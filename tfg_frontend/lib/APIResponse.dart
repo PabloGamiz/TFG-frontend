@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class APIResponse extends StatefulWidget {
   String response = '';
-  APIResponse({required this.response});
+  APIResponse({Key? key, required this.response}) : super(key: key);
 
   @override
   _APIResponse createState() => _APIResponse(response);
@@ -10,13 +10,15 @@ class APIResponse extends StatefulWidget {
 
 class _APIResponse extends State<APIResponse> {
   String resp = '';
-  void initState() {
-    super.initState();
-  }
 
   _APIResponse(String response) {
     resp = response;
   }
+
+  void initState() {
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
@@ -25,7 +27,7 @@ class _APIResponse extends State<APIResponse> {
           SizedBox(height: 50),
           Container(
             alignment: Alignment.topCenter,
-            child: Text(''),
+            child: Text(resp),
           ),
         ],
       ),

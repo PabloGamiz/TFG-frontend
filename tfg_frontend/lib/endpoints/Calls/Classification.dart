@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:http/http.dart' as http;
 import 'package:tfg_frontend/endpoints/Objects/NonResidentialBuildingClassification.dart';
@@ -12,28 +13,50 @@ Future<String> createClassificationData(
     String min_C2,
     String max_C2) async {
   print('dentro de classification data');
+
+  var map = Map<String, String>();
+
+  map["number_metrics"] = number_metrics;
+  map["calification"] = calification;
+  map["min_C1"] = min_C1;
+  map["max_C1"] = max_C1;
+  map["min_C2"] = min_C2;
+  map["max_C2"] = max_C2;
+
+  String jsonmap = jsonEncode(map);
+
   var body = {
-    'number_metrics': number_metrics,
-    'calification': calification,
-    'min_C1': min_C1,
-    'max_C1': max_C1,
-    'min_C2': min_C2,
-    'max_C2': max_C2
+    "number_metrics": number_metrics,
+    "calification": calification,
+    "min_C1": min_C1,
+    "max_C1": max_C1,
+    "min_C2": min_C2,
+    "max_C2": max_C2
   };
 
   final jsonbody = json.encode(body);
   print('antes de llamada');
+  print(jsonbody);
 
   final response = await http.post(
       Uri.parse('https://pablogamiz.pythonanywhere.com/classificationData/'),
-      body: jsonbody);
+      body: jsonmap,
+      headers: {
+        "Accept": "application/json",
+        "content-type": "application/json"
+      });
+
+  print(response.body);
 
   print('despues de llamada');
   if (response.statusCode == 201) {
+    print('ha creado correctamente la clasificacion');
     // If the server did return a 200 OK response,
     // then parse the JSON.
     return 'La classificació s\'ha creat correctament';
   } else {
+    print(response.statusCode);
+    print('no ha creado la clasificacion');
     // If the server did not return a 200 OK response,
     // then throw an exception.
     return 'No s\'ha pogut crear la classificació';
@@ -56,19 +79,39 @@ Future<String> updateClassificationData(
     'max_C2': max_C2
   };
 
+  var map = Map<String, String>();
+
+  map["number_metrics"] = number_metrics;
+  map["calification"] = calification;
+  map["min_C1"] = min_C1;
+  map["max_C1"] = max_C1;
+  map["min_C2"] = min_C2;
+  map["max_C2"] = max_C2;
+
+  String jsonmap = jsonEncode(map);
+
   String url = 'https://pablogamiz.pythonanywhere.com/classificationData/' +
-      number_metrics.toString() +
+      number_metrics +
       '/' +
       calification +
       '/';
 
-  final response = await http.put(Uri.parse(url), body: body);
+  print(url);
+  print(jsonmap);
+  final response = await http.put(Uri.parse(url), body: jsonmap, headers: {
+    "Accept": "application/json",
+    "content-type": "application/json"
+  });
+
+  print(response.statusCode);
 
   if (response.statusCode == 200) {
+    print('actualiza correctamente');
     // If the server did return a 200 OK response,
     // then parse the JSON.
     return 'S\'ha actulitzat correctament la classificació';
   } else {
+    print('no actualiza');
     // If the server did not return a 200 OK response,
     // then throw an exception.
     return 'No s\'ha pogut actualitzar la classificació';
@@ -83,7 +126,10 @@ Future<String> deleteClassificationData(
       calification +
       '/';
 
-  final response = await http.delete(Uri.parse(url));
+  final response = await http.delete(Uri.parse(url), headers: {
+    "Accept": "application/json",
+    "content-type": "application/json"
+  });
 
   if (response.statusCode == 204) {
     // If the server did return a 200 OK response,
@@ -121,7 +167,10 @@ Future<ClassificationData> getClassificationData(
         '/';
   }
 
-  final response = await http.get(Uri.parse(url));
+  final response = await http.get(Uri.parse(url), headers: {
+    "Accept": "application/json",
+    "content-type": "application/json"
+  });
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,

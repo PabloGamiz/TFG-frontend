@@ -35,7 +35,7 @@ class _APIValue extends State {
   static String classification = '';
   static String minC = '';
   static String maxC = '';
-  static String minC1 = '';
+  static String minC1 = 'valor de minC1';
   static String maxC1 = '';
   static String minC2 = '';
   static String maxC2 = '';
@@ -53,6 +53,7 @@ class _APIValue extends State {
   static String value2 = '';
   static String value3 = '';
 
+  bool visible1 = true;
   bool visible2 = false;
   bool visible3 = false;
 
@@ -95,8 +96,13 @@ class _APIValue extends State {
       print('dentro del post');
       if (info == 'Classificació') {
         print('classification');
-        createClassificationData(
-                number_metrics, classification, minC1, maxC1, minC2, maxC2)
+        await createClassificationData(
+                number_metrics,
+                classification,
+                _controller2.text,
+                _controller3.text,
+                _controller4.text,
+                _controller5.text)
             .then((String result) {
           setState(() {
             response = result;
@@ -105,8 +111,16 @@ class _APIValue extends State {
       } else if (info == 'Dades de càlcul') {
         if (element == 'Edifici') {
           print('no classificacion dentro de edificio');
-          createBuildingData('Edfici', antiquity, value_type, indicator,
-                  building_type, climatic_zone, value1, value2, value3)
+          await createBuildingData(
+                  'Edfici',
+                  antiquity,
+                  value_type,
+                  indicator,
+                  building_type,
+                  climatic_zone,
+                  _controller.text,
+                  _controller2.text,
+                  _controller3.text)
               .then((String result) {
             setState(() {
               response = result;
@@ -114,8 +128,8 @@ class _APIValue extends State {
           });
         } else if (element == 'Sistema software') {
           print('no clasificacion dentro de sistema software');
-          createBuildingData('Sistema software', '', value1, '', component, '',
-                  value2, value3, '')
+          await createBuildingData('Sistema software', '', _controller.text, '',
+                  component, '', _controller2.text, _controller3.text, '')
               .then((String result) {
             setState(() {
               response = result;
@@ -123,10 +137,16 @@ class _APIValue extends State {
           });
         }
       }
-    } else if (action == 'UPDATE') {
-      if (noClassification) {
-        updateClassificationData(
-                number_metrics, classification, minC1, maxC1, minC2, maxC2)
+    } else if (action == 'PUT') {
+      if (info == 'Classificació') {
+        print('dentro de actualizar clasificacion');
+        await updateClassificationData(
+                number_metrics,
+                classification,
+                _controller2.text,
+                _controller3.text,
+                _controller4.text,
+                _controller5.text)
             .then((String result) {
           setState(() {
             response = result;
@@ -134,16 +154,24 @@ class _APIValue extends State {
         });
       } else if (info == 'Dades de càlcul') {
         if (element == 'Edifici') {
-          updateBuildingData('Edfici', antiquity, value_type, indicator,
-                  building_type, climatic_zone, value1, value2, value3)
+          await updateBuildingData(
+                  'Edfici',
+                  antiquity,
+                  value_type,
+                  indicator,
+                  building_type,
+                  climatic_zone,
+                  _controller.text,
+                  _controller2.text,
+                  _controller3.text)
               .then((String result) {
             setState(() {
               response = result;
             });
           });
         } else if (element == 'Sistema software') {
-          updateBuildingData('Sistema software', '', value1, '', component, '',
-                  value2, value3, '')
+          await updateBuildingData('Sistema software', '', _controller.text, '',
+                  component, '', _controller2.text, _controller3.text, '')
               .then((String result) {
             setState(() {
               response = result;
@@ -152,8 +180,8 @@ class _APIValue extends State {
         }
       }
     } else if (action == 'DELETE') {
-      if (noClassification) {
-        deleteClassificationData(number_metrics, classification)
+      if (info == 'Classificació') {
+        await deleteClassificationData(number_metrics, classification)
             .then((String result) {
           setState(() {
             response = result;
@@ -161,16 +189,16 @@ class _APIValue extends State {
         });
       } else if (info == 'Dades de càlcul') {
         if (element == 'Edifici') {
-          deleteBuildingData('Edfici', antiquity, value_type, indicator,
-                  building_type, climatic_zone, value1, value2, value3)
+          await deleteBuildingData('Edfici', antiquity, value_type, indicator,
+                  building_type, climatic_zone)
               .then((String result) {
             setState(() {
               response = result;
             });
           });
         } else if (element == 'Sistema software') {
-          deleteBuildingData('Sistema software', '', value1, '', component, '',
-                  value2, value3, '')
+          await deleteSoftwareData(
+                  'Sistema software', _controller.text, component)
               .then((String result) {
             setState(() {
               response = result;
@@ -180,7 +208,8 @@ class _APIValue extends State {
       }
     }
     print(response);
-    await Future.delayed(Duration(seconds: 1));
+
+    if (!mounted) return;
     runApp(MaterialApp(home: APIResponse(response: response)));
   }
 
@@ -237,12 +266,12 @@ class _APIValue extends State {
               const SizedBox(
                 height: 20,
               ),
-              const Text('Indica el tipus de l\'indicador:'),
+              const Text('Indica el tipus d\'edifici:'),
               const SizedBox(
                 height: 5,
               ),
               DropdownButton<String>(
-                value: indicator,
+                value: building_type,
                 style: TextStyle(color: Colors.green.shade700),
                 underline: Container(
                   height: 2,
@@ -250,44 +279,10 @@ class _APIValue extends State {
                 ),
                 onChanged: (String? newValue) {
                   setState(() {
-                    if (newValue == 'Demanda') {
-                      visible2 = true;
-                      visible3 = false;
-                    } else if (newValue == 'Consum d\'energia' ||
-                        newValue == 'Emissions') {
-                      visible2 = visible3 = true;
-                    }
-                    indicator = newValue!;
+                    building_type = newValue!;
                   });
                 },
-                items: ['', 'Demanda', 'Consum d\'energia', 'Emissions']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text('Indica la zona climàtica:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: climatic_zone,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    climatic_zone = newValue!;
-                  });
-                },
-                items: ['', 'Demanda', 'Consum d\'energia', 'Emissions']
+                items: ['', 'Unifamiliar', 'Bloc']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -342,9 +337,9 @@ class _APIValue extends State {
                   color: Colors.green.shade50,
                 ),
                 onChanged: (String? newValue) {
-                  if (newValue == 'Dispersió') {
+                  if (newValue == 'Dispersió' && action != 'DELETE') {
                     visible2 = visible3 = false;
-                  } else if (newValue == 'Valor mitjà') {
+                  } else if (newValue == 'Valor mitjà' && action != 'DELETE') {
                     visible2 = visible3 = true;
                   }
                   setState(() {
@@ -362,12 +357,12 @@ class _APIValue extends State {
               const SizedBox(
                 height: 20,
               ),
-              const Text('Indica el tipus d\'edifici:'),
+              const Text('Indica la zona climàtica:'),
               const SizedBox(
                 height: 5,
               ),
               DropdownButton<String>(
-                value: building_type,
+                value: climatic_zone,
                 style: TextStyle(color: Colors.green.shade700),
                 underline: Container(
                   height: 2,
@@ -375,34 +370,16 @@ class _APIValue extends State {
                 ),
                 onChanged: (String? newValue) {
                   setState(() {
-                    building_type = newValue!;
+                    climatic_zone = newValue!;
                   });
                 },
-                items: ['', 'Unifamiliar', 'Bloc']
+                items: ['', 'A1', 'A2', 'A3']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
                   );
                 }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text('Introdueix el primer valor:'),
-              const SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: _controller,
-                onChanged: (String value) async {
-                  value1 = value;
-                },
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Introdueix un valor',
-                ),
               ),
               const SizedBox(
                 height: 20,
@@ -429,6 +406,75 @@ class _APIValue extends State {
                     ),
                   )),
             ],
+          ),
+        ),
+        const SizedBox(
+          width: 150,
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              const Text('Indica el tipus de l\'indicador:'),
+              const SizedBox(
+                height: 5,
+              ),
+              DropdownButton<String>(
+                value: indicator,
+                style: TextStyle(color: Colors.green.shade700),
+                underline: Container(
+                  height: 2,
+                  color: Colors.green.shade50,
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    if (newValue == 'Demanda' && action != 'DELETE') {
+                      visible2 = true;
+                      visible3 = false;
+                    } else if ((newValue == 'Consum d\'energia' ||
+                            newValue == 'Emissions') &&
+                        action != 'DELETE') {
+                      visible2 = visible3 = true;
+                    }
+                    indicator = newValue!;
+                  });
+                },
+                items: ['', 'Demanda', 'Consum d\'energia', 'Emissions']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Visibility(
+                child: Text('Introdueix el primer valor:'),
+                visible: visible1,
+              ),
+              Visibility(
+                child: const SizedBox(
+                  height: 5,
+                ),
+                visible: visible1,
+              ),
+              Visibility(
+                child: TextField(
+                  controller: _controller,
+                  onChanged: (String value) async {
+                    value1 = value;
+                  },
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Introdueix un valor',
+                  ),
+                ),
+                visible: visible1,
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
           ),
         ),
         const SizedBox(
@@ -462,10 +508,10 @@ class _APIValue extends State {
                   color: Colors.green.shade50,
                 ),
                 onChanged: (String? newValue) {
-                  if (newValue == '2') {
+                  if (newValue == '2' && action != 'DELETE') {
                     visibleC1C2 = true;
                     visibleC = false;
-                  } else if (newValue == '1') {
+                  } else if (newValue == '1' && action != 'DELETE') {
                     visibleC1C2 = false;
                     visibleC = true;
                   }
@@ -526,6 +572,7 @@ class _APIValue extends State {
                       labelText: 'Introdueix un valor',
                     ),
                   )),
+              Text(_controller2.text),
               const SizedBox(
                 height: 20,
               ),
@@ -693,21 +740,28 @@ class _APIValue extends State {
               const SizedBox(
                 height: 20,
               ),
-              const Text('Introdueix el segon valor:'),
-              const SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: _controller2,
-                onChanged: (String value) async {
-                  value2 = value;
-                },
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Introdueix un valor',
+              Visibility(
+                  child: const Text('Introdueix el segon valor:'),
+                  visible: visible1),
+              Visibility(
+                child: const SizedBox(
+                  height: 5,
                 ),
+                visible: visible1,
               ),
+              Visibility(
+                  child: TextField(
+                    controller: _controller2,
+                    onChanged: (String value) async {
+                      value2 = value;
+                    },
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Introdueix un valor',
+                    ),
+                  ),
+                  visible: visible1),
             ],
           ),
         ),
@@ -736,21 +790,27 @@ class _APIValue extends State {
               const SizedBox(
                 height: 20,
               ),
-              const Text('Introdueix el tercer valor:'),
-              const SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: _controller3,
-                onChanged: (String value) async {
-                  value3 = value;
-                },
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Introdueix un valor',
-                ),
-              ),
+              Visibility(
+                  child: const Text('Introdueix el tercer valor:'),
+                  visible: visible1),
+              Visibility(
+                  child: const SizedBox(
+                    height: 5,
+                  ),
+                  visible: visible1),
+              Visibility(
+                  child: TextField(
+                    controller: _controller3,
+                    onChanged: (String value) async {
+                      value3 = value;
+                    },
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Introdueix un valor',
+                    ),
+                  ),
+                  visible: visible1),
             ],
           ),
         ),
@@ -790,8 +850,11 @@ class _APIValue extends State {
               setState(() {
                 action = newValue!;
               });
+              if (action == 'DELETE') {
+                visible1 = visible2 = visible3 = visibleC = visibleC1C2 = false;
+              }
             },
-            items: ['', 'POST', 'UPDATE', 'DELETE']
+            items: ['', 'POST', 'PUT', 'DELETE']
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -925,6 +988,7 @@ class _APIValue extends State {
                     textStyle: const TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
+                    //if ((number_metrics != '' && classification != '' && ((minC != '' && maxC != '') || (minC1 != '' && maxC1 != '') || (minC1 != '' && maxC1 != '' && minC2 != '' && maxC2 != ''))) {
                     realizarCrida();
                   },
                   child: const Text('Continuar'),
@@ -933,7 +997,7 @@ class _APIValue extends State {
             ),
           ),
           const SizedBox(
-            height: 50,
+            height: 20,
           ),
         ],
       ),

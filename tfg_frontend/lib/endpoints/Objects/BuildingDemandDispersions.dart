@@ -3,7 +3,7 @@ import 'dart:ffi';
 class BuildingDemand {
   final int building_type;
   final String climatic_zone;
-  final Float dispersion;
+  final double dispersion;
 
   const BuildingDemand({
     required this.building_type,
