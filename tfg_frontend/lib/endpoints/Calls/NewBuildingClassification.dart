@@ -1,7 +1,7 @@
-import 'dart:convert';
+/*import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:tfg_frontend/endpoints/Objects/ResidentialBuildingClassification.dart';
+import 'package:tfg_frontend/endpoints/Objects/ClassificationData.dart';
 
 Future<ResidentialBuildingClassification> SaveClassificationC1C2(
     String calification,
@@ -31,4 +31,4 @@ Future<ResidentialBuildingClassification> SaveClassificationC1C2(
     // then throw an exception.
     throw Exception('Failed to store the classification');
   }
-}
+}*/

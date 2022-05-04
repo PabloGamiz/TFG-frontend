@@ -1,9 +1,7 @@
-import 'dart:ffi';
-
 class NonResidentialBuildingClassification {
   final String calification;
-  final Float min_C;
-  final Float max_C;
+  final double min_C;
+  final double max_C;
 
   const NonResidentialBuildingClassification({
     required this.calification,

@@ -1,11 +1,10 @@
-/*import 'dart:convert';
+import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:tfg_frontend/endpoints/Objects/CalculationData.dart';
-import 'package:tfg_frontend/endpoints/Objects/NonResidentialBuildingClassification.dart';
-import 'package:tfg_frontend/endpoints/Objects/ClassificationData.dart';
 
-Future<BuildingAPIValues> SaveBuildingData(
+Future<String> createBuildingData(
+    String object,
     String antiquity,
     String value_type,
     String indicator,
@@ -15,6 +14,7 @@ Future<BuildingAPIValues> SaveBuildingData(
     String value2,
     String value3) async {
   var body = {
+    'object': object,
     'antiquity': antiquity,
     'value_type': value_type,
     'indicator': indicator,
@@ -32,15 +32,16 @@ Future<BuildingAPIValues> SaveBuildingData(
   if (response.statusCode == 201) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return BuildingAPIValues.fromJson(jsonDecode(response.body));
+    return 'S\'ha introduït la informació per a l\'edifici de forma correcta';
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to store the classification');
+    return 'No s\'ha pogut crear la informació per a l\'edifici';
   }
 }
 
-Future<BuildingAPIValues> UpdateBu8ildingData(
+Future<String> updateBuildingData(
+    String object,
     String antiquity,
     String value_type,
     String indicator,
@@ -50,6 +51,7 @@ Future<BuildingAPIValues> UpdateBu8ildingData(
     String value2,
     String value3) async {
   var body = {
+    'object': object,
     'antiquity': antiquity,
     'value_type': value_type,
     'indicator': indicator,
@@ -64,18 +66,19 @@ Future<BuildingAPIValues> UpdateBu8ildingData(
       Uri.parse('https://jsonplaceholder.typicode.com/albums/1'),
       body: body);
 
-  if (response.statusCode == 200) {
+  if (response.statusCode == 201) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return BuildingAPIValues.fromJson(jsonDecode(response.body));
+    return 'S\'ha actualitzat la informació per a l\'edifici de forma correcta';
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to store the classification');
+    return 'No s\'ha pogut actualitzar la informació per a l\'edifici';
   }
 }
 
-Future<BuildingAPIValues> DeleteBuildingData(
+Future<String> deleteBuildingData(
+    String object,
     String antiquity,
     String value_type,
     String indicator,
@@ -84,33 +87,22 @@ Future<BuildingAPIValues> DeleteBuildingData(
     String value1,
     String value2,
     String value3) async {
-  var body = {
-    'antiquity': antiquity,
-    'value_type': value_type,
-    'indicator': indicator,
-    'building_type': building_type,
-    'climatic_zone': climatic_zone,
-    'value1': value1,
-    'value2': value2,
-    'value3': value3,
-  };
+  final response = await http
+      .delete(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
 
-  final response = await http.delete(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums/1'),
-      body: body);
-
-  if (response.statusCode == 204) {
+  if (response.statusCode == 201) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return BuildingAPIValues.fromJson(jsonDecode(response.body));
+    return 'S\'ha esborrat la informació per a l\'edifici de forma correcta';
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to store the classification');
+    return 'No s\'ha pogut esborrar la informació per a l\'edifici';
   }
 }
 
-Future<BuildingAPIValues> GetBuildingData(
+Future<CalculationData> getBuildingData(
+    String object,
     String antiquity,
     String value_type,
     String indicator,
@@ -119,29 +111,16 @@ Future<BuildingAPIValues> GetBuildingData(
     String value1,
     String value2,
     String value3) async {
-  var body = {
-    'antiquity': antiquity,
-    'value_type': value_type,
-    'indicator': indicator,
-    'building_type': building_type,
-    'climatic_zone': climatic_zone,
-    'value1': value1,
-    'value2': value2,
-    'value3': value3,
-  };
+  final response = await http
+      .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
 
-  final response = await http.get(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums/1'),
-      body: body);
-
-  if (response.statusCode == 200) {
+  if (response.statusCode == 20) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return BuildingAPIValues.fromJson(jsonDecode(response.body));
+    return CalculationData.fromJson(jsonDecode(response.body));
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to store the classification');
+    throw Exception('Failed to get the data');
   }
 }
-*/

@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tfg_frontend/APIResponse.dart';
 import 'package:tfg_frontend/BuildingCAPIInput.dart';
+import 'package:tfg_frontend/endpoints/Calls/CalculationData.dart';
 import 'BuildingAPIInput.dart';
 import 'SoftwareAPIInput.dart';
-import 'endpoints/Objects/BuildingAPIValues.dart';
+import 'endpoints/Objects/CalculationData.dart';
+import 'endpoints/Calls/Classification.dart';
 
 class APIValue extends StatefulWidget {
   @override
@@ -25,6 +30,7 @@ class _APIValue extends State {
 
   //Classification fields
 
+  String number_metrics = '';
   static String purpose = '';
   static String classification = '';
   static String minC = '';
@@ -81,28 +87,102 @@ class _APIValue extends State {
     super.dispose();
   }
 
-  /* void realizarCrida() {
-    if (action == 'POST' or action == 'UPDATE') {
-      if (noClassification) {
-        if (purpose == 'Residencial') {
-          ResidentialBuildingClassification rb = new ResidentialBuildingClassification(classification, minC1, maxC1, minC2, maxC2);
-          //hacer la llamada para guardar
+  void realizarCrida() async {
+    String response = '';
+    print(
+        '-----------------------------Antes de hacer las llamadas------------------------------');
+    if (action == 'POST') {
+      print('dentro del post');
+      if (info == 'Classificació') {
+        print('classification');
+        createClassificationData(
+                number_metrics, classification, minC1, maxC1, minC2, maxC2)
+            .then((String result) {
+          setState(() {
+            response = result;
+          });
+        });
+      } else if (info == 'Dades de càlcul') {
+        if (element == 'Edifici') {
+          print('no classificacion dentro de edificio');
+          createBuildingData('Edfici', antiquity, value_type, indicator,
+                  building_type, climatic_zone, value1, value2, value3)
+              .then((String result) {
+            setState(() {
+              response = result;
+            });
+          });
+        } else if (element == 'Sistema software') {
+          print('no clasificacion dentro de sistema software');
+          createBuildingData('Sistema software', '', value1, '', component, '',
+                  value2, value3, '')
+              .then((String result) {
+            setState(() {
+              response = result;
+            });
+          });
         }
-        else if (purpose == 'No residencial') {
-          NonResidentialBuildingClassification nrb = new NonResidentialBuildingClassification(classification, minC, maxC);
-          //hacer la llamada para guardar
-        }
-      else if (info == 'Dades de càlcul'){
-          if (element == 'Edifici') {
-            BuildingData bd = new BuildingData(antiquity, value_type, indicator, building_type, climatic_zone, value1, value2, value3);
-            //hacer llamada para guardar
-          }
-          else if (element == 'Sistema software') {
-            SoftwareData sd = new SoftwareData(component, name, value1, value2);
-          }
       }
-    } else if (action == 'DELETE') {}
-  }*/
+    } else if (action == 'UPDATE') {
+      if (noClassification) {
+        updateClassificationData(
+                number_metrics, classification, minC1, maxC1, minC2, maxC2)
+            .then((String result) {
+          setState(() {
+            response = result;
+          });
+        });
+      } else if (info == 'Dades de càlcul') {
+        if (element == 'Edifici') {
+          updateBuildingData('Edfici', antiquity, value_type, indicator,
+                  building_type, climatic_zone, value1, value2, value3)
+              .then((String result) {
+            setState(() {
+              response = result;
+            });
+          });
+        } else if (element == 'Sistema software') {
+          updateBuildingData('Sistema software', '', value1, '', component, '',
+                  value2, value3, '')
+              .then((String result) {
+            setState(() {
+              response = result;
+            });
+          });
+        }
+      }
+    } else if (action == 'DELETE') {
+      if (noClassification) {
+        deleteClassificationData(number_metrics, classification)
+            .then((String result) {
+          setState(() {
+            response = result;
+          });
+        });
+      } else if (info == 'Dades de càlcul') {
+        if (element == 'Edifici') {
+          deleteBuildingData('Edfici', antiquity, value_type, indicator,
+                  building_type, climatic_zone, value1, value2, value3)
+              .then((String result) {
+            setState(() {
+              response = result;
+            });
+          });
+        } else if (element == 'Sistema software') {
+          deleteBuildingData('Sistema software', '', value1, '', component, '',
+                  value2, value3, '')
+              .then((String result) {
+            setState(() {
+              response = result;
+            });
+          });
+        }
+      }
+    }
+    print(response);
+    await Future.delayed(Duration(seconds: 1));
+    runApp(MaterialApp(home: APIResponse(response: response)));
+  }
 
 /*  static List<Widget> _APIInfo = <Widget>[
     Container(
@@ -369,30 +449,31 @@ class _APIValue extends State {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Indica la finalitat de l\'edifici'),
+              const Text(
+                  'Indica la finalitat el nombre de mètriques que es faran servir per obtenir la classificació:'),
               const SizedBox(
                 height: 5,
               ),
               DropdownButton<String>(
-                value: purpose,
+                value: number_metrics,
                 style: TextStyle(color: Colors.green.shade700),
                 underline: Container(
                   height: 2,
                   color: Colors.green.shade50,
                 ),
                 onChanged: (String? newValue) {
-                  if (newValue == 'Residencial') {
+                  if (newValue == '2') {
                     visibleC1C2 = true;
                     visibleC = false;
-                  } else if (newValue == 'No residencial') {
+                  } else if (newValue == '1') {
                     visibleC1C2 = false;
                     visibleC = true;
                   }
                   setState(() {
-                    purpose = newValue!;
+                    number_metrics = newValue!;
                   });
                 },
-                items: ['', 'Residencial', 'No residencial']
+                items: ['', '1', '2']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -843,7 +924,9 @@ class _APIValue extends State {
                     primary: Colors.white,
                     textStyle: const TextStyle(fontSize: 20),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    realizarCrida();
+                  },
                   child: const Text('Continuar'),
                 ),
               ],

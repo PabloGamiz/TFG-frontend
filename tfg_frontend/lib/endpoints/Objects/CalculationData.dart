@@ -1,4 +1,5 @@
-class BuildingAPIValues {
+class CalculationData {
+  final String object;
   final String antiquity;
   final String value_type;
   final String indicator;
@@ -8,7 +9,8 @@ class BuildingAPIValues {
   final String value2;
   final String value3;
 
-  const BuildingAPIValues({
+  const CalculationData({
+    required this.object,
     required this.antiquity,
     required this.value_type,
     required this.indicator,
@@ -19,8 +21,9 @@ class BuildingAPIValues {
     required this.value3,
   });
 
-  factory BuildingAPIValues.fromJson(Map<String, dynamic> json) {
-    return BuildingAPIValues(
+  factory CalculationData.fromJson(Map<String, dynamic> json) {
+    return CalculationData(
+      object: json['object'],
       antiquity: json['antiquity'],
       value_type: json['value_type'],
       indicator: json['indicator'],

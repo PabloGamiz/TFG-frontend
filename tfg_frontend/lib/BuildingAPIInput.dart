@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BuildingAPIInput extends StatefulWidget {
@@ -19,6 +19,7 @@ class _BuildingAPIInput extends State<BuildingAPIInput> {
   static String value1 = '';
   static String value2 = '';
   static String value3 = '';
+
 
   bool visible2 = false;
   bool visible3 = false;
@@ -296,3 +297,4 @@ class _BuildingAPIInput extends State<BuildingAPIInput> {
     ));
   }
 }
+*/

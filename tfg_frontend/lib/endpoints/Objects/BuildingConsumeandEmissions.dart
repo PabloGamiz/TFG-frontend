@@ -3,9 +3,9 @@ import 'dart:ffi';
 class BuildingConsumeandEmissions {
   final int building_type;
   final String climatic_zone;
-  final Float heating;
-  final Float refrigeration;
-  final Float acs;
+  final double heating;
+  final double refrigeration;
+  final double acs;
 
   const BuildingConsumeandEmissions({
     required this.building_type,
