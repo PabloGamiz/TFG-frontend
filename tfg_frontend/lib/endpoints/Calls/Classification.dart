@@ -144,26 +144,30 @@ Future<String> deleteClassificationData(
 
 Future<ClassificationData> getClassificationData(
     String number_metrics, String C1, String C2) async {
+  String C1_aux = C1;
+  String C2_aux = C2;
+  if (double.parse(C1) != double.parse(C1).toInt()) {
+    C1_aux = C1_aux + '.0';
+  }
+
+  if (double.parse(C2) != double.parse(C2).toInt()) {
+    C2_aux = C2_aux + '.0';
+  }
+
   String url = '';
   if (number_metrics == 2) {
-    if (C2 == '') {
-      url = 'https://pablogamiz.pythonanywhere.com/classificationDataC1/' +
-          number_metrics +
-          '/' +
-          C1 +
-          '/';
-    } else {
-      url = 'https://pablogamiz.pythonanywhere.com/classificationDataC1C2/' +
-          C1 +
-          '/' +
-          C2 +
-          '/';
-    }
+    url = 'https://pablogamiz.pythonanywhere.com/classificationDataC1C2/' +
+        number_metrics +
+        '/' +
+        C1_aux +
+        '/' +
+        C2_aux +
+        '/';
   } else {
     url = 'https://pablogamiz.pythonanywhere.com/classificationDataC1/' +
         number_metrics +
         '/' +
-        C1 +
+        C1_aux +
         '/';
   }
 

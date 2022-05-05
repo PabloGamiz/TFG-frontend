@@ -59,7 +59,7 @@ class _Structure extends State {
             ],
           ),
           VerticalDivider(thickness: 1, width: 1),
-          Text(selectedIndex.toString()),
+          Text((selectedIndex.toDouble()).toString()),
           Expanded(
             child: Container(
               child: _AppFeatures.elementAt(selectedIndex),

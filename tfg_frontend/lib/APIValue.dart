@@ -35,7 +35,7 @@ class _APIValue extends State {
   static String classification = '';
   static String minC = '';
   static String maxC = '';
-  static String minC1 = 'valor de minC1';
+  static String minC1 = '';
   static String maxC1 = '';
   static String minC2 = '';
   static String maxC2 = '';
@@ -49,9 +49,9 @@ class _APIValue extends State {
   static String indicator = '';
   static String building_type = '';
   static String climatic_zone = '';
-  static String value1 = '';
-  static String value2 = '';
-  static String value3 = '';
+  static String value1 = '0.0';
+  static String value2 = '0.0';
+  static String value3 = '0.0';
 
   bool visible1 = true;
   bool visible2 = false;
@@ -112,7 +112,7 @@ class _APIValue extends State {
         if (element == 'Edifici') {
           print('no classificacion dentro de edificio');
           await createBuildingData(
-                  'Edfici',
+                  'Edifici',
                   antiquity,
                   value_type,
                   indicator,
@@ -155,7 +155,7 @@ class _APIValue extends State {
       } else if (info == 'Dades de càlcul') {
         if (element == 'Edifici') {
           await updateBuildingData(
-                  'Edfici',
+                  'Edifici',
                   antiquity,
                   value_type,
                   indicator,
@@ -189,7 +189,7 @@ class _APIValue extends State {
         });
       } else if (info == 'Dades de càlcul') {
         if (element == 'Edifici') {
-          await deleteBuildingData('Edfici', antiquity, value_type, indicator,
+          await deleteBuildingData('Edifici', antiquity, value_type, indicator,
                   building_type, climatic_zone)
               .then((String result) {
             setState(() {
@@ -949,11 +949,9 @@ class _APIValue extends State {
             height: 20,
           ),
           Visibility(
-              child: Expanded(
-                  child: Container(
-                height: 100,
-              )),
-              visible: initial),
+              child: Expanded(child: Container()),
+              visible: initial ||
+                  (!initial && !building && !software && noClassification)),
           Visibility(
               child: Expanded(
                   child: Container(
