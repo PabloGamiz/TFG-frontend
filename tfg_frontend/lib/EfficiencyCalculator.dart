@@ -24,22 +24,6 @@ class _EfficiencyCalculator extends State {
     BuildingInputs(),
   ];
 
-  void calculateEfficiency() {
-    if (buildingPurpose == 'Residencial') {
-      //obtener el valor de la dispersion
-      //obtener el valor del parque de edificios
-      //Float C1 = (((r * i_o / i_r) - 1) / 2 * (r - 1)) + 0.6;
-      //Float C2 = (((r_2 * i_o / i_s) - 1) / 2 * (r_2 - 1)) + 0.5;
-      //pasar valores al endpoint correspondiente
-    } else if (buildingPurpose == 'No residencial') {
-      //obtener el valor de la dispersion
-      //obtener el valor del parque de edificios
-      //Float C1 = (((r * i_o / i_r) - 1) / 2 * (r - 1)) + 0.6;
-      //Float C2 = (((r_2 * i_o / i_s) - 1) / 2 * (r_2 - 1)) + 0.5;
-      //Float C = C1/C2;
-      //pasar valor de C al endpoint correspondiente
-    }
-  }
 
   Widget build(BuildContext context) {
     return Scaffold(

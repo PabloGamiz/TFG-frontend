@@ -62,6 +62,12 @@ class _Structure extends State {
           Text((selectedIndex.toDouble()).toString()),
           Expanded(
             child: Container(
+              /*decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('icono-gris.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),*/
               child: _AppFeatures.elementAt(selectedIndex),
             ),
           ),

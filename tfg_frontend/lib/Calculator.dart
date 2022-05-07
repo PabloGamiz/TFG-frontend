@@ -11,7 +11,7 @@ class Calculator extends StatefulWidget {
 class _Calculator extends State {
   String action = '';
   int actionNumber = 0;
-  String element = '';
+  String element = 'Escull l\'objecte';
 
   //Camps relacionats amb el software
 
@@ -133,6 +133,10 @@ class _Calculator extends State {
       //double op_consumption = efficiency_cpu + efficiency_gpu + efficiency_mem;
 
       //----------------------------CALCULO PERDURABILIDAD----------------------------------------
+
+      //double testing_efficiency = testingErrors/testingDuration;
+
+      //realizar llamada para obtener el valor de la classificacion para la perdurabilidad
 
     }
   }
@@ -613,39 +617,47 @@ class _Calculator extends State {
           const SizedBox(
             height: 50,
           ),
-          const Text('De quin objecte vols calcular l\'eficiència?'),
-          const SizedBox(
-            height: 5,
-          ),
-          DropdownButton<String>(
-            value: element,
-            style: TextStyle(color: Colors.green.shade700),
-            underline: Container(
-              height: 2,
-              color: Colors.green.shade50,
-            ),
-            onChanged: (String? newValue) {
-              setState(() {
-                element = newValue!;
-              });
-              if (element == '') {
-                visibleBuilding = false;
-                visibleSoftware = false;
-              } else if (element == 'Edifici') {
-                visibleBuilding = true;
-                visibleSoftware = false;
-              } else if (element == 'Sistema software') {
-                visibleBuilding = false;
-                visibleSoftware = true;
-              }
-            },
-            items: ['', 'Edifici', 'Sistema software']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Indica el tipus d\'objecte per al que vols realitzar el càlcul: ',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              DropdownButton<String>(
+                value: element,
+                style: TextStyle(color: Colors.green.shade700),
+                underline: Container(
+                  height: 2,
+                  color: Colors.green.shade50,
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    element = newValue!;
+                  });
+                  if (element == 'Escull l\'objecte') {
+                    visibleBuilding = false;
+                    visibleSoftware = false;
+                  } else if (element == 'Edifici') {
+                    visibleBuilding = true;
+                    visibleSoftware = false;
+                  } else if (element == 'Sistema software') {
+                    visibleBuilding = false;
+                    visibleSoftware = true;
+                  }
+                },
+                items: ['Escull l\'objecte', 'Edifici', 'Sistema software']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
           ),
           const SizedBox(
             height: 20,

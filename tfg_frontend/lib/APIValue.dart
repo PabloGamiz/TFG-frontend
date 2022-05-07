@@ -17,11 +17,11 @@ class APIValue extends StatefulWidget {
 
 class _APIValue extends State {
   //APIValue fields
-  String action = '';
+  String action = 'Escull l\'acció';
   int actionNumber = 0;
   int infoNumber = 0;
-  String info = '';
-  String element = '';
+  String info = 'Escull el tipus';
+  String element = 'Escull l\'objecte';
 
   bool noClassification = false;
   bool building = false;
@@ -229,259 +229,269 @@ class _APIValue extends State {
   ];*/
 
   Widget buildingInputs() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(
-          width: 150,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Indica l\'antiguitat de l\'edifici:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: antiquity,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    antiquity = newValue!;
-                  });
-                },
-                items: ['', 'Nou', 'Existent']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text('Indica el tipus d\'edifici:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: building_type,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    building_type = newValue!;
-                  });
-                },
-                items: ['', 'Unifamiliar', 'Bloc']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  visible: visible2,
-                  child: const Text('Introdueix el segon valor:')),
-              Visibility(
-                  visible: visible2,
-                  child: const SizedBox(
-                    height: 5,
-                  )),
-              Visibility(
-                visible: visible2,
-                child: TextField(
-                    controller: _controller2,
-                    onChanged: (String value) async {
-                      value2 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    )),
-              ),
-            ],
+    return Column(children: [
+      const Text(
+        'Introdueix els valors següents dels edificis per poder realitzar l\'acció:',
+        style: TextStyle(fontSize: 18),
+      ),
+      const SizedBox(
+        height: 20,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 150,
           ),
-        ),
-        const SizedBox(
-          width: 150,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                  'Indica el tipus de valor que vols afegir o actualitzar:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: value_type,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Indica l\'antiguitat de l\'edifici:'),
+                const SizedBox(
+                  height: 5,
                 ),
-                onChanged: (String? newValue) {
-                  if (newValue == 'Dispersió' && action != 'DELETE') {
-                    visible2 = visible3 = false;
-                  } else if (newValue == 'Valor mitjà' && action != 'DELETE') {
-                    visible2 = visible3 = true;
-                  }
-                  setState(() {
-                    value_type = newValue!;
-                  });
-                },
-                items: ['', 'Valor mitjà', 'Dispersió']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text('Indica la zona climàtica:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: climatic_zone,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
+                DropdownButton<String>(
+                  value: antiquity,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      antiquity = newValue!;
+                    });
+                  },
+                  items: ['', 'Nou', 'Existent']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    climatic_zone = newValue!;
-                  });
-                },
-                items: ['', 'A1', 'A2', 'A3']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  visible: visible3,
-                  child: const Text('Introdueix el tercer valor:')),
-              Visibility(
-                  visible: visible3,
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text('Indica el tipus d\'edifici:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                DropdownButton<String>(
+                  value: building_type,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      building_type = newValue!;
+                    });
+                  },
+                  items: ['', 'Unifamiliar', 'Bloc']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    visible: visible2,
+                    child: const Text('Introdueix el segon valor:')),
+                Visibility(
+                    visible: visible2,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                  visible: visible2,
+                  child: TextField(
+                      controller: _controller2,
+                      onChanged: (String value) async {
+                        value2 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Introdueix un valor',
+                      )),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 150,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                    'Indica el tipus de valor que vols afegir o actualitzar:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                DropdownButton<String>(
+                  value: value_type,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    if (newValue == 'Dispersió' && action != 'DELETE') {
+                      visible2 = visible3 = false;
+                    } else if (newValue == 'Valor mitjà' &&
+                        action != 'DELETE') {
+                      visible2 = visible3 = true;
+                    }
+                    setState(() {
+                      value_type = newValue!;
+                    });
+                  },
+                  items: ['', 'Valor mitjà', 'Dispersió']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text('Indica la zona climàtica:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                DropdownButton<String>(
+                  value: climatic_zone,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      climatic_zone = newValue!;
+                    });
+                  },
+                  items: ['', 'A1', 'A2', 'A3']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    visible: visible3,
+                    child: const Text('Introdueix el tercer valor:')),
+                Visibility(
+                    visible: visible3,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: visible3,
+                    child: TextField(
+                      controller: _controller3,
+                      onChanged: (String value) async {
+                        value3 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Introdueix un valor',
+                      ),
+                    )),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 150,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                const Text('Indica el tipus de l\'indicador:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                DropdownButton<String>(
+                  value: indicator,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue == 'Demanda' && action != 'DELETE') {
+                        visible2 = true;
+                        visible3 = false;
+                      } else if ((newValue == 'Consum d\'energia' ||
+                              newValue == 'Emissions') &&
+                          action != 'DELETE') {
+                        visible2 = visible3 = true;
+                      }
+                      indicator = newValue!;
+                    });
+                  },
+                  items: ['', 'Demanda', 'Consum d\'energia', 'Emissions']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                  child: Text('Introdueix el primer valor:'),
+                  visible: visible1,
+                ),
+                Visibility(
                   child: const SizedBox(
                     height: 5,
-                  )),
-              Visibility(
-                  visible: visible3,
+                  ),
+                  visible: visible1,
+                ),
+                Visibility(
                   child: TextField(
-                    controller: _controller3,
+                    controller: _controller,
                     onChanged: (String value) async {
-                      value3 = value;
+                      value1 = value;
                     },
                     obscureText: false,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Introdueix un valor',
                     ),
-                  )),
-            ],
-          ),
-        ),
-        const SizedBox(
-          width: 150,
-        ),
-        Expanded(
-          child: Column(
-            children: [
-              const Text('Indica el tipus de l\'indicador:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: indicator,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    if (newValue == 'Demanda' && action != 'DELETE') {
-                      visible2 = true;
-                      visible3 = false;
-                    } else if ((newValue == 'Consum d\'energia' ||
-                            newValue == 'Emissions') &&
-                        action != 'DELETE') {
-                      visible2 = visible3 = true;
-                    }
-                    indicator = newValue!;
-                  });
-                },
-                items: ['', 'Demanda', 'Consum d\'energia', 'Emissions']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                child: Text('Introdueix el primer valor:'),
-                visible: visible1,
-              ),
-              Visibility(
-                child: const SizedBox(
-                  height: 5,
-                ),
-                visible: visible1,
-              ),
-              Visibility(
-                child: TextField(
-                  controller: _controller,
-                  onChanged: (String value) async {
-                    value1 = value;
-                  },
-                  obscureText: false,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Introdueix un valor',
                   ),
+                  visible: visible1,
                 ),
-                visible: visible1,
-              ),
-            ],
-            mainAxisAlignment: MainAxisAlignment.center,
+              ],
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
           ),
-        ),
-        const SizedBox(
-          width: 150,
-        ),
-      ],
-    );
+          const SizedBox(
+            width: 150,
+          ),
+        ],
+      )
+    ]);
   }
 
   Widget classificationInputs() {
@@ -495,6 +505,13 @@ class _APIValue extends State {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Text(
+                'Introdueix els valors següents de la classificació per poder realitzar l\'acció:',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               const Text(
                   'Indica la finalitat el nombre de mètriques que es faran servir per obtenir la classificació:'),
               const SizedBox(
@@ -713,6 +730,13 @@ class _APIValue extends State {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Text(
+                'Introdueix els valors següents dels sistemes software per poder realitzar l\'acció:',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               const Text('Indica el tipus de component:'),
               const SizedBox(
                 height: 5,
@@ -835,74 +859,135 @@ class _APIValue extends State {
           const SizedBox(
             height: 50,
           ),
-          const Text('Quin tipus d\'acció vols realitzar?'),
-          const SizedBox(
-            height: 5,
-          ),
-          DropdownButton<String>(
-            value: action,
-            style: TextStyle(color: Colors.green.shade700),
-            underline: Container(
-              height: 2,
-              color: Colors.green.shade50,
-            ),
-            onChanged: (String? newValue) {
-              setState(() {
-                action = newValue!;
-              });
-              if (action == 'DELETE') {
-                visible1 = visible2 = visible3 = visibleC = visibleC1C2 = false;
-              }
-            },
-            items: ['', 'POST', 'PUT', 'DELETE']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          const Text('Quin tipus d\'informació vols introduir o modificar?'),
-          const SizedBox(
-            height: 5,
-          ),
-          DropdownButton<String>(
-            value: info,
-            style: TextStyle(color: Colors.green.shade700),
-            underline: Container(
-              height: 2,
-              color: Colors.green.shade50,
-            ),
-            onChanged: (String? newValue) {
-              setState(() {
-                if (newValue == '') {
-                  noClassification = false;
-                  initial = true;
-                } else if (newValue == 'Classificació') {
-                  noClassification = false;
-                  initial = false;
-                } else if (newValue == 'Dades de càlcul') {
-                  noClassification = true;
-                  initial = false;
-                }
-                info = newValue!;
-              });
-            },
-            items: ['', 'Classificació', 'Dades de càlcul']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Indica el tipus d\'acció que vols realitzar: ',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              DropdownButton<String>(
+                value: action,
+                style: TextStyle(color: Colors.green.shade700),
+                underline: Container(
+                  height: 2,
+                  color: Colors.green.shade50,
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    action = newValue!;
+                  });
+                  if (action == 'DELETE') {
+                    visible1 =
+                        visible2 = visible3 = visibleC = visibleC1C2 = false;
+                  }
+                },
+                items: ['Escull l\'acció', 'POST', 'PUT', 'DELETE']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
           ),
           const SizedBox(
-            height: 20,
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Indica el tipus d\'informació per al que vols realitzar l\'acció: ',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              DropdownButton<String>(
+                value: info,
+                style: TextStyle(color: Colors.green.shade700),
+                underline: Container(
+                  height: 2,
+                  color: Colors.green.shade50,
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    if (newValue == 'Escull el tipus') {
+                      noClassification = false;
+                      initial = true;
+                    } else if (newValue == 'Classificació') {
+                      noClassification = false;
+                      initial = false;
+                    } else if (newValue == 'Dades de càlcul') {
+                      noClassification = true;
+                      initial = false;
+                    }
+                    info = newValue!;
+                  });
+                },
+                items: ['Escull el tipus', 'Classificació', 'Dades de càlcul']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
           ),
           Visibility(
+              visible: noClassification && !initial,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Indica l\'objecte per al que vols introduir, actualitzar o esborrar dades:',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  DropdownButton<String>(
+                    value: element,
+                    style: TextStyle(color: Colors.green.shade700),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.green.shade50,
+                    ),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        if (newValue == 'Escull l\'objecte') {
+                          building = false;
+                          software = false;
+                        } else if (newValue == 'Edifici') {
+                          building = true;
+                          software = false;
+                        } else if (newValue == 'Sistema software') {
+                          building = false;
+                          software = true;
+                        }
+                        element = newValue!;
+                      });
+                    },
+                    items: ['Escull l\'objecte', 'Edifici', 'Sistema software']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              )),
+          /*Visibility(
               child: const Text(
                   'Indica l\'element per al que vols realitzar l\'acció:'),
               visible: noClassification && !initial),
@@ -944,7 +1029,7 @@ class _APIValue extends State {
               }).toList(),
             ),
             visible: noClassification && !initial,
-          ),
+          ),*/
           const SizedBox(
             height: 20,
           ),
