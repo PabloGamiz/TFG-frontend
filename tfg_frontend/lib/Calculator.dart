@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tfg_frontend/BuildingCalculator.dart';
+import 'package:tfg_frontend/EfficiencyResults.dart';
 import 'BuildingCalculator.dart';
 import 'SoftwareCalculator.dart';
 
@@ -696,7 +697,9 @@ class _Calculator extends State {
                     primary: Colors.white,
                     textStyle: const TextStyle(fontSize: 20),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    runApp(MaterialApp(home: EfficiencyResults()));
+                  },
                   child: const Text('Continuar'),
                 ),
               ],

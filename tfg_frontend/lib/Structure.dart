@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tfg_frontend/Signup.dart';
 import 'APIValue.dart';
 import 'Calculator.dart';
+import 'Login.dart';
 
 class Structure extends StatefulWidget {
   @override
@@ -14,7 +16,11 @@ class _Structure extends State {
     super.initState();
   }
 
-  static List<Widget> _AppFeatures = <Widget>[Calculator(), APIValue()];
+  static List<Widget> _AppFeatures = <Widget>[
+    Signup(),
+    Calculator(),
+    APIValue()
+  ];
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +36,29 @@ class _Structure extends State {
             },
             labelType: NavigationRailLabelType.selected,
             destinations: [
+              NavigationRailDestination(
+                icon: Image(
+                  image: AssetImage('images/icono-blanco.png'),
+                  width: 125,
+                  height: 125,
+                ),
+                label: Text(
+                  'Home',
+                  style: TextStyle(
+                    color: Colors.lightGreen,
+                    fontSize: 1,
+                  ),
+                ),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.person, color: Colors.white, size: 30),
+                label: Text(
+                  'Login',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
               NavigationRailDestination(
                 icon: Icon(
                   Icons.calculate,
@@ -62,12 +91,6 @@ class _Structure extends State {
           Text((selectedIndex.toDouble()).toString()),
           Expanded(
             child: Container(
-              /*decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('icono-gris.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),*/
               child: _AppFeatures.elementAt(selectedIndex),
             ),
           ),
