@@ -146,11 +146,11 @@ Future<ClassificationData> getClassificationData(
     String number_metrics, String C1, String C2) async {
   String C1_aux = C1;
   String C2_aux = C2;
-  if (double.parse(C1) != double.parse(C1).toInt()) {
+  if (double.parse(C1) == double.parse(C1).toInt()) {
     C1_aux = C1_aux + '.0';
   }
 
-  if (double.parse(C2) != double.parse(C2).toInt()) {
+  if (double.parse(C2) == double.parse(C2).toInt()) {
     C2_aux = C2_aux + '.0';
   }
 
@@ -170,15 +170,17 @@ Future<ClassificationData> getClassificationData(
         C1_aux +
         '/';
   }
-
+  print(url);
   final response = await http.get(Uri.parse(url), headers: {
     "Accept": "application/json",
     "content-type": "application/json"
   });
-
+  print(response.statusCode);
+  print(response.body);
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
+    print(jsonDecode(response.body));
     return ClassificationData.fromJson(jsonDecode(response.body));
   } else {
     // If the server did not return a 200 OK response,

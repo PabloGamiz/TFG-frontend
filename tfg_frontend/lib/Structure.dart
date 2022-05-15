@@ -1,26 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:tfg_frontend/EfficiencyResults.dart';
 import 'package:tfg_frontend/Signup.dart';
+import 'package:tfg_frontend/endpoints/Objects/BuildingResult.dart';
 import 'APIValue.dart';
 import 'Calculator.dart';
+import 'Home.dart';
 import 'Login.dart';
+import 'endpoints/Objects/SoftwareResult.dart';
 
 class Structure extends StatefulWidget {
+  final int tipus;
+  final BuildingResult br;
+  final SoftwareResult sr;
+
+  const Structure(
+      {Key? key, required this.tipus, required this.br, required this.sr})
+      : super(key: key);
+
   @override
   _Structure createState() => _Structure();
 }
 
-class _Structure extends State {
+class _Structure extends State<Structure> {
+  late SoftwareResult sr;
+  late BuildingResult br;
+
+  List<Widget> _AppFeatures = <Widget>[];
+
   int selectedIndex = 0;
 
   void initState() {
+    if (widget.tipus == 0) {
+      _AppFeatures = <Widget>[Home(), Login(), Calculator(), APIValue()];
+    } else if (widget.tipus == 1) {
+      selectedIndex = 2;
+      _AppFeatures = <Widget>[
+        Home(),
+        Login(),
+        EfficiencyResults(br: widget.br, sr: widget.sr, tipus: widget.tipus),
+        APIValue()
+      ];
+    } else if (widget.tipus == 2) {
+      selectedIndex = 2;
+      _AppFeatures = <Widget>[
+        Home(),
+        Login(),
+        EfficiencyResults(br: widget.br, sr: widget.sr, tipus: widget.tipus),
+        APIValue()
+      ];
+    }
     super.initState();
   }
-
-  static List<Widget> _AppFeatures = <Widget>[
-    Signup(),
-    Calculator(),
-    APIValue()
-  ];
 
   Widget build(BuildContext context) {
     return Scaffold(

@@ -207,10 +207,13 @@ class _APIValue extends State {
         }
       }
     }
-    print(response);
-
-    if (!mounted) return;
-    runApp(MaterialApp(home: APIResponse(response: response)));
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text(response),
+          );
+        });
   }
 
 /*  static List<Widget> _APIInfo = <Widget>[

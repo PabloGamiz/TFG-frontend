@@ -4,6 +4,8 @@ import 'EfficiencyCalculator.dart';
 import 'Structure.dart';
 
 import 'APIValues.dart';
+import 'endpoints/Objects/BuildingResult.dart';
+import 'endpoints/Objects/SoftwareResult.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,6 +17,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    BuildingResult br = BuildingResult(
+        consumption_class: '',
+        consumption: '',
+        demand_class: '',
+        demand: '',
+        emissions_class: '',
+        emissions: '');
+    SoftwareResult sr = SoftwareResult(
+        efficiency: '',
+        efficiency_class: '',
+        consumption: '',
+        consumption_class: '',
+        perdurability: '',
+        perdurability_class: '',
+        CPU_percentatge: 0,
+        GPU_percentatge: 0,
+        mem_percentatge: 0);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -29,7 +48,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Structure(),
+      home: Structure(br: br, sr: sr, tipus: 0),
     );
   }
 }

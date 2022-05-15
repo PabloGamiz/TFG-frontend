@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfg_frontend/BuildingCalculator.dart';
 import 'package:tfg_frontend/EfficiencyResults.dart';
+import 'package:tfg_frontend/StructureConnected.dart';
+import 'package:tfg_frontend/endpoints/Objects/BuildingResult.dart';
+import 'package:tfg_frontend/endpoints/Objects/ClassificationData.dart';
+import 'package:tfg_frontend/endpoints/Objects/SoftwareResult.dart';
 import 'BuildingCalculator.dart';
 import 'SoftwareCalculator.dart';
+import 'Structure.dart';
+import 'endpoints/Calls/CalculationData.dart';
+import 'endpoints/Calls/Classification.dart';
+import 'endpoints/Objects/CalculationData.dart';
 
 class Calculator extends StatefulWidget {
   @override
   _Calculator createState() => _Calculator();
 }
 
-class _Calculator extends State {
+class _Calculator extends State<Calculator> {
   String action = '';
   int actionNumber = 0;
   String element = 'Escull l\'objecte';
@@ -86,59 +95,532 @@ class _Calculator extends State {
     super.dispose();
   }
 
-  void calculateEfficiency() {
+  Future<bool> userConnected() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('email');
+    if (email != null) {
+      return true;
+    }
+    return false;
+  }
+
+  void calculateEfficiency() async {
+    print('al principio del calculo');
     if (element == 'Edifici') {
+      print('dentro de calculo de edificio');
+      print('dentro de calculo residencial');
+      late CalculationData newdemandData;
+      //obtener el valor de la dispersion
+      print('dentro de primera llamada');
+      await getBuildingData(
+              'Edifici', 'Nou', 'Valor mitjà', 'Demanda', type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          newdemandData = cd;
+        });
+      });
+      late CalculationData newdemandDisperssionData;
+      print('dentro de primera llamada');
+      await getBuildingData(
+              'Edifici', 'Nou', 'Dispersió', 'Demanda', type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          newdemandDisperssionData = cd;
+        });
+      });
+      late CalculationData newconsumData;
+      print('dentro de primera llamada');
+      await getBuildingData('Edifici', 'Nou', 'Valor mitjà',
+              'Consum d\'energia', type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          newconsumData = cd;
+        });
+      });
+      late CalculationData newconsumDisperssionData;
+      print('dentro de primera llamada');
+      await getBuildingData('Edifici', 'Nou', 'Dispersió', 'Consum d\'energia',
+              type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          newconsumDisperssionData = cd;
+        });
+      });
+      late CalculationData newemissionsData;
+      print('dentro de primera llamada');
+      await getBuildingData(
+              'Edifici', 'Nou', 'Valor mitjà', 'Emissions', type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          newemissionsData = cd;
+        });
+      });
+      late CalculationData newemissionsDisperssionData;
+      print('dentro de primera llamada');
+      await getBuildingData(
+              'Edifici', 'Nou', 'Dispersió', 'Emissions', type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          newemissionsDisperssionData = cd;
+        });
+      });
+
+      late CalculationData existentdemandData;
+      //obtener el valor de la dispersion
+      print('dentro de primera llamada');
+      await getBuildingData('Edifici', 'Existent', 'Valor mitjà', 'Demanda',
+              type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          existentdemandData = cd;
+        });
+      });
+      late CalculationData existentdemandDisperssionData;
+      await getBuildingData('Edifici', 'Existent', 'Dispersió', 'Demanda', type,
+              climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          existentdemandDisperssionData = cd;
+        });
+      });
+      late CalculationData existentconsumData;
+      await getBuildingData('Edifici', 'Existent', 'Valor mitjà',
+              'Consum d\'energia', type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          existentconsumData = cd;
+        });
+      });
+      late CalculationData existentconsumDisperssionData;
+      await getBuildingData('Edifici', 'Existent', 'Dispersió',
+              'Consum d\'energia', type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          existentconsumDisperssionData = cd;
+        });
+      });
+      late CalculationData existentemissionsData;
+      await getBuildingData('Edifici', 'Existent', 'Valor mitjà', 'Emissions',
+              type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          existentemissionsData = cd;
+        });
+      });
+      late CalculationData existentemissionsDisperssionData;
+      await getBuildingData('Edifici', 'Existent', 'Dispersió', 'Emissions',
+              type, climatic_zone)
+          .then((CalculationData cd) {
+        setState(() {
+          existentemissionsDisperssionData = cd;
+        });
+      });
+      print('despues de las llamadas para obtener la informacion');
+      late double C1_demand;
+      late double C2_demand;
+      late double C1_consum;
+      late double C2_consum;
+      late double C1_emissions;
+      late double C2_emissions;
+      if (service == 'Calefacció') {
+        print('dentro del calculo  de calefaccion');
+        //CALCULO DE LA EFICIENCIA DE LA DEMANDA
+        C1_demand = (((double.parse(newdemandDisperssionData.value1) *
+                        double.parse(_controller.text) /
+                        double.parse(newdemandData.value1)) -
+                    1) /
+                2 *
+                (double.parse(newdemandDisperssionData.value1) - 1)) +
+            0.6;
+        C2_demand = (((double.parse(existentdemandDisperssionData.value1) *
+                        double.parse(_controller.text) /
+                        double.parse(existentdemandData.value1)) -
+                    1) /
+                2 *
+                (double.parse(existentdemandDisperssionData.value1) - 1)) +
+            0.5;
+        C1_consum = (((double.parse(newconsumDisperssionData.value1) *
+                        double.parse(_controller2.text) /
+                        double.parse(newconsumData.value1)) -
+                    1) /
+                2 *
+                (double.parse(newconsumDisperssionData.value1) - 1)) +
+            0.6;
+        C2_consum = (((double.parse(existentconsumDisperssionData.value1) *
+                        double.parse(_controller2.text) /
+                        double.parse(existentconsumData.value1)) -
+                    1) /
+                2 *
+                (double.parse(existentconsumDisperssionData.value1) - 1)) +
+            0.5;
+
+        //CALCULO DE LA EFICIENCIA DE LAS EMISIONES
+        C1_emissions = (((double.parse(newemissionsDisperssionData.value1) *
+                        double.parse(_controller3.text) /
+                        double.parse(newemissionsData.value1)) -
+                    1) /
+                2 *
+                (double.parse(newemissionsDisperssionData.value1) - 1)) +
+            0.6;
+        C2_emissions =
+            (((double.parse(existentemissionsDisperssionData.value1) *
+                            double.parse(_controller3.text) /
+                            double.parse(existentemissionsData.value1)) -
+                        1) /
+                    2 *
+                    (double.parse(existentemissionsDisperssionData.value1) -
+                        1)) +
+                0.5;
+        print('despues del calculo de calefaccion');
+      } else if (service == 'Refrigeració') {
+        C1_demand = (((double.parse(newdemandDisperssionData.value2) *
+                        double.parse(_controller.text) /
+                        double.parse(newdemandData.value2)) -
+                    1) /
+                2 *
+                (double.parse(newdemandDisperssionData.value2) - 1)) +
+            0.6;
+        C2_demand = (((double.parse(existentdemandDisperssionData.value2) *
+                        double.parse(_controller.text) /
+                        double.parse(existentdemandData.value2)) -
+                    1) /
+                2 *
+                (double.parse(existentdemandDisperssionData.value2) - 1)) +
+            0.5;
+
+        C1_consum = (((double.parse(newconsumDisperssionData.value2) *
+                        double.parse(_controller2.text) /
+                        double.parse(newconsumData.value2)) -
+                    1) /
+                2 *
+                (double.parse(newconsumDisperssionData.value2) - 1)) +
+            0.6;
+        C2_consum = (((double.parse(existentconsumDisperssionData.value2) *
+                        double.parse(_controller2.text) /
+                        double.parse(existentconsumData.value2)) -
+                    1) /
+                2 *
+                (double.parse(existentconsumDisperssionData.value2) - 1)) +
+            0.5;
+
+        //CALCULO DE LA EFICIENCIA DE LAS EMISIONES
+        C1_emissions = (((double.parse(newemissionsDisperssionData.value2) *
+                        double.parse(_controller3.text) /
+                        double.parse(newemissionsData.value2)) -
+                    1) /
+                2 *
+                (double.parse(newemissionsDisperssionData.value2) - 1)) +
+            0.6;
+        C2_emissions =
+            (((double.parse(existentemissionsDisperssionData.value1) *
+                            double.parse(_controller3.text) /
+                            double.parse(existentemissionsData.value1)) -
+                        1) /
+                    2 *
+                    (double.parse(existentemissionsDisperssionData.value1) -
+                        1)) +
+                0.5;
+      } else if (service == 'ACS') {
+        /*C1_demand = (((double.parse(newdemandDisperssionData.value3) *
+                        double.parse(_controller.text) /
+                        double.parse(newdemandData.value3)) -
+                    1) /
+                2 *
+                (double.parse(newdemandDisperssionData.value3) - 1)) +
+            0.6;
+        C2_demand = (((double.parse(existentdemandDisperssionData.value3) *
+                        double.parse(_controller.text) /
+                        double.parse(existentdemandData.value3)) -
+                    1) /
+                2 *
+                (double.parse(existentdemandDisperssionData.value3) - 1)) +
+            0.5;*/
+
+        C1_consum = (((double.parse(newconsumDisperssionData.value3) *
+                        double.parse(_controller2.text) /
+                        double.parse(newconsumData.value3)) -
+                    1) /
+                2 *
+                (double.parse(newconsumDisperssionData.value3) - 1)) +
+            0.6;
+        C2_consum = (((double.parse(existentconsumDisperssionData.value3) *
+                        double.parse(_controller2.text) /
+                        double.parse(existentconsumData.value3)) -
+                    1) /
+                2 *
+                (double.parse(existentconsumDisperssionData.value3) - 1)) +
+            0.5;
+
+        //CALCULO DE LA EFICIENCIA DE LAS EMISIONES
+        C1_emissions = (((double.parse(newemissionsDisperssionData.value3) *
+                        double.parse(_controller3.text) /
+                        double.parse(newemissionsData.value3)) -
+                    1) /
+                2 *
+                (double.parse(newemissionsDisperssionData.value3) - 1)) +
+            0.6;
+        C2_emissions =
+            (((double.parse(existentemissionsDisperssionData.value3) *
+                            double.parse(_controller3.text) /
+                            double.parse(existentemissionsData.value3)) -
+                        1) /
+                    2 *
+                    (double.parse(existentemissionsDisperssionData.value3) -
+                        1)) +
+                0.5;
+      }
       if (building_type == 'Residencial') {
-        //obtener el valor de la dispersion
-        //obtener el valor del parque de edificios
-        //obtener el valor de la dispersion para
-        //Float C1 = (((r * i_o / i_r) - 1) / 2 * (r - 1)) + 0.6;
-        //Float C2 = (((r_2 * i_o / i_s) - 1) / 2 * (r_2 - 1)) + 0.5;
-        //pasar valores al endpoint correspondiente
+        print(
+            'dentro de obtencion de classificaciones de un edificio residencial');
+        late String demand_classification;
+        late String consum_classification;
+        late String emissions_classification;
+
+        print('antes de primera classificacion');
+        await getClassificationData(
+                '2', C1_demand.toString(), C2_demand.toString())
+            .then((ClassificationData cd) {
+          setState(() {
+            demand_classification = cd.calification;
+          });
+        });
+        print('antes de segunda clasificacion');
+        await getClassificationData(
+                '2', C1_consum.toString(), C2_consum.toString())
+            .then((ClassificationData cd) {
+          setState(() {
+            consum_classification = cd.calification;
+          });
+        });
+        print('antes de tercera clasificacion');
+        await getClassificationData(
+                '2', C1_emissions.toString(), C2_emissions.toString())
+            .then((ClassificationData cd) {
+          setState(() {
+            emissions_classification = cd.calification;
+          });
+        });
+        print(
+            'despues de obtener todas las clasificaciones para un edificio residencial');
+        BuildingResult br = BuildingResult(
+            demand: _controller.text,
+            demand_class: demand_classification,
+            consumption: _controller2.text,
+            consumption_class: consum_classification,
+            emissions: _controller3.text,
+            emissions_class: emissions_classification);
+        print('despues de crear br');
+        SoftwareResult sr = SoftwareResult(
+            efficiency: '',
+            efficiency_class: '',
+            consumption: '',
+            consumption_class: '',
+            perdurability: '',
+            perdurability_class: '',
+            CPU_percentatge: 0.0,
+            GPU_percentatge: 0.0,
+            mem_percentatge: 0.0);
+        print('despues de crear sr');
+        bool user = await userConnected();
+        if (user) {
+          print('usuario existe por lo que se llama a la estructura conectada');
+          runApp(MaterialApp(
+              home: StructureConnected(
+            tipus: 1,
+            br: br,
+            sr: sr,
+          )));
+        } else {
+          print(
+              'usuario no existe por lo que se llama a la estructura no conectada');
+          if (!mounted) return;
+          runApp(MaterialApp(
+              home: Structure(
+            tipus: 1,
+            br: br,
+            sr: sr,
+          )));
+        }
       } else if (building_type == 'No residencial') {
-        //obtener el valor de la dispersion
-        //obtener el valor del parque de edificios
-        //Float C1 = (((r * i_o / i_r) - 1) / 2 * (r - 1)) + 0.6;
-        //Float C2 = (((r_2 * i_o / i_s) - 1) / 2 * (r_2 - 1)) + 0.5;
-        //Float C = C1/C2;
-        //pasar valor de C al endpoint correspondiente
+        late String demand_classification;
+        late String consum_classification;
+        late String emissions_classification;
+
+        await getClassificationData(
+                '1', (C1_demand / C2_demand).toString(), '0.0')
+            .then((ClassificationData cd) {
+          setState(() {
+            demand_classification = cd.calification;
+          });
+        });
+        await getClassificationData(
+                '1', (C1_consum / C2_consum).toString(), '0.0')
+            .then((ClassificationData cd) {
+          setState(() {
+            consum_classification = cd.calification;
+          });
+        });
+        await getClassificationData(
+                '1', (C1_emissions / C2_emissions).toString(), '0.0')
+            .then((ClassificationData cd) {
+          setState(() {
+            emissions_classification = cd.calification;
+          });
+        });
+        BuildingResult br = BuildingResult(
+            demand: _controller.text,
+            demand_class: demand_classification,
+            consumption: _controller2.text,
+            consumption_class: consum_classification,
+            emissions: _controller3.text,
+            emissions_class: emissions_classification);
+
+        SoftwareResult sr = SoftwareResult(
+            efficiency: '',
+            efficiency_class: '',
+            consumption: '',
+            consumption_class: '',
+            perdurability: '',
+            perdurability_class: '',
+            CPU_percentatge: 0.0,
+            GPU_percentatge: 0.0,
+            mem_percentatge: 0.0);
+
+        bool user = await userConnected();
+        if (user) {
+          runApp(MaterialApp(
+              home: StructureConnected(
+            tipus: 1,
+            br: br,
+            sr: sr,
+          )));
+        } else {
+          runApp(MaterialApp(
+              home: Structure(
+            tipus: 1,
+            br: br,
+            sr: sr,
+          )));
+        }
       }
     } else if (element == 'Sistema software') {
       //----------------------------CALCULO EFICIENCIA--------------------------------
 
+      late CalculationData CPU_data;
+
+      await getBuildingData('Sistema software', '', cpu, '', 'CPU', '')
+          .then((CalculationData cd) {
+        setState(() {
+          CPU_data = cd;
+        });
+      });
+
+      late CalculationData GPU_data;
+      await getBuildingData('Sistema software', '', gpu, '', 'GPU', '')
+          .then((CalculationData cd) {
+        setState(() {
+          GPU_data = cd;
+        });
+      });
+
       //obtener la informacion de la CPU seleccionada
       //obtener informacion de la GPU seleccionada
+      double efficiency_cpu =
+          (double.parse(_controller2.text) - double.parse(_controller.text)) /
+              double.parse(_controller2.text);
+      double efficiency_gpu =
+          (double.parse(_controller4.text) - double.parse(_controller3.text)) /
+              double.parse(_controller4.text);
+      double efficiency_mem =
+          (double.parse(_controller6.text) - double.parse(_controller5.text)) /
+              double.parse(_controller6.text);
+      double efficiency = (efficiency_cpu + efficiency_gpu + efficiency_mem);
 
-      //double efficiency_cpu = (numero_nucleos*gasto_nucleo*(_controller2.text-_controller.text))/(numero_nucleos*gasto_nucleo*_controller2.text);
-      //double efficiency_gpu = (numero_nucleos*gasto_nucleo*(_controller4.text-_controller3.text))/(numero_nucleos*gasto_nucleo*_controller4.text);
-      //double efficiency_mem = (energia_GB * (_controller6.text-_controller5.text))/(energia_GB * _controller6.text);
-      //double efficiency = efficiency_cpu + efficiency_gpu + efficiency_mem;
+      late String efficiency_classification;
+      await getClassificationData('1', (efficiency).toString(), '0.0')
+          .then((ClassificationData cd) {
+        setState(() {
+          efficiency_classification = cd.calification;
+        });
+      });
 
       //realizar llamada para obtener el valor de la classificacion para la eficiencia
 
       //-----------------------------CALCULO OPTIMIZACION RECURSOS---------------------
 
-      //double cpu_optimization = (_controller2.text-_controller.text)/_controller2.text;
-      //double gpu_optimization = (_controller4.text-_controller3.text)/_controller4.text;
-      //double mem_optimization = (_controller6.text-_controller5.text)/_controller6.text;
+      double w_GB = 0.3725;
+      double consum_total = double.parse(CPU_data.value1) +
+          double.parse(GPU_data.value1) +
+          double.parse(memoryGB) * w_GB;
 
-      //double optimization = cpu_optimization + gpu_optimization + mem_optimization;
+      double op_consumption_cpu =
+          (double.parse(_controller2.text) - double.parse(_controller.text)) /
+              double.parse(_controller2.text);
+      double op_consumption_gpu =
+          (double.parse(_controller4.text) - double.parse(_controller3.text)) /
+              double.parse(_controller4.text);
+      double op_consumption_mem =
+          (double.parse(_controller6.text) - double.parse(_controller5.text)) /
+              double.parse(_controller6.text);
+      double op_consumption = op_consumption_cpu *
+              (double.parse(CPU_data.value1) / consum_total) +
+          op_consumption_gpu * (double.parse(GPU_data.value1) / consum_total) +
+          op_consumption_mem * (double.parse(memoryGB) * w_GB / consum_total);
 
-      //realizar llamada para obtener el valor de la classificacion para la optimizacion
-
-      //-----------------------------CALCULO OPTIMIZACION DE CAPACIDAD---------------------------
-
-      //double op_consumption_cpu = (numero_nucleos*gasto_nucleo*(_controller2.text-_controller.text))/(numero_nucleos*gasto_nucleo*_controller2.text);
-      //double op_consumption_gpu = (numero_nucleos*gasto_nucleo*(_controller4.text-_controller3.text))/(numero_nucleos*gasto_nucleo*_controller4.text);
-      //double op_consumption_mem = (energia_GB * (_controller6.text-_controller5.text))/(energia_GB * _controller6.text);
-      //double op_consumption = efficiency_cpu + efficiency_gpu + efficiency_mem;
+      late String op_classification;
+      await getClassificationData('1', (op_consumption).toString(), '0.0')
+          .then((ClassificationData cd) {
+        setState(() {
+          op_classification = cd.calification;
+        });
+      });
 
       //----------------------------CALCULO PERDURABILIDAD----------------------------------------
 
-      //double testing_efficiency = testingErrors/testingDuration;
+      double testing =
+          double.parse(_controller7.text) / double.parse(_controller8.text);
+      late String testing_classification;
+      await getClassificationData('1', (testing).toString(), '0.0')
+          .then((ClassificationData cd) {
+        setState(() {
+          testing_classification = cd.calification;
+        });
+      });
+      SoftwareResult sr = SoftwareResult(
+          consumption_class: op_classification,
+          consumption: op_consumption.toString(),
+          efficiency_class: efficiency_classification,
+          efficiency: efficiency.toString(),
+          perdurability: testing.toString(),
+          perdurability_class: testing_classification.toString(),
+          CPU_percentatge: (double.parse(CPU_data.value1) / consum_total),
+          GPU_percentatge: (double.parse(GPU_data.value1) / consum_total),
+          mem_percentatge: (double.parse(memoryGB) * w_GB / consum_total));
 
+      BuildingResult br = const BuildingResult(
+          consumption_class: '',
+          demand_class: '',
+          consumption: '',
+          demand: '',
+          emissions_class: '',
+          emissions: '');
       //realizar llamada para obtener el valor de la classificacion para la perdurabilidad
-
+      bool user = await userConnected();
+      if (user) {
+        runApp(MaterialApp(
+            home: StructureConnected(
+          tipus: 2,
+          br: br,
+          sr: sr,
+        )));
+      } else {
+        runApp(MaterialApp(
+            home: Structure(
+          tipus: 2,
+          br: br,
+          sr: sr,
+        )));
+      }
     }
   }
 
@@ -299,7 +781,7 @@ class _Calculator extends State {
                   climatic_zone = newValue!;
                 });
               },
-              items: ['', 'Demanda', 'Consum d\'energia', 'Emissions']
+              items: ['', 'A1', 'A2', 'A3']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -419,7 +901,7 @@ class _Calculator extends State {
             const SizedBox(
               height: 20,
             ),
-            const Text('Indica el nombre de falles trobades en el testeig:'),
+            const Text('Indica el valor del PUE (power usage effectiveness):'),
             const SizedBox(
               height: 5,
             ),
@@ -431,7 +913,7 @@ class _Calculator extends State {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'PUE',
               ),
             ),
           ],
@@ -499,7 +981,8 @@ class _Calculator extends State {
             const SizedBox(
               height: 20,
             ),
-            const Text('Indica la duració del testeig en dies:'),
+            const Text(
+                'Indica el nombre de falles totals desde el deployment:'),
             const SizedBox(
               height: 5,
             ),
@@ -511,7 +994,7 @@ class _Calculator extends State {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Nombre de falles',
               ),
             ),
           ],
@@ -579,7 +1062,7 @@ class _Calculator extends State {
             const SizedBox(
               height: 20,
             ),
-            const Text('Indica el nombre de falles arreglades:'),
+            const Text('Indica el nombre de dies des del deployment:'),
             const SizedBox(
               height: 5,
             ),
@@ -591,7 +1074,7 @@ class _Calculator extends State {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Nombre de dies',
               ),
             ),
           ],
@@ -698,7 +1181,7 @@ class _Calculator extends State {
                     textStyle: const TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
-                    runApp(MaterialApp(home: EfficiencyResults()));
+                    calculateEfficiency();
                   },
                   child: const Text('Continuar'),
                 ),

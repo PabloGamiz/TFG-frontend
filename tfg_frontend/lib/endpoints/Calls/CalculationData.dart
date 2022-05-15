@@ -243,33 +243,42 @@ Future<CalculationData> getBuildingData(
     String value_type,
     String indicator,
     String building_type,
-    String climatic_zone,
-    String value1,
-    String value2,
-    String value3) async {
-  String url =
-      'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
-          object +
-          '/' +
-          antiquity +
-          '/' +
-          value_type +
-          '/' +
-          indicator +
-          '/' +
-          building_type +
-          '/' +
-          climatic_zone +
-          '/';
+    String climatic_zone) async {
+  late String url;
+  if (object == 'Edifici') {
+    url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
+        object +
+        '/' +
+        antiquity +
+        '/' +
+        value_type +
+        '/' +
+        indicator +
+        '/' +
+        building_type +
+        '/' +
+        climatic_zone +
+        '/';
+  } else if (object == 'Sistema software') {
+    url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
+        object +
+        '/' +
+        value_type +
+        '/' +
+        building_type +
+        '/';
+  }
+  print(url);
   final response = await http.get(Uri.parse(url), headers: {
     "Accept": "application/json",
     "content-type": "application/json"
   });
-
+  print(response.statusCode);
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return CalculationData.fromJson(jsonDecode(response.body));
+    print(json.decode(response.body));
+    return CalculationData.fromJson(json.decode(response.body));
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.

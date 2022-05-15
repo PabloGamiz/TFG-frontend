@@ -17,12 +17,12 @@ class ClassificationData {
 
   factory ClassificationData.fromJson(Map<String, dynamic> json) {
     return ClassificationData(
-      number_metrics: json['number_metrics'],
+      number_metrics: int.parse(json['number_metrics']),
       calification: json['calification'],
-      min_C1: json['min_C1'],
-      max_C1: json['max_C1'],
-      min_C2: json['min_C2'],
-      max_C2: json['max_C2'],
+      min_C1: double.parse(json['min_C1']),
+      max_C1: double.parse(json['max_C1']),
+      min_C2: double.parse(json['min_C2']),
+      max_C2: double.parse(json['max_C2']),
     );
   }
 }

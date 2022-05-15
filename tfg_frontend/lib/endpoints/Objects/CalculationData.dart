@@ -27,7 +27,7 @@ class CalculationData {
       antiquity: json['antiquity'],
       value_type: json['value_type'],
       indicator: json['indicator'],
-      building_type: json['building_type'],
+      building_type: json['object_type'],
       climatic_zone: json['climatic_zone'],
       value1: json['value1'],
       value2: json['value2'],
