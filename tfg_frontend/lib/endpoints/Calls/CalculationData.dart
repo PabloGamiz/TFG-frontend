@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:tfg_frontend/endpoints/Objects/CalculationData.dart';
 
@@ -10,6 +11,8 @@ Future<String> createBuildingData(
     String indicator,
     String building_type,
     String climatic_zone,
+    String zone,
+    String classification,
     String value1,
     String value2,
     String value3) async {
@@ -45,6 +48,12 @@ Future<String> createBuildingData(
     map["value1"] = value1_aux;
     map["value2"] = value2_aux;
     map["value3"] = value3_aux;
+    if (zone != 'Escull la zona') {
+      map["zone"] = zone;
+    }
+    if (classification != 'Escull la classificació') {
+      map["classification"] = classification;
+    }
   } else if (object == 'Sistema software') {
     map["object"] = object;
     map["value_type"] = value_type;
@@ -87,6 +96,8 @@ Future<String> updateBuildingData(
     String indicator,
     String building_type,
     String climatic_zone,
+    String zone,
+    String classification,
     String value1,
     String value2,
     String value3) async {
@@ -137,6 +148,14 @@ Future<String> updateBuildingData(
         '/' +
         climatic_zone +
         '/';
+    if (zone != 'Escull la zona') {
+      map["zone"] = zone;
+      url = url + zone + '/';
+    }
+    if (classification != 'Escull la classificació') {
+      url = url + classification + '/';
+      map["classification"] = classification;
+    }
   } else if (object == 'Sistema software') {
     map["object"] = object;
     map["value_type"] = value_type;
@@ -179,7 +198,9 @@ Future<String> deleteBuildingData(
     String value_type,
     String indicator,
     String building_type,
-    String climatic_zone) async {
+    String climatic_zone,
+    String zone,
+    String classification) async {
   String url =
       'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
           object +
@@ -194,6 +215,12 @@ Future<String> deleteBuildingData(
           '/' +
           climatic_zone +
           '/';
+  if (zone != 'Escull la zona') {
+    url = url + zone + '/';
+  }
+  if (classification != 'Escull la classificació') {
+    url = url + classification + '/';
+  }
   final response = await http.delete(Uri.parse(url), headers: {
     "Accept": "application/json",
     "content-type": "application/json"
@@ -243,7 +270,8 @@ Future<CalculationData> getBuildingData(
     String value_type,
     String indicator,
     String building_type,
-    String climatic_zone) async {
+    String climatic_zone,
+    String zone) async {
   late String url;
   if (object == 'Edifici') {
     url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
@@ -259,13 +287,16 @@ Future<CalculationData> getBuildingData(
         '/' +
         climatic_zone +
         '/';
+    if (zone != '') {
+      url = url + zone + '/';
+    }
   } else if (object == 'Sistema software') {
-    url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
+    url = 'https://pablogamiz.pythonanywhere.com/softwareCalculationData/' +
         object +
         '/' +
-        value_type +
-        '/' +
         building_type +
+        '/' +
+        value_type +
         '/';
   }
   print(url);
@@ -279,6 +310,116 @@ Future<CalculationData> getBuildingData(
     // then parse the JSON.
     print(json.decode(response.body));
     return CalculationData.fromJson(json.decode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to get the data');
+  }
+}
+
+Future<List<CalculationData>> getCPUs() async {
+  String url = 'https://pablogamiz.pythonanywhere.com/cpus/CPU/';
+  http.Client client = http.Client();
+  final response = await client.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.body);
+    final List<CalculationData> l = [];
+    for (Map<String, dynamic> m in jsonResponse) {
+      print('valor del mapa ---->');
+      print(m);
+      l.add(CalculationData.fromJson(m));
+    }
+    print('imprimimos la lista ---->');
+    print(l);
+    return l;
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    /*final list = calculationDataList(
+        utf8.decode(response.bodyBytes));*/
+
+    /*final jsonResponse = json.decode(response.body);
+    print(jsonResponse);
+    final List =
+        jsonResponse.map((data) => new CalculationData.fromJson(data)).toList();
+    print(List);
+    return List;*/
+    /*final list =
+        json.decode(response.body).map((e) => CalculationData.fromJson(e)).;
+    return list;*/
+    //return compute(parseData, response.body);
+    //print(json.decode(response.body));
+    //return listCalculationData(utf8.decode(response.bodyBytes));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to get the data');
+  }
+}
+
+Future<CalculationData> getMaximumClass(
+    String object,
+    String antiquity,
+    String value_type,
+    String indicator,
+    String type,
+    String climatic_zone,
+    String zone,
+    String classification) async {
+  String url = 'https://pablogamiz.pythonanywhere.com/buildingMaximumData/' +
+      object +
+      '/' +
+      antiquity +
+      '/' +
+      value_type +
+      '/' +
+      indicator +
+      '/' +
+      type +
+      '/' +
+      climatic_zone +
+      '/' +
+      zone +
+      '/' +
+      classification +
+      '/';
+  print(url);
+  final response = await http.get(Uri.parse(url), headers: {
+    "Accept": "application/json",
+    "content-type": "application/json"
+  });
+  print(response.statusCode);
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    print('estado ------>');
+    print(response.statusCode);
+    print('cuerpo ------>');
+    print(json.decode(response.body));
+    return CalculationData.fromJson(json.decode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to get the data');
+  }
+}
+
+Future<List<CalculationData>> getGPUs() async {
+  String url = 'https://pablogamiz.pythonanywhere.com/cpus/GPU/';
+  http.Client client = http.Client();
+  final response = await client.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    final jsonResponse = json.decode(response.body);
+    final List<CalculationData> l = [];
+    for (Map<String, dynamic> m in jsonResponse) {
+      print('valor del mapa ---->');
+      print(m);
+      l.add(CalculationData.fromJson(m));
+    }
+    print('imprimimos la lista ---->');
+    print(l);
+    return l;
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.

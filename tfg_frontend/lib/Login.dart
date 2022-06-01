@@ -34,7 +34,7 @@ class _Login extends State<Login> {
     super.initState();
   }
 
-  Future<void> login() async {
+  /*Future<void> login() async {
     final prefs = await SharedPreferences.getInstance();
     await getUser(_controller.text).then((User u) {
       setState(() {
@@ -83,7 +83,7 @@ class _Login extends State<Login> {
           mem_percentatge: 0.0);
       runApp(MaterialApp(home: StructureConnected(br: br, sr: sr, tipus: 0)));
     }
-  }
+  }*/
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -204,7 +204,7 @@ class _Login extends State<Login> {
                         textStyle: const TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        BuildingResult br = BuildingResult(
+                        /* BuildingResult br = BuildingResult(
                             consumption_class: '',
                             consumption: '',
                             demand_class: '',
@@ -223,7 +223,7 @@ class _Login extends State<Login> {
                             mem_percentatge: 0.0);
                         runApp(MaterialApp(
                             home:
-                                StructureConnected(br: br, sr: sr, tipus: 0)));
+                                StructureConnected(br: br, sr: sr, tipus: 0)));*/
                       },
                       child: const Text('Log in'),
                     ),

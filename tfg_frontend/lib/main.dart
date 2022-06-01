@@ -23,7 +23,15 @@ class MyApp extends StatelessWidget {
         demand_class: '',
         demand: '',
         emissions_class: '',
-        emissions: '');
+        emissions: '',
+        climatic_zone: '',
+        in_consumption: '',
+        in_demand: '',
+        in_emissions: '',
+        purpose: '',
+        service: '',
+        type: '',
+        zone: '');
     SoftwareResult sr = SoftwareResult(
         efficiency: '',
         efficiency_class: '',
@@ -33,7 +41,19 @@ class MyApp extends StatelessWidget {
         perdurability_class: '',
         CPU_percentatge: 0,
         GPU_percentatge: 0,
-        mem_percentatge: 0);
+        mem_percentatge: 0,
+        cpu_before: '',
+        cpu_execution: '',
+        cpu: '',
+        gpu_before: '',
+        gpu_execution: '',
+        gpu: '',
+        mem_before: '',
+        mem_execution: '',
+        mem_size: '',
+        num_days: '',
+        num_errors: '',
+        PUE: '');
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

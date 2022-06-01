@@ -31,20 +31,18 @@ class _Structure extends State<Structure> {
 
   void initState() {
     if (widget.tipus == 0) {
-      _AppFeatures = <Widget>[Home(), Login(), Calculator(), APIValue()];
+      _AppFeatures = <Widget>[Home(), Calculator(), APIValue()];
     } else if (widget.tipus == 1) {
-      selectedIndex = 2;
+      selectedIndex = 1;
       _AppFeatures = <Widget>[
         Home(),
-        Login(),
         EfficiencyResults(br: widget.br, sr: widget.sr, tipus: widget.tipus),
         APIValue()
       ];
     } else if (widget.tipus == 2) {
-      selectedIndex = 2;
+      selectedIndex = 1;
       _AppFeatures = <Widget>[
         Home(),
-        Login(),
         EfficiencyResults(br: widget.br, sr: widget.sr, tipus: widget.tipus),
         APIValue()
       ];
@@ -60,6 +58,9 @@ class _Structure extends State<Structure> {
             backgroundColor: Colors.lightGreen,
             selectedIndex: selectedIndex,
             onDestinationSelected: (int index) {
+              if (selectedIndex == 2 && index != selectedIndex) {
+                _AppFeatures = <Widget>[Home(), Calculator(), APIValue()];
+              }
               setState(() {
                 selectedIndex = index;
               });
@@ -77,15 +78,6 @@ class _Structure extends State<Structure> {
                   style: TextStyle(
                     color: Colors.lightGreen,
                     fontSize: 1,
-                  ),
-                ),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.person, color: Colors.white, size: 30),
-                label: Text(
-                  'Login',
-                  style: TextStyle(
-                    color: Colors.white,
                   ),
                 ),
               ),

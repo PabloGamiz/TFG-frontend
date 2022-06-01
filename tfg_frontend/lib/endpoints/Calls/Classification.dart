@@ -20,8 +20,10 @@ Future<String> createClassificationData(
   map["calification"] = calification;
   map["min_C1"] = min_C1;
   map["max_C1"] = max_C1;
-  map["min_C2"] = min_C2;
-  map["max_C2"] = max_C2;
+  if (number_metrics != '1') {
+    map["min_C2"] = min_C2;
+    map["max_C2"] = max_C2;
+  }
 
   String jsonmap = jsonEncode(map);
 
@@ -70,23 +72,16 @@ Future<String> updateClassificationData(
     String max_C1,
     String min_C2,
     String max_C2) async {
-  var body = {
-    'number_metrics': number_metrics,
-    'calification': calification,
-    'min_C1': min_C1,
-    'max_C1': max_C1,
-    'min_C2': min_C2,
-    'max_C2': max_C2
-  };
-
   var map = Map<String, String>();
 
   map["number_metrics"] = number_metrics;
   map["calification"] = calification;
   map["min_C1"] = min_C1;
   map["max_C1"] = max_C1;
-  map["min_C2"] = min_C2;
-  map["max_C2"] = max_C2;
+  if (number_metrics != '1') {
+    map["min_C2"] = min_C2;
+    map["max_C2"] = max_C2;
+  }
 
   String jsonmap = jsonEncode(map);
 
@@ -164,7 +159,7 @@ Future<ClassificationData> getClassificationData(
         C2_aux +
         '/';
   } else {
-    url = 'https://pablogamiz.pythonanywhere.com/classificationDataC1/' +
+    url = 'https://pablogamiz.pythonanywhere.com/classificationDataC/' +
         number_metrics +
         '/' +
         C1_aux +

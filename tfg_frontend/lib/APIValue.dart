@@ -30,25 +30,27 @@ class _APIValue extends State {
 
   //Classification fields
 
-  String number_metrics = '';
+  String number_metrics = 'Escull el nombre de mètriques';
   static String purpose = '';
   static String classification = '';
-  static String minC = '';
-  static String maxC = '';
-  static String minC1 = '';
-  static String maxC1 = '';
-  static String minC2 = '';
-  static String maxC2 = '';
+  static String minC = '0.0';
+  static String maxC = '0.0';
+  static String minC1 = '0.0';
+  static String maxC1 = '0.0';
+  static String minC2 = '0.0';
+  static String maxC2 = '0.0';
 
   bool visibleC = false;
   bool visibleC1C2 = false;
 
   //Building API values input fields
-  static String antiquity = '';
-  static String value_type = '';
-  static String indicator = '';
-  static String building_type = '';
-  static String climatic_zone = '';
+  static String antiquity = 'Escull l\'antiguitat';
+  static String value_type = 'Escull el tipus de valors';
+  static String indicator = 'Escull l\'indicador';
+  static String building_type = 'Escull el tipus d\'edifici';
+  static String climatic_zone = 'Escull la zona climàtica';
+  String max_classification = 'Escull la classificació';
+  String zone = 'Escull la zona';
   static String value1 = '0.0';
   static String value2 = '0.0';
   static String value3 = '0.0';
@@ -59,7 +61,9 @@ class _APIValue extends State {
 
   //Software API values input fields
 
-  static String component = '';
+  static String component = 'Escull el tipus';
+
+  List<String> climaticZones = [];
 
   ////////////////////////////////
 
@@ -118,6 +122,8 @@ class _APIValue extends State {
                   indicator,
                   building_type,
                   climatic_zone,
+                  zone,
+                  max_classification,
                   _controller.text,
                   _controller2.text,
                   _controller3.text)
@@ -128,8 +134,18 @@ class _APIValue extends State {
           });
         } else if (element == 'Sistema software') {
           print('no clasificacion dentro de sistema software');
-          await createBuildingData('Sistema software', '', _controller.text, '',
-                  component, '', _controller2.text, _controller3.text, '')
+          await createBuildingData(
+                  'Sistema software',
+                  '',
+                  _controller.text,
+                  '',
+                  component,
+                  '',
+                  '',
+                  '',
+                  _controller2.text,
+                  _controller3.text,
+                  '')
               .then((String result) {
             setState(() {
               response = result;
@@ -161,6 +177,8 @@ class _APIValue extends State {
                   indicator,
                   building_type,
                   climatic_zone,
+                  zone,
+                  max_classification,
                   _controller.text,
                   _controller2.text,
                   _controller3.text)
@@ -170,8 +188,18 @@ class _APIValue extends State {
             });
           });
         } else if (element == 'Sistema software') {
-          await updateBuildingData('Sistema software', '', _controller.text, '',
-                  component, '', _controller2.text, _controller3.text, '')
+          await updateBuildingData(
+                  'Sistema software',
+                  '',
+                  _controller.text,
+                  '',
+                  component,
+                  '',
+                  '',
+                  '',
+                  _controller2.text,
+                  _controller3.text,
+                  '')
               .then((String result) {
             setState(() {
               response = result;
@@ -190,7 +218,7 @@ class _APIValue extends State {
       } else if (info == 'Dades de càlcul') {
         if (element == 'Edifici') {
           await deleteBuildingData('Edifici', antiquity, value_type, indicator,
-                  building_type, climatic_zone)
+                  building_type, climatic_zone, zone, max_classification)
               .then((String result) {
             setState(() {
               response = result;
@@ -216,23 +244,8 @@ class _APIValue extends State {
         });
   }
 
-/*  static List<Widget> _APIInfo = <Widget>[
-    Container(
-      height: 5,
-    ),
-    classificationInputs(),
-  ];
-
-  static List<Widget> _APIFeatures = <Widget>[
-    Container(
-      height: 5,
-    ),
-    buildingInputs(),
-    softwareInputs()
-  ];*/
-
   Widget buildingInputs() {
-    return Column(children: [
+    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       const Text(
         'Introdueix els valors següents dels edificis per poder realitzar l\'acció:',
         style: TextStyle(fontSize: 18),
@@ -266,7 +279,7 @@ class _APIValue extends State {
                       antiquity = newValue!;
                     });
                   },
-                  items: ['', 'Nou', 'Existent']
+                  items: ['Escull l\'antiguitat', 'Nou', 'Existent']
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -293,7 +306,7 @@ class _APIValue extends State {
                       building_type = newValue!;
                     });
                   },
-                  items: ['', 'Unifamiliar', 'Bloc']
+                  items: ['Escull el tipus d\'edifici', 'Unifamiliar', 'Bloc']
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -305,25 +318,28 @@ class _APIValue extends State {
                   height: 20,
                 ),
                 Visibility(
-                    visible: visible2,
-                    child: const Text('Introdueix el segon valor:')),
+                  child: Text('Introdueix el valor de la calefacció:'),
+                  visible: visible1,
+                ),
                 Visibility(
-                    visible: visible2,
-                    child: const SizedBox(
-                      height: 5,
-                    )),
+                  child: const SizedBox(
+                    height: 5,
+                  ),
+                  visible: visible1,
+                ),
                 Visibility(
-                  visible: visible2,
                   child: TextField(
-                      controller: _controller2,
-                      onChanged: (String value) async {
-                        value2 = value;
-                      },
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Introdueix un valor',
-                      )),
+                    controller: _controller,
+                    onChanged: (String value) async {
+                      value1 = value;
+                    },
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Calefacció',
+                    ),
+                  ),
+                  visible: visible1,
                 ),
               ],
             ),
@@ -354,12 +370,158 @@ class _APIValue extends State {
                         action != 'DELETE') {
                       visible2 = visible3 = true;
                     }
+                    if (newValue == 'Dispersió') {
+                      climaticZones = [
+                        'Escull la zona climàtica',
+                        'α',
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E',
+                        '1',
+                        '2',
+                        '3',
+                        '4'
+                      ];
+                    } else if (newValue == 'Valor mitjà') {
+                      climaticZones = [
+                        'Escull la zona climàtica',
+                        'α1',
+                        'α2',
+                        'α3',
+                        'α4',
+                        'A1',
+                        'A2',
+                        'A3',
+                        'A4',
+                        'B1',
+                        'B2',
+                        'B3',
+                        'B4',
+                        'C1',
+                        'C2',
+                        'C3',
+                        'C4',
+                        'D1',
+                        'D2',
+                        'D3',
+                        'E1'
+                      ];
+                    }
                     setState(() {
                       value_type = newValue!;
                     });
                   },
-                  items: ['', 'Valor mitjà', 'Dispersió']
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items: [
+                    'Escull el tipus de valors',
+                    'Valor mitjà',
+                    'Dispersió',
+                    'Màxim'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text('Indica la zona d\'España on es troba:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                DropdownButton<String>(
+                  value: zone,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      zone = newValue!;
+                    });
+                  },
+                  items: [
+                    'Escull la zona',
+                    'Península, Ceuta, Melilla i Illes Balears',
+                    'Illes Canàries'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    visible: visible2,
+                    child:
+                        const Text('Introdueix el valor de la refrigeració:')),
+                Visibility(
+                    visible: visible2,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                  visible: visible2,
+                  child: TextField(
+                      controller: _controller2,
+                      onChanged: (String value) async {
+                        value2 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Refrigeració',
+                      )),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 150,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                const Text('Indica el tipus de l\'indicador:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                DropdownButton<String>(
+                  value: indicator,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue == 'Demanda' &&
+                          action != 'DELETE' &&
+                          value_type == 'Valor mitjà') {
+                        visible2 = true;
+                        visible3 = false;
+                      } else if ((newValue == 'Consum d\'energia' ||
+                              newValue == 'Emissions') &&
+                          action != 'DELETE' &&
+                          value_type == 'Valor mitjà') {
+                        visible2 = visible3 = true;
+                      }
+                      indicator = newValue!;
+                    });
+                  },
+                  items: [
+                    'Escull l\'indicador',
+                    'Demanda',
+                    'Consum d\'energia',
+                    'Emissions'
+                  ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -385,7 +547,7 @@ class _APIValue extends State {
                       climatic_zone = newValue!;
                     });
                   },
-                  items: ['', 'A1', 'A2', 'A3']
+                  items: climaticZones
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -398,7 +560,7 @@ class _APIValue extends State {
                 ),
                 Visibility(
                     visible: visible3,
-                    child: const Text('Introdueix el tercer valor:')),
+                    child: const Text('Introdueix el valor de ACS:')),
                 Visibility(
                     visible: visible3,
                     child: const SizedBox(
@@ -414,77 +576,9 @@ class _APIValue extends State {
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Introdueix un valor',
+                        labelText: 'ACS',
                       ),
                     )),
-              ],
-            ),
-          ),
-          const SizedBox(
-            width: 150,
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                const Text('Indica el tipus de l\'indicador:'),
-                const SizedBox(
-                  height: 5,
-                ),
-                DropdownButton<String>(
-                  value: indicator,
-                  style: TextStyle(color: Colors.green.shade700),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.green.shade50,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      if (newValue == 'Demanda' && action != 'DELETE') {
-                        visible2 = true;
-                        visible3 = false;
-                      } else if ((newValue == 'Consum d\'energia' ||
-                              newValue == 'Emissions') &&
-                          action != 'DELETE') {
-                        visible2 = visible3 = true;
-                      }
-                      indicator = newValue!;
-                    });
-                  },
-                  items: ['', 'Demanda', 'Consum d\'energia', 'Emissions']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Visibility(
-                  child: Text('Introdueix el primer valor:'),
-                  visible: visible1,
-                ),
-                Visibility(
-                  child: const SizedBox(
-                    height: 5,
-                  ),
-                  visible: visible1,
-                ),
-                Visibility(
-                  child: TextField(
-                    controller: _controller,
-                    onChanged: (String value) async {
-                      value1 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
-                  ),
-                  visible: visible1,
-                ),
               ],
               mainAxisAlignment: MainAxisAlignment.center,
             ),
@@ -498,354 +592,359 @@ class _APIValue extends State {
   }
 
   Widget classificationInputs() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(
-          width: 150,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Introdueix els valors següents de la classificació per poder realitzar l\'acció:',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                  'Indica la finalitat el nombre de mètriques que es faran servir per obtenir la classificació:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: number_metrics,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
-                ),
-                onChanged: (String? newValue) {
-                  if (newValue == '2' && action != 'DELETE') {
-                    visibleC1C2 = true;
-                    visibleC = false;
-                  } else if (newValue == '1' && action != 'DELETE') {
-                    visibleC1C2 = false;
-                    visibleC = true;
-                  }
-                  setState(() {
-                    number_metrics = newValue!;
-                  });
-                },
-                items: ['', '1', '2']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  visible: visibleC,
-                  child: const Text('Introdueix el valor miním de C:')),
-              Visibility(
-                  visible: visibleC,
-                  child: const SizedBox(
-                    height: 5,
-                  )),
-              Visibility(
-                  visible: visibleC,
-                  child: TextField(
-                    controller: _controller2,
-                    onChanged: (String value) async {
-                      minC = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
-                  )),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const Text('Introdueix el valor miním de C1:')),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const SizedBox(
-                    height: 5,
-                  )),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: TextField(
-                    controller: _controller2,
-                    onChanged: (String value) async {
-                      minC1 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
-                  )),
-              Text(_controller2.text),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const Text('Introdueix el valor miním de C2:')),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const SizedBox(
-                    height: 5,
-                  )),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: TextField(
-                    controller: _controller4,
-                    onChanged: (String value) async {
-                      minC2 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
-                  )),
-            ],
+    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+      const Text(
+        'Introdueix els valors següents de la classificació per poder realitzar l\'acció:',
+        style: TextStyle(fontSize: 18),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 150,
           ),
-        ),
-        const SizedBox(
-          width: 150,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                  'Introdueix la lletra a la que pertanyarà o pertany el llindar:'),
-              const SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: _controller,
-                onChanged: (String value) async {
-                  classification = value;
-                },
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Introdueix un valor',
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 20,
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  visible: visibleC,
-                  child: const Text('Introdueix el valor màxim de C:')),
-              Visibility(
-                  visible: visibleC,
-                  child: const SizedBox(
-                    height: 5,
-                  )),
-              Visibility(
-                  visible: visibleC,
-                  child: TextField(
-                    controller: _controller3,
-                    onChanged: (String value) async {
-                      maxC = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
-                  )),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const Text('Introdueix el valor miním de C1:')),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const SizedBox(
-                    height: 5,
-                  )),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: TextField(
-                    controller: _controller3,
-                    onChanged: (String value) async {
-                      maxC1 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
-                  )),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const Text('Introdueix el valor miním de C2:')),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: const SizedBox(
-                    height: 5,
-                  )),
-              Visibility(
-                  visible: visibleC1C2,
-                  child: TextField(
-                    controller: _controller5,
-                    onChanged: (String value) async {
-                      maxC2 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
-                  )),
-            ],
+                const Text(
+                    'Indica el nombre de mètriques necessàries per obtenir la classificació:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                DropdownButton<String>(
+                  value: number_metrics,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
+                  ),
+                  onChanged: (String? newValue) {
+                    if (newValue == '2' && action != 'DELETE') {
+                      visibleC1C2 = true;
+                      visibleC = false;
+                    } else if (newValue == '1' && action != 'DELETE') {
+                      visibleC1C2 = false;
+                      visibleC = true;
+                    }
+                    setState(() {
+                      number_metrics = newValue!;
+                    });
+                  },
+                  items: ['Escull el nombre de mètriques', '1', '2']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    visible: visibleC,
+                    child: const Text('Introdueix el valor miním de C:')),
+                Visibility(
+                    visible: visibleC,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: visibleC,
+                    child: TextField(
+                      controller: _controller2,
+                      onChanged: (String value) async {
+                        minC = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Valor mínim de C',
+                      ),
+                    )),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const Text('Introdueix el valor miním de C1:')),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: TextField(
+                      controller: _controller2,
+                      onChanged: (String value) async {
+                        minC1 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Valor mínim de C1',
+                      ),
+                    )),
+                Text(_controller2.text),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const Text('Introdueix el valor miním de C2:')),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: TextField(
+                      controller: _controller4,
+                      onChanged: (String value) async {
+                        minC2 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Valor mínim de C2',
+                      ),
+                    )),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(
-          width: 150,
-        ),
-      ],
-    );
+          const SizedBox(
+            width: 150,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                    'Introdueix la lletra a la que pertanyarà o pertany el llindar:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                TextField(
+                  controller: _controller,
+                  onChanged: (String value) async {
+                    classification = value;
+                  },
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Indica la lletra de classificació',
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    visible: visibleC,
+                    child: const Text('Introdueix el valor màxim de C:')),
+                Visibility(
+                    visible: visibleC,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: visibleC,
+                    child: TextField(
+                      controller: _controller3,
+                      onChanged: (String value) async {
+                        maxC = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Valor màxim de C',
+                      ),
+                    )),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const Text('Introdueix el valor màxim de C1:')),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: TextField(
+                      controller: _controller3,
+                      onChanged: (String value) async {
+                        maxC1 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Valor màxim de C1',
+                      ),
+                    )),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const Text('Introdueix el valor màxim de C2:')),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: TextField(
+                      controller: _controller5,
+                      onChanged: (String value) async {
+                        maxC2 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Valor màxim de C2',
+                      ),
+                    )),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 150,
+          ),
+        ],
+      ),
+    ]);
   }
 
   Widget softwareInputs() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(
-          width: 150,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Introdueix els valors següents dels sistemes software per poder realitzar l\'acció:',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text('Indica el tipus de component:'),
-              const SizedBox(
-                height: 5,
-              ),
-              DropdownButton<String>(
-                value: component,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
+    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+      const Text(
+        'Introdueix els valors següents dels sistemes software per poder realitzar l\'acció:',
+        style: TextStyle(fontSize: 18),
+      ),
+      SizedBox(height: 30),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 150,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 20,
                 ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    component = newValue!;
-                  });
-                },
-                items: ['', 'CPU', 'GPU']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  child: const Text('Introdueix el segon valor:'),
-                  visible: visible1),
-              Visibility(
-                child: const SizedBox(
+                const Text('Indica el tipus de component:'),
+                const SizedBox(
                   height: 5,
                 ),
-                visible: visible1,
-              ),
-              Visibility(
-                  child: TextField(
-                    controller: _controller2,
-                    onChanged: (String value) async {
-                      value2 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
-                    ),
+                DropdownButton<String>(
+                  value: component,
+                  style: TextStyle(color: Colors.green.shade700),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.green.shade50,
                   ),
-                  visible: visible1),
-            ],
-          ),
-        ),
-        const SizedBox(
-          width: 150,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Introdueix el primer valor:'),
-              const SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: _controller,
-                onChanged: (String value) async {
-                  value1 = value;
-                },
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Introdueix un valor',
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      component = newValue!;
+                    });
+                  },
+                  items: ['Escull el tipus', 'CPU', 'GPU']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Visibility(
-                  child: const Text('Introdueix el tercer valor:'),
-                  visible: visible1),
-              Visibility(
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    child: const Text('Introdueix el valor de TDP:'),
+                    visible: visible1),
+                Visibility(
                   child: const SizedBox(
                     height: 5,
                   ),
-                  visible: visible1),
-              Visibility(
-                  child: TextField(
-                    controller: _controller3,
-                    onChanged: (String value) async {
-                      value3 = value;
-                    },
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Introdueix un valor',
+                  visible: visible1,
+                ),
+                Visibility(
+                    child: TextField(
+                      controller: _controller2,
+                      onChanged: (String value) async {
+                        value2 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'TDP',
+                      ),
                     ),
-                  ),
-                  visible: visible1),
-            ],
+                    visible: visible1),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(
-          width: 150,
-        ),
-      ],
-    );
+          const SizedBox(
+            width: 150,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Introdueix el nom del component:'),
+                const SizedBox(
+                  height: 5,
+                ),
+                TextField(
+                  controller: _controller,
+                  onChanged: (String value) async {
+                    value1 = value;
+                  },
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Nom',
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    child: const Text('Introdueix el nombre de nuclis:'),
+                    visible: visible1),
+                Visibility(
+                    child: const SizedBox(
+                      height: 5,
+                    ),
+                    visible: visible1),
+                Visibility(
+                    child: TextField(
+                      controller: _controller3,
+                      onChanged: (String value) async {
+                        value3 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Nombre de nuclis',
+                      ),
+                    ),
+                    visible: visible1),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 150,
+          ),
+        ],
+      ),
+    ]);
   }
 
   Widget build(BuildContext context) {
@@ -1075,6 +1174,54 @@ class _APIValue extends State {
                   ),
                   onPressed: () {
                     //if ((number_metrics != '' && classification != '' && ((minC != '' && maxC != '') || (minC1 != '' && maxC1 != '') || (minC1 != '' && maxC1 != '' && minC2 != '' && maxC2 != ''))) {
+                    if (action != 'Escull l\'acció' &&
+                        info != 'Escull el tipus') {
+                      if (info == 'Classificació' &&
+                          number_metrics != '' &&
+                          _controller.text != '' &&
+                          ((_controller2.text != '' &&
+                                  _controller3.text != '') ||
+                              (_controller2.text != '' &&
+                                  _controller3.text != '' &&
+                                  _controller4.text != '' &&
+                                  _controller5.text != ''))) {
+                        realizarCrida();
+                      } else if (info == 'Dades de càlcul' &&
+                          element == 'Edifici' &&
+                          antiquity != 'Escull l\'antiguitat' &&
+                          value_type != 'Escull el tipus de valors' &&
+                          indicator != 'Escull l\'indicador' &&
+                          building_type != 'Escull el tipus d\'edifici' &&
+                          climatic_zone != 'Escull la zona climàtica' &&
+                          zone != 'Escull la zona' &&
+                          ((value_type == 'Dispersió' &&
+                                  _controller.text != '') ||
+                              (value_type == 'Valor mitjà' &&
+                                  indicator == 'Demanda' &&
+                                  _controller.text != '' &&
+                                  _controller2.text != '') ||
+                              (value_type == 'Valor mitjà' &&
+                                  _controller.text != '' &&
+                                  _controller2.text != '' &&
+                                  _controller3.text != ''))) {
+                        realizarCrida();
+                      } else if (info == 'Dades de càlcul' &&
+                          element == 'Sistema software' &&
+                          component != 'Escull el tipus' &&
+                          _controller.text != '' &&
+                          _controller2.text != '' &&
+                          _controller3.text != '') {
+                        realizarCrida();
+                      }
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (_) {
+                            return const AlertDialog(
+                              title: Text('Falten valors per introduir'),
+                            );
+                          });
+                    }
                     realizarCrida();
                   },
                   child: const Text('Continuar'),

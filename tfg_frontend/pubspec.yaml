@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: ^2.0.13
   http: ^0.13.4
   syncfusion_flutter_charts: ^20.1.55
+  pdf: ^3.8.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,8 @@ flutter:
     - images/perdurability.png
     - images/icono-blanco.png
     - images/profile-icon.png
+    - images/building-certificate.jpg
+    - images/software-certificate.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -84,12 +87,15 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+  #  - family: Schyler
+  #    fonts:
+  #      - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
+    - family: Montserrat
+      fonts:
+        - asset: images/OpenSans-Light.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

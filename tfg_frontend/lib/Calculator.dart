@@ -25,11 +25,11 @@ class _Calculator extends State<Calculator> {
 
   //Camps relacionats amb el software
 
-  String cpu = '';
+  String cpu = 'Escull la CPU';
   String minCPU = '';
   String maxCPU = '';
 
-  String gpu = '';
+  String gpu = 'Escull la GPU';
   String minGPU = '';
   String maxGPU = '';
 
@@ -43,10 +43,11 @@ class _Calculator extends State<Calculator> {
 
 //Camps per als edificis
 
-  static String building_type = '';
-  static String service = '';
-  static String climatic_zone = '';
-  static String type = '';
+  static String building_type = 'Escull la finalitat';
+  static String service = 'Escull el servei';
+  static String climatic_zone = 'Escull la zona climàtica';
+  static String type = 'Escull el tipus';
+  String zone = 'Escull la zona';
 
   static String value1 = '';
   static String value2 = '';
@@ -66,6 +67,10 @@ class _Calculator extends State<Calculator> {
   late TextEditingController _controller9;
   late TextEditingController _controller10;
 
+  List<String> cpus = ['Escull la CPU'];
+  List<String> gpus = ['Escull la GPU'];
+  List<String> climatic_zones = [];
+
   void initState() {
     _controller = TextEditingController();
     _controller2 = TextEditingController();
@@ -77,7 +82,34 @@ class _Calculator extends State<Calculator> {
     _controller8 = TextEditingController();
     _controller9 = TextEditingController();
     _controller10 = TextEditingController();
+    getComponentNames();
     super.initState();
+  }
+
+  Future<void> getComponentNames() async {
+    late List<CalculationData> calculation_data;
+    print('obtenemos valores de las cpus');
+    await getCPUs().then((List<CalculationData> cd) {
+      setState(() {
+        calculation_data = cd;
+      });
+    });
+    print('se guardan valores de las cpus');
+    for (CalculationData c in calculation_data) {
+      cpus.add(c.value_type);
+    }
+    print('obtenemos valores de las gpus');
+    await getGPUs().then((List<CalculationData> cd) {
+      setState(() {
+        calculation_data = cd;
+      });
+    });
+    print('LISTA DE LAS GPUS ---------------->');
+    print(calculation_data);
+    print('guardamos los valores de las gpus');
+    for (CalculationData c in calculation_data) {
+      gpus.add(c.value_type);
+    }
   }
 
   @override
@@ -109,11 +141,19 @@ class _Calculator extends State<Calculator> {
     if (element == 'Edifici') {
       print('dentro de calculo de edificio');
       print('dentro de calculo residencial');
+      String dispersion_cz = '';
+      if (service == 'Calefacció') {
+        dispersion_cz = climatic_zone.substring(0, 1);
+      } else if (climatic_zone == 'Refrigeració') {
+        dispersion_cz = climatic_zone.substring(1, 2);
+      } else {
+        dispersion_cz = climatic_zone;
+      }
       late CalculationData newdemandData;
       //obtener el valor de la dispersion
       print('dentro de primera llamada');
-      await getBuildingData(
-              'Edifici', 'Nou', 'Valor mitjà', 'Demanda', type, climatic_zone)
+      await getBuildingData('Edifici', 'Nou', 'Valor mitjà', 'Demanda', type,
+              climatic_zone, zone)
           .then((CalculationData cd) {
         setState(() {
           newdemandData = cd;
@@ -121,8 +161,8 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData newdemandDisperssionData;
       print('dentro de primera llamada');
-      await getBuildingData(
-              'Edifici', 'Nou', 'Dispersió', 'Demanda', type, climatic_zone)
+      await getBuildingData('Edifici', 'Nou', 'Dispersió', 'Demanda', type,
+              dispersion_cz, 'default')
           .then((CalculationData cd) {
         setState(() {
           newdemandDisperssionData = cd;
@@ -131,7 +171,7 @@ class _Calculator extends State<Calculator> {
       late CalculationData newconsumData;
       print('dentro de primera llamada');
       await getBuildingData('Edifici', 'Nou', 'Valor mitjà',
-              'Consum d\'energia', type, climatic_zone)
+              'Consum d\'energia', type, climatic_zone, zone)
           .then((CalculationData cd) {
         setState(() {
           newconsumData = cd;
@@ -140,7 +180,7 @@ class _Calculator extends State<Calculator> {
       late CalculationData newconsumDisperssionData;
       print('dentro de primera llamada');
       await getBuildingData('Edifici', 'Nou', 'Dispersió', 'Consum d\'energia',
-              type, climatic_zone)
+              type, dispersion_cz, 'default')
           .then((CalculationData cd) {
         setState(() {
           newconsumDisperssionData = cd;
@@ -148,8 +188,8 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData newemissionsData;
       print('dentro de primera llamada');
-      await getBuildingData(
-              'Edifici', 'Nou', 'Valor mitjà', 'Emissions', type, climatic_zone)
+      await getBuildingData('Edifici', 'Nou', 'Valor mitjà', 'Emissions', type,
+              climatic_zone, zone)
           .then((CalculationData cd) {
         setState(() {
           newemissionsData = cd;
@@ -157,8 +197,8 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData newemissionsDisperssionData;
       print('dentro de primera llamada');
-      await getBuildingData(
-              'Edifici', 'Nou', 'Dispersió', 'Emissions', type, climatic_zone)
+      await getBuildingData('Edifici', 'Nou', 'Dispersió', 'Emissions', type,
+              dispersion_cz, 'default')
           .then((CalculationData cd) {
         setState(() {
           newemissionsDisperssionData = cd;
@@ -169,7 +209,7 @@ class _Calculator extends State<Calculator> {
       //obtener el valor de la dispersion
       print('dentro de primera llamada');
       await getBuildingData('Edifici', 'Existent', 'Valor mitjà', 'Demanda',
-              type, climatic_zone)
+              type, climatic_zone, zone)
           .then((CalculationData cd) {
         setState(() {
           existentdemandData = cd;
@@ -177,7 +217,7 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData existentdemandDisperssionData;
       await getBuildingData('Edifici', 'Existent', 'Dispersió', 'Demanda', type,
-              climatic_zone)
+              dispersion_cz, 'default')
           .then((CalculationData cd) {
         setState(() {
           existentdemandDisperssionData = cd;
@@ -185,7 +225,7 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData existentconsumData;
       await getBuildingData('Edifici', 'Existent', 'Valor mitjà',
-              'Consum d\'energia', type, climatic_zone)
+              'Consum d\'energia', type, climatic_zone, zone)
           .then((CalculationData cd) {
         setState(() {
           existentconsumData = cd;
@@ -193,7 +233,7 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData existentconsumDisperssionData;
       await getBuildingData('Edifici', 'Existent', 'Dispersió',
-              'Consum d\'energia', type, climatic_zone)
+              'Consum d\'energia', type, dispersion_cz, 'default')
           .then((CalculationData cd) {
         setState(() {
           existentconsumDisperssionData = cd;
@@ -201,7 +241,7 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData existentemissionsData;
       await getBuildingData('Edifici', 'Existent', 'Valor mitjà', 'Emissions',
-              type, climatic_zone)
+              type, climatic_zone, zone)
           .then((CalculationData cd) {
         setState(() {
           existentemissionsData = cd;
@@ -209,7 +249,7 @@ class _Calculator extends State<Calculator> {
       });
       late CalculationData existentemissionsDisperssionData;
       await getBuildingData('Edifici', 'Existent', 'Dispersió', 'Emissions',
-              type, climatic_zone)
+              type, dispersion_cz, 'default')
           .then((CalculationData cd) {
         setState(() {
           existentemissionsDisperssionData = cd;
@@ -255,6 +295,9 @@ class _Calculator extends State<Calculator> {
             0.5;
 
         //CALCULO DE LA EFICIENCIA DE LAS EMISIONES
+        print(newemissionsDisperssionData.value1);
+        print(_controller3.text);
+        print(newemissionsData.value1);
         C1_emissions = (((double.parse(newemissionsDisperssionData.value1) *
                         double.parse(_controller3.text) /
                         double.parse(newemissionsData.value1)) -
@@ -262,6 +305,7 @@ class _Calculator extends State<Calculator> {
                 2 *
                 (double.parse(newemissionsDisperssionData.value1) - 1)) +
             0.6;
+        print(C1_emissions);
         C2_emissions =
             (((double.parse(existentemissionsDisperssionData.value1) *
                             double.parse(_controller3.text) /
@@ -321,21 +365,6 @@ class _Calculator extends State<Calculator> {
                         1)) +
                 0.5;
       } else if (service == 'ACS') {
-        /*C1_demand = (((double.parse(newdemandDisperssionData.value3) *
-                        double.parse(_controller.text) /
-                        double.parse(newdemandData.value3)) -
-                    1) /
-                2 *
-                (double.parse(newdemandDisperssionData.value3) - 1)) +
-            0.6;
-        C2_demand = (((double.parse(existentdemandDisperssionData.value3) *
-                        double.parse(_controller.text) /
-                        double.parse(existentdemandData.value3)) -
-                    1) /
-                2 *
-                (double.parse(existentdemandDisperssionData.value3) - 1)) +
-            0.5;*/
-
         C1_consum = (((double.parse(newconsumDisperssionData.value3) *
                         double.parse(_controller2.text) /
                         double.parse(newconsumData.value3)) -
@@ -377,13 +406,17 @@ class _Calculator extends State<Calculator> {
         late String emissions_classification;
 
         print('antes de primera classificacion');
-        await getClassificationData(
-                '2', C1_demand.toString(), C2_demand.toString())
-            .then((ClassificationData cd) {
-          setState(() {
-            demand_classification = cd.calification;
+        if (service != 'ACS') {
+          await getClassificationData(
+                  '2', C1_demand.toString(), C2_demand.toString())
+              .then((ClassificationData cd) {
+            setState(() {
+              demand_classification = cd.calification;
+            });
           });
-        });
+        } else {
+          demand_classification = '-';
+        }
         print('antes de segunda clasificacion');
         await getClassificationData(
                 '2', C1_consum.toString(), C2_consum.toString())
@@ -403,23 +436,43 @@ class _Calculator extends State<Calculator> {
         print(
             'despues de obtener todas las clasificaciones para un edificio residencial');
         BuildingResult br = BuildingResult(
-            demand: _controller.text,
+            demand: demand_classification == '-' ? '0' : _controller.text,
             demand_class: demand_classification,
             consumption: _controller2.text,
             consumption_class: consum_classification,
             emissions: _controller3.text,
-            emissions_class: emissions_classification);
+            emissions_class: emissions_classification,
+            climatic_zone: climatic_zone,
+            in_consumption: _controller2.text,
+            in_demand: _controller.text,
+            in_emissions: _controller3.text,
+            purpose: building_type,
+            service: service,
+            type: type,
+            zone: zone);
         print('despues de crear br');
         SoftwareResult sr = SoftwareResult(
-            efficiency: '',
+            efficiency: '0.0',
             efficiency_class: '',
-            consumption: '',
+            consumption: '0.0',
             consumption_class: '',
-            perdurability: '',
+            perdurability: '0.0',
             perdurability_class: '',
             CPU_percentatge: 0.0,
             GPU_percentatge: 0.0,
-            mem_percentatge: 0.0);
+            mem_percentatge: 0.0,
+            cpu_execution: '0.4',
+            cpu_before: '0.5',
+            cpu: '',
+            gpu_before: '0.5',
+            gpu_execution: '0.5',
+            gpu: '',
+            mem_before: '0.5',
+            mem_execution: '0.5',
+            mem_size: '10',
+            num_days: '0',
+            num_errors: '0',
+            PUE: '0');
         print('despues de crear sr');
         bool user = await userConnected();
         if (user) {
@@ -445,14 +498,17 @@ class _Calculator extends State<Calculator> {
         late String demand_classification;
         late String consum_classification;
         late String emissions_classification;
-
-        await getClassificationData(
-                '1', (C1_demand / C2_demand).toString(), '0.0')
-            .then((ClassificationData cd) {
-          setState(() {
-            demand_classification = cd.calification;
+        if (service != 'ACS') {
+          await getClassificationData(
+                  '1', (C1_demand / C2_demand).toString(), '0.0')
+              .then((ClassificationData cd) {
+            setState(() {
+              demand_classification = cd.calification;
+            });
           });
-        });
+        } else {
+          demand_classification = '-';
+        }
         await getClassificationData(
                 '1', (C1_consum / C2_consum).toString(), '0.0')
             .then((ClassificationData cd) {
@@ -468,12 +524,20 @@ class _Calculator extends State<Calculator> {
           });
         });
         BuildingResult br = BuildingResult(
-            demand: _controller.text,
+            demand: demand_classification == '-' ? '0' : _controller.text,
             demand_class: demand_classification,
             consumption: _controller2.text,
             consumption_class: consum_classification,
             emissions: _controller3.text,
-            emissions_class: emissions_classification);
+            emissions_class: emissions_classification,
+            climatic_zone: '',
+            in_consumption: '',
+            in_demand: '',
+            purpose: '',
+            in_emissions: '',
+            service: '',
+            type: '',
+            zone: '');
 
         SoftwareResult sr = SoftwareResult(
             efficiency: '',
@@ -484,7 +548,19 @@ class _Calculator extends State<Calculator> {
             perdurability_class: '',
             CPU_percentatge: 0.0,
             GPU_percentatge: 0.0,
-            mem_percentatge: 0.0);
+            mem_percentatge: 0.0,
+            cpu_before: '',
+            cpu_execution: '',
+            gpu_before: '',
+            cpu: '',
+            gpu_execution: '',
+            gpu: '',
+            mem_before: '',
+            mem_execution: '',
+            mem_size: '',
+            num_days: '',
+            num_errors: '',
+            PUE: '');
 
         bool user = await userConnected();
         if (user) {
@@ -507,8 +583,8 @@ class _Calculator extends State<Calculator> {
       //----------------------------CALCULO EFICIENCIA--------------------------------
 
       late CalculationData CPU_data;
-
-      await getBuildingData('Sistema software', '', cpu, '', 'CPU', '')
+      print('llamada para obtener la CPU');
+      await getBuildingData('Sistema software', '', cpu, '', 'CPU', '', '')
           .then((CalculationData cd) {
         setState(() {
           CPU_data = cd;
@@ -516,26 +592,35 @@ class _Calculator extends State<Calculator> {
       });
 
       late CalculationData GPU_data;
-      await getBuildingData('Sistema software', '', gpu, '', 'GPU', '')
+      print('llamada para obtener la GPU');
+      await getBuildingData('Sistema software', '', gpu, '', 'GPU', '', '')
           .then((CalculationData cd) {
         setState(() {
           GPU_data = cd;
         });
       });
-
+      print('despues de hacer las llamadas');
       //obtener la informacion de la CPU seleccionada
       //obtener informacion de la GPU seleccionada
       double efficiency_cpu =
           (double.parse(_controller2.text) - double.parse(_controller.text)) /
-              double.parse(_controller2.text);
+              double.parse(_controller2.text) *
+              double.parse(CPU_data.value1);
+      print(efficiency_cpu);
       double efficiency_gpu =
           (double.parse(_controller4.text) - double.parse(_controller3.text)) /
-              double.parse(_controller4.text);
+              double.parse(_controller4.text) *
+              double.parse(GPU_data.value1);
+      print(efficiency_gpu);
       double efficiency_mem =
-          (double.parse(_controller6.text) - double.parse(_controller5.text)) /
-              double.parse(_controller6.text);
-      double efficiency = (efficiency_cpu + efficiency_gpu + efficiency_mem);
-
+          (double.parse(_controller7.text) - double.parse(_controller6.text)) /
+              double.parse(_controller7.text) *
+              0.3725;
+      print(efficiency_mem);
+      double efficiency = (efficiency_cpu + efficiency_gpu + efficiency_mem) *
+          double.parse(_controller8.text) *
+          0.001;
+      print(efficiency);
       late String efficiency_classification;
       await getClassificationData('1', (efficiency).toString(), '0.0')
           .then((ClassificationData cd) {
@@ -560,8 +645,8 @@ class _Calculator extends State<Calculator> {
           (double.parse(_controller4.text) - double.parse(_controller3.text)) /
               double.parse(_controller4.text);
       double op_consumption_mem =
-          (double.parse(_controller6.text) - double.parse(_controller5.text)) /
-              double.parse(_controller6.text);
+          (double.parse(_controller7.text) - double.parse(_controller6.text)) /
+              double.parse(_controller7.text);
       double op_consumption = op_consumption_cpu *
               (double.parse(CPU_data.value1) / consum_total) +
           op_consumption_gpu * (double.parse(GPU_data.value1) / consum_total) +
@@ -578,7 +663,7 @@ class _Calculator extends State<Calculator> {
       //----------------------------CALCULO PERDURABILIDAD----------------------------------------
 
       double testing =
-          double.parse(_controller7.text) / double.parse(_controller8.text);
+          double.parse(_controller9.text) / double.parse(_controller10.text);
       late String testing_classification;
       await getClassificationData('1', (testing).toString(), '0.0')
           .then((ClassificationData cd) {
@@ -595,7 +680,19 @@ class _Calculator extends State<Calculator> {
           perdurability_class: testing_classification.toString(),
           CPU_percentatge: (double.parse(CPU_data.value1) / consum_total),
           GPU_percentatge: (double.parse(GPU_data.value1) / consum_total),
-          mem_percentatge: (double.parse(memoryGB) * w_GB / consum_total));
+          mem_percentatge: (double.parse(memoryGB) * w_GB / consum_total),
+          cpu_before: '',
+          cpu_execution: '',
+          cpu: '',
+          gpu_before: '',
+          gpu_execution: '',
+          gpu: '',
+          mem_before: '',
+          mem_execution: '',
+          mem_size: '',
+          num_days: '',
+          num_errors: '',
+          PUE: '');
 
       BuildingResult br = const BuildingResult(
           consumption_class: '',
@@ -603,7 +700,15 @@ class _Calculator extends State<Calculator> {
           consumption: '',
           demand: '',
           emissions_class: '',
-          emissions: '');
+          emissions: '',
+          climatic_zone: '',
+          in_consumption: '',
+          in_demand: '',
+          in_emissions: '',
+          purpose: '',
+          service: '',
+          type: '',
+          zone: '');
       //realizar llamada para obtener el valor de la classificacion para la perdurabilidad
       bool user = await userConnected();
       if (user) {
@@ -651,7 +756,7 @@ class _Calculator extends State<Calculator> {
                   building_type = newValue!;
                 });
               },
-              items: ['', 'Residencial', 'No residencial']
+              items: ['Escull la finalitat', 'Residencial', 'No residencial']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -678,7 +783,7 @@ class _Calculator extends State<Calculator> {
                   type = newValue!;
                 });
               },
-              items: ['', 'Unifamiliar', 'Bloc']
+              items: ['Escull el tipus', 'Unifamiliar', 'Bloc']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -702,7 +807,7 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Demanda',
               ),
             ),
             const SizedBox(
@@ -721,7 +826,7 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Emissions',
               ),
             ),
           ],
@@ -749,9 +854,74 @@ class _Calculator extends State<Calculator> {
                 setState(() {
                   service = newValue!;
                 });
+                if (service == 'Calefacció') {
+                  climatic_zones = [
+                    'Escull la zona climàtica',
+                    'A1',
+                    'A2',
+                    'A3',
+                    'A4',
+                    'B1',
+                    'B2',
+                    'B3',
+                    'B4',
+                    'C1',
+                    'C2',
+                    'C3',
+                    'C4',
+                    'D1',
+                    'D2',
+                    'D3',
+                    'E1'
+                  ];
+                } else if (service == 'Refrigeració') {
+                  climatic_zones = [
+                    'Escull la zona climàtica',
+                    'α2',
+                    'α3',
+                    'α4',
+                    'A2',
+                    'A3',
+                    'A4',
+                    'B2',
+                    'B3',
+                    'B4',
+                    'C2',
+                    'C3',
+                    'C4',
+                    'D2',
+                    'D3'
+                  ];
+                } else if (service == 'ACS') {
+                  climatic_zones = [
+                    'Escull la zona climàtica',
+                    'α1',
+                    'α2',
+                    'α3',
+                    'α4',
+                    'A1',
+                    'A2',
+                    'A3',
+                    'A4',
+                    'B1',
+                    'B2',
+                    'B3',
+                    'B4',
+                    'C1',
+                    'C2',
+                    'C3',
+                    'C4',
+                    'D1',
+                    'D2',
+                    'D3',
+                    'E1'
+                  ];
+                } else {
+                  climatic_zones = ['Escull la zona climàtica'];
+                }
               },
               items: [
-                '',
+                'Escull el servei',
                 'Calefacció',
                 'Refrigeració',
                 'Aigua corrent sanitària'
@@ -781,8 +951,8 @@ class _Calculator extends State<Calculator> {
                   climatic_zone = newValue!;
                 });
               },
-              items: ['', 'A1', 'A2', 'A3']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items:
+                  climatic_zones.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -791,6 +961,36 @@ class _Calculator extends State<Calculator> {
             ),
             const SizedBox(
               height: 20,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text('Indica la zona d\'España on es troba:'),
+            const SizedBox(
+              height: 5,
+            ),
+            DropdownButton<String>(
+              value: zone,
+              style: TextStyle(color: Colors.green.shade700),
+              underline: Container(
+                height: 2,
+                color: Colors.green.shade50,
+              ),
+              onChanged: (String? newValue) {
+                setState(() {
+                  zone = newValue!;
+                });
+              },
+              items: [
+                'Escull la zona',
+                'Península, Ceuta, Melilla i Illes Balears',
+                'Illes Canàries'
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ),
             const SizedBox(
               height: 20,
@@ -808,7 +1008,7 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Consum d\'energia',
               ),
             ),
           ],
@@ -821,10 +1021,16 @@ class _Calculator extends State<Calculator> {
   }
 
   Widget softwareCalculator() {
+    print(cpus);
+    print(gpus);
+    print('tamaño de las cpus ---------->');
+    print(cpus.length);
+    print('tamaño de las gpus ---------->');
+    print(gpus.length);
     return Row(
       children: [
         const SizedBox(
-          width: 150,
+          width: 100,
         ),
         Expanded(
             child: Column(
@@ -845,8 +1051,7 @@ class _Calculator extends State<Calculator> {
                   cpu = newValue!;
                 });
               },
-              items: ['', 'Unifamiliar', 'Bloc']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: cpus.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -872,8 +1077,7 @@ class _Calculator extends State<Calculator> {
                   gpu = newValue!;
                 });
               },
-              items: ['', 'Unifamiliar', 'Bloc']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: gpus.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -895,13 +1099,13 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Tamany de memòria',
               ),
             ),
             const SizedBox(
               height: 20,
             ),
-            const Text('Indica el valor del PUE (power usage effectiveness):'),
+            const Text('Indica el valor del PUE:'),
             const SizedBox(
               height: 5,
             ),
@@ -919,13 +1123,12 @@ class _Calculator extends State<Calculator> {
           ],
         )),
         const SizedBox(
-          width: 150,
+          width: 100,
         ),
         Expanded(
             child: Column(
           children: [
-            const Text(
-                'Indica el percentatge de CPU abans l\'execució del software:'),
+            const Text('Indica el percentatge de CPU abans de l\'execució:'),
             const SizedBox(
               height: 5,
             ),
@@ -937,14 +1140,13 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Percentatge de CPU',
               ),
             ),
             const SizedBox(
               height: 20,
             ),
-            const Text(
-                'Indica el percentatge de CPU abans l\'execució del software:'),
+            const Text('Indica el percentatge de GPU abans de l\'execució:'),
             const SizedBox(
               height: 5,
             ),
@@ -956,14 +1158,14 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Percentatge de GPU',
               ),
             ),
             const SizedBox(
               height: 20,
             ),
             const Text(
-                'Indica el percentatge de memòria abans l\'execució del software:'),
+                'Indica el percentatge de memòria abans de l\'execució:'),
             const SizedBox(
               height: 5,
             ),
@@ -975,7 +1177,7 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Percentatge de memòria',
               ),
             ),
             const SizedBox(
@@ -987,7 +1189,7 @@ class _Calculator extends State<Calculator> {
               height: 5,
             ),
             TextField(
-              controller: _controller8,
+              controller: _controller9,
               onChanged: (String value) async {
                 testingDuration = value;
               },
@@ -1000,13 +1202,12 @@ class _Calculator extends State<Calculator> {
           ],
         )),
         const SizedBox(
-          width: 150,
+          width: 100,
         ),
         Expanded(
             child: Column(
           children: [
-            const Text(
-                'Indica el percentatge de CPU durant l\'execució del software:'),
+            const Text('Indica el percentatge de CPU durant l\'execució:'),
             const SizedBox(
               height: 5,
             ),
@@ -1018,14 +1219,13 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Percentatge de CPU',
               ),
             ),
             const SizedBox(
               height: 20,
             ),
-            const Text(
-                'Indica el percentatge de GPU durant l\'execució del software:'),
+            const Text('Indica el percentatge de GPU durant l\'execució:'),
             const SizedBox(
               height: 5,
             ),
@@ -1037,7 +1237,7 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Percentatge de GPU',
               ),
             ),
             const SizedBox(
@@ -1056,7 +1256,7 @@ class _Calculator extends State<Calculator> {
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Introdueix un valor',
+                labelText: 'Percentatge de memòria',
               ),
             ),
             const SizedBox(
@@ -1080,7 +1280,7 @@ class _Calculator extends State<Calculator> {
           ],
         )),
         const SizedBox(
-          width: 150,
+          width: 100,
         ),
       ],
     );
@@ -1181,7 +1381,48 @@ class _Calculator extends State<Calculator> {
                     textStyle: const TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
-                    calculateEfficiency();
+                    if (element == 'Edifici' &&
+                        building_type != 'Escull la finalitat' &&
+                        service != 'Escull el servei' &&
+                        climatic_zone != 'Escull la zona climàtica' &&
+                        type != 'Escull el tipus') {
+                      if (service == 'Calefacció' &&
+                          climatic_zone != 'α1' &&
+                          climatic_zone != 'α2' &&
+                          climatic_zone != 'α3') {
+                        calculateEfficiency();
+                      } else if (service == 'Refrigeració' &&
+                          climatic_zone != 'α1' &&
+                          climatic_zone != 'A1' &&
+                          climatic_zone != 'B1' &&
+                          climatic_zone != 'C1' &&
+                          climatic_zone != 'D1' &&
+                          climatic_zone != 'E1') {
+                        calculateEfficiency();
+                      }
+                    } else if (element == 'Sistema software' &&
+                        cpu != 'Escull la CPU' &&
+                        gpu != 'Escull la GPU' &&
+                        _controller.text != '' &&
+                        _controller2.text != '' &&
+                        _controller3.text != '' &&
+                        _controller4.text != '' &&
+                        _controller5.text != '' &&
+                        _controller6.text != '' &&
+                        _controller7.text != '' &&
+                        _controller8.text != '' &&
+                        _controller9.text != '' &&
+                        _controller10.text != '') {
+                      calculateEfficiency();
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (_) {
+                            return const AlertDialog(
+                              title: Text('Falten valors per introduir'),
+                            );
+                          });
+                    }
                   },
                   child: const Text('Continuar'),
                 ),

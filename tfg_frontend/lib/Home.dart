@@ -16,10 +16,35 @@ class _Home extends State<Home> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          const Text('Pantalla de inicio'),
-        ],
+      body: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/icono-gris.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            const Text('Green Id Card', style: TextStyle(fontSize: 50)),
+            const SizedBox(height: 150),
+            const Text(
+                '\u2192 Calcula l\'eficiència energètica per a un edifici o sistema software',
+                style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 20),
+            const Text(
+                '\u2192 Veu la classificació energètica per a cadascun del valors calculats',
+                style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 20),
+            const Text('\u2192 Visualitza les dades en forma de gràfic',
+                style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 20),
+            const Text('\u2192 Genera un informe dels resultats obtinguts',
+                style: TextStyle(fontSize: 18)),
+          ],
+        ),
       ),
     );
   }

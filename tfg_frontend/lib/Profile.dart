@@ -72,13 +72,20 @@ class _Profile extends State<Profile> {
                                 textStyle: const TextStyle(fontSize: 20),
                               ),
                               onPressed: () {
-                                BuildingResult br = BuildingResult(
+                                /*BuildingResult br = BuildingResult(
                                     consumption_class: '',
                                     consumption: '',
                                     demand_class: '',
                                     demand: '',
                                     emissions_class: '',
-                                    emissions: '');
+                                    emissions: '',
+                                    climatic_zone: '',
+                                    in_consumption: '',
+                                    in_demand: '',
+                                    in_emissions: '',
+                                    purpose: '',
+                                    service: '',
+                                    type: '');
                                 SoftwareResult sr = SoftwareResult(
                                     efficiency: '',
                                     efficiency_class: '',
@@ -88,9 +95,21 @@ class _Profile extends State<Profile> {
                                     perdurability_class: '',
                                     CPU_percentatge: 0.0,
                                     GPU_percentatge: 0.0,
-                                    mem_percentatge: 0.0);
+                                    mem_percentatge: 0.0,
+                                    cpu_before: '',
+                                    cpu_execution: '',
+                                    cpu: '',
+                                    gpu_before: '',
+                                    gpu_execution: '',
+                                    gpu: '',
+                                    mem_before: '',
+                                    mem_execution: '',
+                                    mem_size: '',
+                                    num_days: '',
+                                    num_errors: '',
+                                    PUE: '');
                                 runApp(MaterialApp(
-                                    home: Structure(br: br, sr: sr, tipus: 0)));
+                                    home: Structure(br: br, sr: sr, tipus: 0)));*/
                               },
                               child: const Text('Logout'),
                             ),

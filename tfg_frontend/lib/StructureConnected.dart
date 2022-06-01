@@ -80,6 +80,9 @@ class _StructureConnected extends State<StructureConnected> {
       backgroundColor: Colors.lightGreen,
       selectedIndex: selectedIndex,
       onDestinationSelected: (int index) {
+        if (selectedIndex == 2 && index != selectedIndex) {
+          _AppFeatures = <Widget>[Home(), Profile(), Calculator(), APIValue()];
+        }
         setState(() {
           selectedIndex = index;
         });
