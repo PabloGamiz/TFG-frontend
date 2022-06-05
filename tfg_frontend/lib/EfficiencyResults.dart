@@ -157,7 +157,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
   }
 
   Future<void> getComponentsData() async {
-    print('dentro de obtener los resultados');
+    print('empiezo a obtener la informacion de los grficos');
     if (widget.tipus == 1) {
       print('dentro de obtener los resultados de los edificios');
       if (widget.br.demand != '0') {
@@ -237,7 +237,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
         cd_minemissions = calcdata;
       });
       print('despues de obtener la informacion de los edificios');
-    } else {
+    } else if (widget.tipus == 2) {
       print('antes de obtener la informacion de los sistemas software');
       await getCPUs().then((List<CalculationData> cd) {
         setState(() {
@@ -269,6 +269,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
       });
       for (CalculationData c in calculation_data) {
         if (c.value_type != widget.sr.gpu) {
+          print('ESTO ES DONDE EMPIEZA UNA ITERACION DE LAS GPUS');
           print('valor de c.value---->');
           print(c.value1);
           chartDataGPU.add(
@@ -289,31 +290,190 @@ class _EfficiencyResults extends State<EfficiencyResults> {
     print('empieza el fichero');
     final pdf = pw.Document();
     if (widget.tipus == 1) {
-      final img = Image.network(
-          'https://www.remica.es/wp-content/uploads/2014/10/modelo-etiqueta-energetica.jpg');
       ByteData bytes = await rootBundle.load('images/building-certificate.jpg');
+      ByteData logobytes = await rootBundle.load('images/icono-negro.png');
       print('pagina 1 de edificio');
       pdf.addPage(
         pw.Page(
           build: (pw.Context context) => pw.Column(
             mainAxisAlignment: pw.MainAxisAlignment.start,
             children: [
-              pw.Text('Green Id Card', style: pw.TextStyle(fontSize: 30)),
-              pw.SizedBox(height: 5),
+              pw.Image(pw.MemoryImage(logobytes.buffer.asUint8List())),
               pw.Text('Informe de resultats',
-                  style: pw.TextStyle(fontSize: 25)),
+                  style: pw.TextStyle(fontSize: 30)),
+              /*pw.SizedBox(height: 5),
+              pw.Text('GreenIdCard',
+                  style: pw.TextStyle(fontSize: 25)),*/
               pw.SizedBox(height: 30),
-              pw.Text('Dades introduides',
-                  textAlign: pw.TextAlign.left,
-                  style: const pw.TextStyle(fontSize: 18)),
+              pw.SizedBox(
+                height: 30,
+                width: 485,
+                child: pw.Text('Dades introduides',
+                    textAlign: pw.TextAlign.left,
+                    style: const pw.TextStyle(fontSize: 18)),
+              ),
               pw.SizedBox(height: 10),
-              pw.Table(children: [
-                pw.TableRow(children: [
-                  pw.Text('Variable introduida', textAlign: pw.TextAlign.left),
-                  pw.Text('Valor introduit', textAlign: pw.TextAlign.left)
-                ]),
-              ]),
-              pw.Table(
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Tipus d\'objecte',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Finalitat de l\'edifici',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Tipus d\'edifici',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child:
+                              pw.Text('Servei', textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Zona climàtica',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Valor de demanda introduït',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text(
+                              'Valor del consum d\'energia introduït',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Valor de les emissions introduït',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                    ]),
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text('Edifici',
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.purpose,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.type,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.service,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.climatic_zone,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.in_demand,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.in_consumption,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.in_emissions,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                    ])
+                /*pw.Table(
                   border: pw.TableBorder(
                       top: pw.BorderSide(),
                       bottom: pw.BorderSide(),
@@ -359,17 +519,93 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                       pw.Text(widget.br.in_emissions,
                           textAlign: pw.TextAlign.left)
                     ]),
-                  ]),
-              pw.SizedBox(height: 30),
-              pw.Text('Resultats obtinguts',
-                  textAlign: pw.TextAlign.left,
-                  style: const pw.TextStyle(fontSize: 18)),
-              pw.SizedBox(height: 10),
-              pw.Table(children: [
-                pw.TableRow(
-                    children: [pw.Text('Mètrica'), pw.Text('Classificació')]),
+                  ]),*/
               ]),
-              pw.Table(
+              pw.SizedBox(height: 30),
+              pw.SizedBox(
+                height: 30,
+                width: 485,
+                child: pw.Text('Resultats obtinguts',
+                    textAlign: pw.TextAlign.left,
+                    style: const pw.TextStyle(fontSize: 18)),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Row(children: [
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child:
+                              pw.Text('Demanda', textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Consum d\'energia',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Emissions',
+                              textAlign: pw.TextAlign.left),
+                        ),
+                      ]),
+                    ]),
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.demand_class,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.consumption_class,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(widget.br.emissions_class,
+                                textAlign: pw.TextAlign.left)),
+                      ]),
+                    ]),
+              ]),
+              /*pw.Table(
                   border: pw.TableBorder(
                       top: pw.BorderSide(),
                       bottom: pw.BorderSide(),
@@ -388,7 +624,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                       pw.Text('Emissions'),
                       pw.Text(widget.br.emissions_class)
                     ]),
-                  ]),
+                  ]),*/
             ],
           ),
         ),
@@ -406,7 +642,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                     pw.Stack(children: [
                       pw.Image(pw.MemoryImage(bytes.buffer.asUint8List())),
                       pw.Column(children: [
-                        pw.SizedBox(height: 95),
+                        pw.SizedBox(height: 97),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 290),
                           pw.Text(widget.br.purpose,
@@ -414,7 +650,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 115),
+                        pw.SizedBox(height: 117),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 290),
                           pw.Text(_controller.text,
@@ -422,7 +658,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 135),
+                        pw.SizedBox(height: 137),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 290),
                           pw.Text(_controller2.text,
@@ -430,7 +666,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 155),
+                        pw.SizedBox(height: 157),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 290),
                           pw.Text(_controller3.text,
@@ -438,7 +674,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 175),
+                        pw.SizedBox(height: 177),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 290),
                           pw.Text(_controller4.text,
@@ -446,7 +682,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 240 + 35 * consumption_row),
+                        pw.SizedBox(height: 240 + 37 * consumption_row),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 310),
                           pw.Text(widget.br.in_consumption,
@@ -454,7 +690,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 240 + 35 * emissions_row),
+                        pw.SizedBox(height: 240 + 37 * emissions_row),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 385),
                           pw.Text(widget.br.in_emissions,
@@ -463,86 +699,30 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                       ]),
                     ]),
                   ])));
-      // Encode our file in base64
-      /* Uint8List pdfInBytes = await pdf.save();
-      final _base64 = base64Encode(pdfInBytes);
-      // Create the link with the file
-      final anchor =
-          AnchorElement(href: 'data:application/octet-stream;base64,$_base64')
-            ..target = 'blank';
-      // add the name
-
-      anchor.download = 'InformeResultado';
-      // trigger download
-      document.body?.append(anchor);
-      anchor.click();
-      anchor.remove();
-      return;*/
       Uint8List pdfInBytes = await pdf.save();
       final blob = html.Blob([pdfInBytes], 'application/pdf');
       final url = html.Url.createObjectUrlFromBlob(blob);
       html.window.open(url, 'Placeholdername');
       return;
-      /*var anchor = html.document.createElement('a') as html.AnchorElement
-        ..href = url
-        ..style.display = 'none'
-        ..download = 'pdf.pdf';
-      html.document.body?.children.add(anchor);
-      document.body?.append(anchor);
-      anchor.click();
-      anchor.remove();
-      return;*/
-      /*final ui.Image data1 =
-          await _cartesianChartKey.currentState!.toImage(pixelRatio: 3.0);
-        final ByteData? bytes1 =
-          await data1.toByteData(format: ui.ImageByteFormat.png);
-        final Uint8List imageBytes1 =
-          bytes1!.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
-      final ui.Image data2 =
-          await _cartesianChartKey.currentState!.toImage(pixelRatio: 3.0);
-        final ByteData? bytes2 =
-          await data2.toByteData(format: ui.ImageByteFormat.png);
-        final Uint8List imageBytes2 =
-          bytes2!.buffer.asUint8List(bytes2.offsetInBytes, bytes2.lengthInBytes);
-      final ui.Image data3 =
-          await _cartesianChartKey.currentState!.toImage(pixelRatio: 3.0);
-        final ByteData? bytes3 =
-          await data3.toByteData(format: ui.ImageByteFormat.png);
-        final Uint8List imageBytes1 =
-          bytes3!.buffer.asUint8List(bytes3.offsetInBytes, bytes3.lengthInBytes);*/
-
     } else {
-      /*final ui.Image data1 =
-          await _DemandChart.currentState!.toImage(pixelRatio: 3.0);
-        final ByteData? bytes1 =  
-          await data1.toByteData(format: ui.ImageByteFormat.png);
-        final Uint8List imageBytes1 =
-          bytes1!.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
-      final ui.Image data2 =
-          await _ConsumptionChart.currentState!.toImage(pixelRatio: 3.0);
-        final ByteData? bytes2 =
-          await data2.toByteData(format: ui.ImageByteFormat.png);
-        final Uint8List imageBytes2 =
-          bytes2!.buffer.asUint8List(bytes2.offsetInBytes, bytes2.lengthInBytes);
-      final ui.Image data3 =
-          await _EmissionsChart.currentState!.toImage(pixelRatio: 3.0);
-        final ByteData? bytes3 =
-          await data3.toByteData(format: ui.ImageByteFormat.png);
-        final Uint8List imageBytes3 =
-          bytes3!.buffer.asUint8List(bytes3.offsetInBytes, bytes3.lengthInBytes);*/
-
       ByteData bytes = await rootBundle.load('images/software-certificate.jpg');
+      ByteData logobytes = await rootBundle.load('images/icono-negro.png');
+
       pdf.addPage(
         pw.Page(
           build: (pw.Context context) => pw.Column(
-            mainAxisAlignment: pw.MainAxisAlignment.center,
+            mainAxisAlignment: pw.MainAxisAlignment.start,
             children: [
+              pw.Image(pw.MemoryImage(logobytes.buffer.asUint8List())),
               pw.Text('Informe de resultats',
                   style: pw.TextStyle(fontSize: 40)),
               pw.SizedBox(height: 30),
-              pw.Text('Dades introduides',
-                  style: const pw.TextStyle(
-                      fontSize: 20, decoration: pw.TextDecoration.underline)),
+              pw.SizedBox(
+                height: 30,
+                width: 485,
+                child: pw.Text('Dades introduides',
+                    style: const pw.TextStyle(fontSize: 20)),
+              ),
               pw.SizedBox(height: 10),
               pw.Table(children: [
                 pw.TableRow(children: [
@@ -590,9 +770,13 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                 ]),
               ]),
               pw.SizedBox(height: 30),
-              pw.Text('Resultats obtinguts',
-                  style: const pw.TextStyle(
-                      fontSize: 20, decoration: pw.TextDecoration.underline)),
+              pw.SizedBox(
+                height: 30,
+                width: 485,
+                child: pw.Text('Resultats obtinguts',
+                    style: const pw.TextStyle(
+                        fontSize: 20, decoration: pw.TextDecoration.underline)),
+              ),
               pw.SizedBox(height: 10),
               pw.Table(children: [
                 pw.TableRow(children: [
@@ -767,139 +951,187 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                     children: [
                       SfCartesianChart(
                           // Initialize category axis
+                          title: ChartTitle(
+                              text:
+                                  'Rang de la demanda per la classificació obtenida'),
+                          legend: Legend(isVisible: true),
                           primaryXAxis: CategoryAxis(),
                           series: <ChartSeries>[
                             // Initialize line series
-                            RangeColumnSeries<BarChartData, String>(
-                                dataSource: [
-                                  BarChartData('', 0, 0, Colors.green),
-                                  BarChartData(
-                                      'Demanda',
-                                      double.parse(cd_mindemand.value1),
-                                      double.parse(cd_maxdemand.value1),
-                                      Colors.green),
-                                  BarChartData(' ', 0, 0, Colors.green),
-                                ],
-                                xValueMapper: (BarChartData data, _) => data.x,
-                                lowValueMapper: (BarChartData data, _) =>
-                                    data.y,
-                                highValueMapper: (BarChartData data, _) =>
-                                    data.y2,
-                                pointColorMapper: (BarChartData data, _) =>
-                                    data.color),
                             LineSeries<ChartData, String>(
+                              name: 'demanda',
                               dataSource: [
                                 // Bind data source
                                 ChartData('', double.parse(widget.br.in_demand),
-                                    Colors.yellow),
-                                ChartData(
-                                    'Demanda',
-                                    double.parse(widget.br.in_demand),
-                                    Colors.yellow),
+                                    Colors.lightGreen),
                                 ChartData(
                                     ' ',
                                     double.parse(widget.br.in_demand),
-                                    Colors.yellow),
+                                    Colors.lightGreen),
                               ],
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                               pointColorMapper: (ChartData data, _) =>
                                   data.color,
                             ),
+                            LineSeries<ChartData, String>(
+                                name: 'mínim',
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_mindemand.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_mindemand.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
+                            LineSeries<ChartData, String>(
+                                name: 'màxim',
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_maxdemand.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_maxdemand.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
                           ]),
                       SizedBox(
                         width: 30,
                       ),
                       SfCartesianChart(
                           // Initialize category axis
+                          title: ChartTitle(
+                              text:
+                                  'Rang del consum per la classificació obtenida'),
+                          legend: Legend(isVisible: true),
                           primaryXAxis: CategoryAxis(),
                           series: <ChartSeries>[
                             // Initialize line series
-                            RangeColumnSeries<BarChartData, String>(
-                              dataSource: [
-                                BarChartData('', 0, 0, Colors.green),
-                                BarChartData(
-                                    'Consum d\'energia',
-                                    double.parse(cd_minconsump.value1),
-                                    double.parse(cd_maxconsump.value1),
-                                    Colors.green),
-                                BarChartData(' ', 0, 0, Colors.green),
-                              ],
-                              xValueMapper: (BarChartData data, _) => data.x,
-                              lowValueMapper: (BarChartData data, _) => data.y,
-                              highValueMapper: (BarChartData data, _) =>
-                                  data.y2,
-                              pointColorMapper: (BarChartData data, _) =>
-                                  data.color,
-                            ),
                             LineSeries<ChartData, String>(
+                              name: 'consum',
                               dataSource: [
                                 // Bind data source
                                 ChartData(
                                     '',
                                     double.parse(widget.br.in_consumption),
-                                    Colors.yellow),
-                                ChartData(
-                                    'Consum d\'energia',
-                                    double.parse(widget.br.in_consumption),
-                                    Colors.yellow),
+                                    Colors.lightGreen),
                                 ChartData(
                                     ' ',
                                     double.parse(widget.br.in_consumption),
-                                    Colors.yellow),
+                                    Colors.lightGreen),
                               ],
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                               pointColorMapper: (ChartData data, _) =>
                                   data.color,
                             ),
+                            LineSeries<ChartData, String>(
+                                name: 'mínim',
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_minconsump.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_minconsump.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
+                            LineSeries<ChartData, String>(
+                                name: 'màxim',
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_maxconsump.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_maxconsump.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
                           ]),
                       SizedBox(
                         width: 30,
                       ),
                       SfCartesianChart(
                           // Initialize category axis
+                          title: ChartTitle(
+                              text:
+                                  'Rang de les emissions per la classificació obtenida'),
+                          legend: Legend(isVisible: true),
                           primaryXAxis: CategoryAxis(),
                           series: <ChartSeries>[
                             // Initialize line series
-                            RangeColumnSeries<BarChartData, String>(
-                              dataSource: [
-                                BarChartData('', 0, 0, Colors.green),
-                                BarChartData(
-                                    'Emissions',
-                                    double.parse(cd_minemissions.value1),
-                                    double.parse(cd_maxemissions.value1),
-                                    Colors.green),
-                                BarChartData(' ', 0, 0, Colors.green),
-                              ],
-                              xValueMapper: (BarChartData data, _) => data.x,
-                              lowValueMapper: (BarChartData data, _) => data.y,
-                              highValueMapper: (BarChartData data, _) =>
-                                  data.y2,
-                              pointColorMapper: (BarChartData data, _) =>
-                                  data.color,
-                            ),
                             LineSeries<ChartData, String>(
+                              name: 'emissions',
                               dataSource: [
                                 // Bind data source
                                 ChartData(
                                     '',
                                     double.parse(widget.br.in_emissions),
-                                    Colors.yellow),
-                                ChartData(
-                                    'Emissions',
-                                    double.parse(widget.br.in_emissions),
-                                    Colors.yellow),
+                                    Colors.lightGreen),
                                 ChartData(
                                     ' ',
                                     double.parse(widget.br.in_emissions),
-                                    Colors.yellow),
+                                    Colors.lightGreen),
                               ],
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                               pointColorMapper: (ChartData data, _) =>
                                   data.color,
                             ),
+                            LineSeries<ChartData, String>(
+                                name: 'mínim',
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_minemissions.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_minemissions.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
+                            LineSeries<ChartData, String>(
+                                name: 'màxim',
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_maxemissions.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_maxemissions.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
                           ])
                     ],
                   ));
@@ -1023,7 +1255,6 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                     children: [
                       SfCircularChart(
                           // Enables the tooltip for all the series in chart
-                          tooltipBehavior: _tooltipBehavior,
                           title: ChartTitle(
                               text: 'Proporció de consum per component'),
                           series: <CircularSeries>[
@@ -1079,6 +1310,8 @@ class _EfficiencyResults extends State<EfficiencyResults> {
   }
 
   Widget build(BuildContext context) {
+    print(
+        '------------------------------empieza el build-----------------------------------------');
     String text = '';
     if (widget.tipus == 1) {
       text =
@@ -1232,7 +1465,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                 ),
                               ]),
                               height: 250,
-                              width: 425,
+                              width: 475,
                             ),
                             actions: [
                               TextButton(

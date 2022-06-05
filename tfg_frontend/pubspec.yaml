@@ -38,6 +38,7 @@ dependencies:
   http: ^0.13.4
   syncfusion_flutter_charts: ^20.1.55
   pdf: ^3.8.1
+  flutter_hooks: ^0.18.4
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,7 @@ flutter:
     - images/profile-icon.png
     - images/building-certificate.jpg
     - images/software-certificate.jpg
+    - images/icono-negro.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

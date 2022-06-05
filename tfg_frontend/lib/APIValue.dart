@@ -912,30 +912,6 @@ class _APIValue extends State {
                     labelText: 'Nom',
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Visibility(
-                    child: const Text('Introdueix el nombre de nuclis:'),
-                    visible: visible1),
-                Visibility(
-                    child: const SizedBox(
-                      height: 5,
-                    ),
-                    visible: visible1),
-                Visibility(
-                    child: TextField(
-                      controller: _controller3,
-                      onChanged: (String value) async {
-                        value3 = value;
-                      },
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Nombre de nuclis',
-                      ),
-                    ),
-                    visible: visible1),
               ],
             ),
           ),
