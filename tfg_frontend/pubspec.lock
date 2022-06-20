@@ -97,6 +97,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_hooks:
+    dependency: "direct main"
+    description:
+      name: flutter_hooks
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.18.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -343,6 +350,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  super_tooltip:
+    dependency: "direct main"
+    description:
+      name: super_tooltip
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   syncfusion_flutter_charts:
     dependency: "direct main"
     description:

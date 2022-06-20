@@ -7,11 +7,14 @@ class BuildingResult {
   final String in_demand;
   final String in_consumption;
   final String in_emissions;
-  final String demand;
+  final String demandC1;
+  final String demandC2;
   final String demand_class;
-  final String consumption;
+  final String consumptionC1;
+  final String consumptionC2;
   final String consumption_class;
-  final String emissions;
+  final String emissionsC1;
+  final String emissionsC2;
   final String emissions_class;
 
   const BuildingResult(
@@ -22,11 +25,14 @@ class BuildingResult {
       required this.in_demand,
       required this.in_consumption,
       required this.in_emissions,
-      required this.demand,
+      required this.demandC1,
+      required this.demandC2,
       required this.demand_class,
-      required this.consumption,
+      required this.consumptionC1,
+      required this.consumptionC2,
       required this.consumption_class,
-      required this.emissions,
+      required this.emissionsC1,
+      required this.emissionsC2,
       required this.emissions_class,
       required this.zone});
 }

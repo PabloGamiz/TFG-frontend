@@ -65,27 +65,22 @@ Future<String> createBuildingData(
 
   String jsonmap = jsonEncode(map);
 
-  print(jsonmap);
-
-  print('antes de llamada');
-
   final response = await http.post(
       Uri.parse('https://pablogamiz.pythonanywhere.com/calculationData/'),
       body: jsonmap,
       headers: {
         "Accept": "application/json",
-        "content-type": "application/json"
+        "content-type": "application/json",
       });
 
-  print(response.statusCode);
   if (response.statusCode == 201) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return 'S\'ha introduït la informació per a l\'edifici de forma correcta';
+    return 'S\'ha introduït la informació de forma correcta';
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    return 'No s\'ha pogut crear la informació per a l\'edifici';
+    return 'No s\'ha pogut crear la informació';
   }
 }
 
@@ -177,18 +172,17 @@ Future<String> updateBuildingData(
 
   final response = await http.put(Uri.parse(url), body: jsonmap, headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
-  print(response.statusCode);
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return 'S\'ha actualitzat la informació per a l\'edifici de forma correcta';
+    return 'S\'ha actualitzat la informació de forma correcta';
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    return 'No s\'ha pogut actualitzar la informació per a l\'edifici';
+    return 'No s\'ha pogut actualitzar la informació';
   }
 }
 
@@ -223,18 +217,16 @@ Future<String> deleteBuildingData(
   }
   final response = await http.delete(Uri.parse(url), headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
-
-  print(response.statusCode);
   if (response.statusCode == 204) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return 'S\'ha esborrat la informació per a l\'edifici de forma correcta';
+    return 'S\'ha esborrat la informació de forma correcta';
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    return 'No s\'ha pogut esborrar la informació per a l\'edifici';
+    return 'No s\'ha pogut esborrar la informació';
   }
 }
 
@@ -250,17 +242,17 @@ Future<String> deleteSoftwareData(
           '/';
   final response = await http.delete(Uri.parse(url), headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
 
   if (response.statusCode == 204) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return 'S\'ha esborrat la informació per a l\'edifici de forma correcta';
+    return 'S\'ha esborrat la informació de forma correcta';
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    return 'No s\'ha pogut esborrar la informació per a l\'edifici';
+    return 'No s\'ha pogut esborrar la informació';
   }
 }
 
@@ -299,16 +291,13 @@ Future<CalculationData> getBuildingData(
         value_type +
         '/';
   }
-  print(url);
   final response = await http.get(Uri.parse(url), headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
-  print(response.statusCode);
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    print(json.decode(response.body));
     return CalculationData.fromJson(json.decode(response.body));
   } else {
     // If the server did not return a 200 OK response,
@@ -325,33 +314,10 @@ Future<List<CalculationData>> getCPUs() async {
     final jsonResponse = json.decode(response.body);
     final List<CalculationData> l = [];
     for (Map<String, dynamic> m in jsonResponse) {
-      print('valor del mapa ---->');
-      print(m);
       l.add(CalculationData.fromJson(m));
     }
-    print('imprimimos la lista ---->');
-    print(l);
     return l;
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    /*final list = calculationDataList(
-        utf8.decode(response.bodyBytes));*/
-
-    /*final jsonResponse = json.decode(response.body);
-    print(jsonResponse);
-    final List =
-        jsonResponse.map((data) => new CalculationData.fromJson(data)).toList();
-    print(List);
-    return List;*/
-    /*final list =
-        json.decode(response.body).map((e) => CalculationData.fromJson(e)).;
-    return list;*/
-    //return compute(parseData, response.body);
-    //print(json.decode(response.body));
-    //return listCalculationData(utf8.decode(response.bodyBytes));
   } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
     throw Exception('Failed to get the data');
   }
 }
@@ -382,23 +348,13 @@ Future<CalculationData> getMaximumClass(
       '/' +
       classification +
       '/';
-  print(url);
   final response = await http.get(Uri.parse(url), headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
-  print(response.statusCode);
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    print('estado ------>');
-    print(response.statusCode);
-    print('cuerpo ------>');
-    print(json.decode(response.body));
     return CalculationData.fromJson(json.decode(response.body));
   } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
     throw Exception('Failed to get the data');
   }
 }
@@ -413,12 +369,8 @@ Future<List<CalculationData>> getGPUs() async {
     final jsonResponse = json.decode(response.body);
     final List<CalculationData> l = [];
     for (Map<String, dynamic> m in jsonResponse) {
-      print('valor del mapa ---->');
-      print(m);
       l.add(CalculationData.fromJson(m));
     }
-    print('imprimimos la lista ---->');
-    print(l);
     return l;
   } else {
     // If the server did not return a 200 OK response,

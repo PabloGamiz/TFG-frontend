@@ -2,11 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tfg_frontend/APIResponse.dart';
-import 'package:tfg_frontend/BuildingCAPIInput.dart';
 import 'package:tfg_frontend/endpoints/Calls/CalculationData.dart';
-import 'BuildingAPIInput.dart';
-import 'SoftwareAPIInput.dart';
 import 'endpoints/Objects/CalculationData.dart';
 import 'endpoints/Calls/Classification.dart';
 
@@ -58,6 +54,7 @@ class _APIValue extends State {
   bool visible1 = true;
   bool visible2 = false;
   bool visible3 = false;
+  bool maxvalue = false;
 
   //Software API values input fields
 
@@ -94,12 +91,8 @@ class _APIValue extends State {
 
   void realizarCrida() async {
     String response = '';
-    print(
-        '-----------------------------Antes de hacer las llamadas------------------------------');
     if (action == 'POST') {
-      print('dentro del post');
       if (info == 'Classificació') {
-        print('classification');
         await createClassificationData(
                 number_metrics,
                 classification,
@@ -114,7 +107,6 @@ class _APIValue extends State {
         });
       } else if (info == 'Dades de càlcul') {
         if (element == 'Edifici') {
-          print('no classificacion dentro de edificio');
           await createBuildingData(
                   'Edifici',
                   antiquity,
@@ -133,7 +125,6 @@ class _APIValue extends State {
             });
           });
         } else if (element == 'Sistema software') {
-          print('no clasificacion dentro de sistema software');
           await createBuildingData(
                   'Sistema software',
                   '',
@@ -155,7 +146,6 @@ class _APIValue extends State {
       }
     } else if (action == 'PUT') {
       if (info == 'Classificació') {
-        print('dentro de actualizar clasificacion');
         await updateClassificationData(
                 number_metrics,
                 classification,
@@ -240,6 +230,12 @@ class _APIValue extends State {
         builder: (_) {
           return AlertDialog(
             title: Text(response),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Continuar'),
+              )
+            ],
           );
         });
   }
@@ -257,7 +253,7 @@ class _APIValue extends State {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
           Expanded(
             child: Column(
@@ -318,6 +314,74 @@ class _APIValue extends State {
                   height: 20,
                 ),
                 Visibility(
+                  child: const Text('Indica la classificació del valor màxim:'),
+                  visible: maxvalue,
+                ),
+                Visibility(
+                    child: const SizedBox(
+                      height: 5,
+                    ),
+                    visible: maxvalue),
+                Visibility(
+                    child: DropdownButton<String>(
+                      value: max_classification,
+                      style: TextStyle(color: Colors.green.shade700),
+                      underline: Container(
+                        height: 2,
+                        color: Colors.green.shade50,
+                      ),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          max_classification = newValue!;
+                        });
+                      },
+                      items: [
+                        'Escull la classificació',
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E',
+                        'F',
+                        'G'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                    visible: maxvalue),
+                Visibility(
+                  child: const SizedBox(
+                    height: 20,
+                  ),
+                  visible: maxvalue,
+                ),
+                Visibility(
+                    visible: maxvalue,
+                    child: const Text('Introdueix el valor de ACS:')),
+                Visibility(
+                    visible: visible3,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                    visible: maxvalue,
+                    child: TextField(
+                      controller: _controller3,
+                      onChanged: (String value) async {
+                        value3 = value;
+                      },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'ACS',
+                      ),
+                    )),
+                Visibility(
                   child: Text('Introdueix el valor de la calefacció:'),
                   visible: visible1,
                 ),
@@ -333,6 +397,8 @@ class _APIValue extends State {
                     onChanged: (String value) async {
                       value1 = value;
                     },
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     obscureText: false,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -345,14 +411,13 @@ class _APIValue extends State {
             ),
           ),
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                    'Indica el tipus de valor que vols afegir o actualitzar:'),
+                const Text('Indica el tipus de valor:'),
                 const SizedBox(
                   height: 5,
                 ),
@@ -412,6 +477,14 @@ class _APIValue extends State {
                     setState(() {
                       value_type = newValue!;
                     });
+                    if (newValue == 'Màxim') {
+                      visible1 =
+                          visible2 = visible3 = visibleC = visibleC1C2 = false;
+                      maxvalue = true;
+                    } else {
+                      maxvalue = false;
+                      visible1 = true;
+                    }
                   },
                   items: [
                     'Escull el tipus de valors',
@@ -474,17 +547,45 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         value2 = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Refrigeració',
                       )),
                 ),
+                Visibility(
+                  child: Text('Introdueix el valor de la calefacció:'),
+                  visible: maxvalue,
+                ),
+                Visibility(
+                  child: const SizedBox(
+                    height: 5,
+                  ),
+                  visible: maxvalue,
+                ),
+                Visibility(
+                  child: TextField(
+                    controller: _controller,
+                    onChanged: (String value) async {
+                      value1 = value;
+                    },
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Calefacció',
+                    ),
+                  ),
+                  visible: maxvalue,
+                ),
               ],
             ),
           ),
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
           Expanded(
             child: Column(
@@ -573,18 +674,44 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         value3 = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'ACS',
                       ),
                     )),
+                Visibility(
+                    visible: maxvalue,
+                    child:
+                        const Text('Introdueix el valor de la refrigeració:')),
+                Visibility(
+                    visible: maxvalue,
+                    child: const SizedBox(
+                      height: 5,
+                    )),
+                Visibility(
+                  visible: maxvalue,
+                  child: TextField(
+                      controller: _controller2,
+                      onChanged: (String value) async {
+                        value2 = value;
+                      },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Refrigeració',
+                      )),
+                ),
               ],
               mainAxisAlignment: MainAxisAlignment.center,
             ),
           ),
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
         ],
       )
@@ -601,7 +728,7 @@ class _APIValue extends State {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
           Expanded(
             child: Column(
@@ -660,6 +787,8 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         minC = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -681,6 +810,8 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         minC1 = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -706,6 +837,8 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         minC2 = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -716,7 +849,7 @@ class _APIValue extends State {
             ),
           ),
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
           Expanded(
             child: Column(
@@ -756,6 +889,8 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         maxC = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -777,6 +912,8 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         maxC1 = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -801,6 +938,8 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         maxC2 = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -811,7 +950,7 @@ class _APIValue extends State {
             ),
           ),
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
         ],
       ),
@@ -829,7 +968,7 @@ class _APIValue extends State {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
           Expanded(
             child: Column(
@@ -866,7 +1005,8 @@ class _APIValue extends State {
                   height: 20,
                 ),
                 Visibility(
-                    child: const Text('Introdueix el valor de TDP:'),
+                    child:
+                        const Text('Introdueix el consum màxim del component:'),
                     visible: visible1),
                 Visibility(
                   child: const SizedBox(
@@ -880,10 +1020,12 @@ class _APIValue extends State {
                       onChanged: (String value) async {
                         value2 = value;
                       },
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'TDP',
+                        labelText: 'Consum màxim',
                       ),
                     ),
                     visible: visible1),
@@ -891,7 +1033,7 @@ class _APIValue extends State {
             ),
           ),
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
           Expanded(
             child: Column(
@@ -916,7 +1058,7 @@ class _APIValue extends State {
             ),
           ),
           const SizedBox(
-            width: 150,
+            width: 120,
           ),
         ],
       ),
@@ -925,147 +1067,213 @@ class _APIValue extends State {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          const Text(
-            'Modificació de la API',
-            style: TextStyle(fontSize: 30),
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Indica el tipus d\'acció que vols realitzar: ',
-                style: TextStyle(fontSize: 18),
+      body: Row(children: [
+        Container(
+          color: Colors.lightGreen,
+          width: 200,
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Image(
+              image: AssetImage('images/icono-blanco.png'),
+              width: 125,
+              height: 125,
+            ),
+            SizedBox(width: 1, height: 75),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/home');
+              },
+              child: Text(
+                'Inici',
+                style: TextStyle(color: Colors.grey.shade300),
               ),
-              const SizedBox(
-                width: 20,
-              ),
-              DropdownButton<String>(
-                value: action,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
+              /*style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightGreen))*/
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/calculeficiencia');
+              },
+              child: Text(
+                'Calcula l\'eficiència',
+                style: TextStyle(
+                  color: Colors.grey.shade300,
                 ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    action = newValue!;
-                  });
-                  if (action == 'DELETE') {
-                    visible1 =
-                        visible2 = visible3 = visibleC = visibleC1C2 = false;
-                  }
-                },
-                items: ['Escull l\'acció', 'POST', 'PUT', 'DELETE']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
               ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Indica el tipus d\'informació per al que vols realitzar l\'acció: ',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              DropdownButton<String>(
-                value: info,
-                style: TextStyle(color: Colors.green.shade700),
-                underline: Container(
-                  height: 2,
-                  color: Colors.green.shade50,
+              /*style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightGreen))*/
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            FlatButton(
+              onPressed: () {},
+              child: Text(
+                'Introdueix valors',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
                 ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    if (newValue == 'Escull el tipus') {
-                      noClassification = false;
-                      initial = true;
-                    } else if (newValue == 'Classificació') {
-                      noClassification = false;
-                      initial = false;
-                    } else if (newValue == 'Dades de càlcul') {
-                      noClassification = true;
-                      initial = false;
-                    }
-                    info = newValue!;
-                  });
-                },
-                items: ['Escull el tipus', 'Classificació', 'Dades de càlcul']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
               ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Visibility(
-              visible: noClassification && !initial,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Indica l\'objecte per al que vols introduir, actualitzar o esborrar dades:',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  DropdownButton<String>(
-                    value: element,
-                    style: TextStyle(color: Colors.green.shade700),
-                    underline: Container(
-                      height: 2,
-                      color: Colors.green.shade50,
+              /*style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightGreen))*/
+            ),
+          ]),
+        ),
+        Expanded(
+          child: Container(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  'Modificació de la API',
+                  style: TextStyle(fontSize: 30),
+                ),
+                const SizedBox(
+                  height: 50,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Indica el tipus d\'acció que vols realitzar: ',
+                      style: TextStyle(fontSize: 18),
                     ),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        if (newValue == 'Escull l\'objecte') {
-                          building = false;
-                          software = false;
-                        } else if (newValue == 'Edifici') {
-                          building = true;
-                          software = false;
-                        } else if (newValue == 'Sistema software') {
-                          building = false;
-                          software = true;
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    DropdownButton<String>(
+                      value: action,
+                      style: TextStyle(color: Colors.green.shade700),
+                      underline: Container(
+                        height: 2,
+                        color: Colors.green.shade50,
+                      ),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          action = newValue!;
+                        });
+                        if (action == 'DELETE') {
+                          visible1 = visible2 = visible3 =
+                              visibleC = maxvalue = visibleC1C2 = false;
                         }
-                        element = newValue!;
-                      });
-                    },
-                    items: ['Escull l\'objecte', 'Edifici', 'Sistema software']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              )),
-          /*Visibility(
+                      },
+                      items: ['Escull l\'acció', 'POST', 'PUT', 'DELETE']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Indica el tipus d\'informació per al que vols realitzar l\'acció: ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    DropdownButton<String>(
+                      value: info,
+                      style: TextStyle(color: Colors.green.shade700),
+                      underline: Container(
+                        height: 2,
+                        color: Colors.green.shade50,
+                      ),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          if (newValue == 'Escull el tipus') {
+                            noClassification = false;
+                            initial = true;
+                          } else if (newValue == 'Classificació') {
+                            noClassification = false;
+                            initial = false;
+                          } else if (newValue == 'Dades de càlcul') {
+                            noClassification = true;
+                            initial = false;
+                          }
+                          info = newValue!;
+                        });
+                      },
+                      items: [
+                        'Escull el tipus',
+                        'Classificació',
+                        'Dades de càlcul'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Visibility(
+                    visible: noClassification && !initial,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Indica l\'objecte per al que vols introduir, actualitzar o esborrar dades:',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        DropdownButton<String>(
+                          value: element,
+                          style: TextStyle(color: Colors.green.shade700),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.green.shade50,
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              if (newValue == 'Escull l\'objecte') {
+                                building = false;
+                                software = false;
+                              } else if (newValue == 'Edifici') {
+                                building = true;
+                                software = false;
+                              } else if (newValue == 'Sistema software') {
+                                building = false;
+                                software = true;
+                              }
+                              element = newValue!;
+                            });
+                          },
+                          items: [
+                            'Escull l\'objecte',
+                            'Edifici',
+                            'Sistema software'
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    )),
+                /*Visibility(
               child: const Text(
                   'Indica l\'element per al que vols realitzar l\'acció:'),
               visible: noClassification && !initial),
@@ -1108,108 +1316,139 @@ class _APIValue extends State {
             ),
             visible: noClassification && !initial,
           ),*/
-          const SizedBox(
-            height: 20,
-          ),
-          Visibility(
-              child: Expanded(child: Container()),
-              visible: initial ||
-                  (!initial && !building && !software && noClassification)),
-          Visibility(
-              child: Expanded(
-                  child: Container(
-                child: classificationInputs(),
-              )),
-              visible: !noClassification && !initial),
-          Visibility(
-              child: Expanded(
-                  child: Container(
-                child: buildingInputs(),
-              )),
-              visible: noClassification && building && !initial),
-          Visibility(
-              child: Expanded(
-                  child: Container(
-                child: softwareInputs(),
-              )),
-              visible: noClassification && software && !initial),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Stack(
-              children: <Widget>[
-                Positioned.fill(
-                  child: Container(
-                    color: Colors.green.shade300,
+                const SizedBox(
+                  height: 20,
+                ),
+                Visibility(
+                    child: Expanded(child: Container()),
+                    visible: initial ||
+                        (!initial &&
+                            !building &&
+                            !software &&
+                            noClassification)),
+                Visibility(
+                    child: Expanded(
+                        child: Container(
+                      child: classificationInputs(),
+                    )),
+                    visible: !noClassification && !initial),
+                Visibility(
+                    child: Expanded(
+                        child: Container(
+                      child: buildingInputs(),
+                    )),
+                    visible: noClassification && building && !initial),
+                Visibility(
+                    child: Expanded(
+                        child: Container(
+                      child: softwareInputs(),
+                    )),
+                    visible: noClassification && software && !initial),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: Container(
+                          color: Colors.green.shade300,
+                        ),
+                      ),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(13.0),
+                          primary: Colors.white,
+                          textStyle: const TextStyle(fontSize: 20),
+                        ),
+                        onPressed: () {
+                          //if ((number_metrics != '' && classification != '' && ((minC != '' && maxC != '') || (minC1 != '' && maxC1 != '') || (minC1 != '' && maxC1 != '' && minC2 != '' && maxC2 != ''))) {
+                          if (action != 'Escull l\'acció' &&
+                              info != 'Escull el tipus') {
+                            if (info == 'Classificació' &&
+                                number_metrics != '' &&
+                                _controller.text != '' &&
+                                ((_controller2.text != '' &&
+                                        _controller3.text != '') ||
+                                    (_controller2.text != '' &&
+                                        _controller3.text != '' &&
+                                        _controller4.text != '' &&
+                                        _controller5.text != '') ||
+                                    action == 'DELETE')) {
+                              realizarCrida();
+                            } else if (info == 'Dades de càlcul' &&
+                                element == 'Edifici' &&
+                                antiquity != 'Escull l\'antiguitat' &&
+                                value_type != 'Escull el tipus de valors' &&
+                                indicator != 'Escull l\'indicador' &&
+                                building_type != 'Escull el tipus d\'edifici' &&
+                                climatic_zone != 'Escull la zona climàtica' &&
+                                zone != 'Escull la zona' &&
+                                ((value_type == 'Dispersió' &&
+                                        _controller.text != '') ||
+                                    (value_type == 'Valor mitjà' &&
+                                        indicator == 'Demanda' &&
+                                        _controller.text != '' &&
+                                        _controller2.text != '') ||
+                                    (value_type == 'Valor mitjà' &&
+                                        _controller.text != '' &&
+                                        _controller2.text != '' &&
+                                        _controller3.text != ''))) {
+                              realizarCrida();
+                            } else if (info == 'Dades de càlcul' &&
+                                element == 'Sistema software' &&
+                                component != 'Escull el tipus' &&
+                                ((_controller.text != '' &&
+                                        _controller2.text != '') ||
+                                    (action == 'DELETE' &&
+                                        _controller.text != ''))) {
+                              realizarCrida();
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                    title: Text('Falten valors per introduir'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: const Text('Continuar'),
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (_) {
+                                return AlertDialog(
+                                  title: Text('Falten valors per introduir'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: const Text('Continuar'),
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: const Text('Continuar'),
+                      ),
+                    ],
                   ),
                 ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(13.0),
-                    primary: Colors.white,
-                    textStyle: const TextStyle(fontSize: 20),
-                  ),
-                  onPressed: () {
-                    //if ((number_metrics != '' && classification != '' && ((minC != '' && maxC != '') || (minC1 != '' && maxC1 != '') || (minC1 != '' && maxC1 != '' && minC2 != '' && maxC2 != ''))) {
-                    if (action != 'Escull l\'acció' &&
-                        info != 'Escull el tipus') {
-                      if (info == 'Classificació' &&
-                          number_metrics != '' &&
-                          _controller.text != '' &&
-                          ((_controller2.text != '' &&
-                                  _controller3.text != '') ||
-                              (_controller2.text != '' &&
-                                  _controller3.text != '' &&
-                                  _controller4.text != '' &&
-                                  _controller5.text != ''))) {
-                        realizarCrida();
-                      } else if (info == 'Dades de càlcul' &&
-                          element == 'Edifici' &&
-                          antiquity != 'Escull l\'antiguitat' &&
-                          value_type != 'Escull el tipus de valors' &&
-                          indicator != 'Escull l\'indicador' &&
-                          building_type != 'Escull el tipus d\'edifici' &&
-                          climatic_zone != 'Escull la zona climàtica' &&
-                          zone != 'Escull la zona' &&
-                          ((value_type == 'Dispersió' &&
-                                  _controller.text != '') ||
-                              (value_type == 'Valor mitjà' &&
-                                  indicator == 'Demanda' &&
-                                  _controller.text != '' &&
-                                  _controller2.text != '') ||
-                              (value_type == 'Valor mitjà' &&
-                                  _controller.text != '' &&
-                                  _controller2.text != '' &&
-                                  _controller3.text != ''))) {
-                        realizarCrida();
-                      } else if (info == 'Dades de càlcul' &&
-                          element == 'Sistema software' &&
-                          component != 'Escull el tipus' &&
-                          _controller.text != '' &&
-                          _controller2.text != '' &&
-                          _controller3.text != '') {
-                        realizarCrida();
-                      }
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (_) {
-                            return const AlertDialog(
-                              title: Text('Falten valors per introduir'),
-                            );
-                          });
-                    }
-                    realizarCrida();
-                  },
-                  child: const Text('Continuar'),
+                const SizedBox(
+                  height: 10,
                 ),
               ],
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
+        ),
+      ]),
     );
   }
 }

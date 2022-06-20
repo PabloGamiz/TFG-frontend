@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'package:http/http.dart' as http;
-import 'package:tfg_frontend/endpoints/Objects/NonResidentialBuildingClassification.dart';
 import 'package:tfg_frontend/endpoints/Objects/ClassificationData.dart';
 
 Future<String> createClassificationData(
@@ -12,8 +11,6 @@ Future<String> createClassificationData(
     String max_C1,
     String min_C2,
     String max_C2) async {
-  print('dentro de classification data');
-
   var map = Map<String, String>();
 
   map["number_metrics"] = number_metrics;
@@ -37,30 +34,18 @@ Future<String> createClassificationData(
   };
 
   final jsonbody = json.encode(body);
-  print('antes de llamada');
-  print(jsonbody);
 
   final response = await http.post(
       Uri.parse('https://pablogamiz.pythonanywhere.com/classificationData/'),
       body: jsonmap,
       headers: {
         "Accept": "application/json",
-        "content-type": "application/json"
+        "content-type": "application/json",
       });
 
-  print(response.body);
-
-  print('despues de llamada');
   if (response.statusCode == 201) {
-    print('ha creado correctamente la clasificacion');
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
     return 'La classificació s\'ha creat correctament';
   } else {
-    print(response.statusCode);
-    print('no ha creado la clasificacion');
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
     return 'No s\'ha pogut crear la classificació';
   }
 }
@@ -91,24 +76,14 @@ Future<String> updateClassificationData(
       calification +
       '/';
 
-  print(url);
-  print(jsonmap);
   final response = await http.put(Uri.parse(url), body: jsonmap, headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
 
-  print(response.statusCode);
-
   if (response.statusCode == 200) {
-    print('actualiza correctamente');
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
     return 'S\'ha actulitzat correctament la classificació';
   } else {
-    print('no actualiza');
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
     return 'No s\'ha pogut actualitzar la classificació';
   }
 }
@@ -123,7 +98,7 @@ Future<String> deleteClassificationData(
 
   final response = await http.delete(Uri.parse(url), headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
 
   if (response.statusCode == 204) {
@@ -165,21 +140,13 @@ Future<ClassificationData> getClassificationData(
         C1_aux +
         '/';
   }
-  print(url);
   final response = await http.get(Uri.parse(url), headers: {
     "Accept": "application/json",
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
-  print(response.statusCode);
-  print(response.body);
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    print(jsonDecode(response.body));
     return ClassificationData.fromJson(jsonDecode(response.body));
   } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
     throw Exception('Failed to store the classification');
   }
 }

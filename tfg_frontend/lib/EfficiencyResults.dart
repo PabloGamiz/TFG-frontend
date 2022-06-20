@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
+import 'package:async/async.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:pdf/pdf.dart';
+import 'package:super_tooltip/super_tooltip.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tfg_frontend/endpoints/Calls/CalculationData.dart';
 import 'package:tfg_frontend/endpoints/Objects/BuildingResult.dart';
@@ -15,30 +18,31 @@ import 'package:tfg_frontend/endpoints/Objects/SoftwareResult.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:tfg_frontend/main.dart';
 
-import 'endpoints/Objects/BarChartData.dart';
 import 'endpoints/Objects/CalculationData.dart';
 import 'endpoints/Objects/ChartData.dart';
 
 import 'dart:html' as html;
 
 class EfficiencyResults extends StatefulWidget {
-  final int tipus;
-  final BuildingResult br;
-  final SoftwareResult sr;
+  //final int tipus;
+  //final BuildingResult br;
+  //final SoftwareResult sr;
 
-  const EfficiencyResults(
+  /*const EfficiencyResults(
       {Key? key, required this.tipus, required this.br, required this.sr})
-      : super(key: key);
+      : super(key: key);*/
 
   @override
   _EfficiencyResults createState() => _EfficiencyResults();
 }
 
 class _EfficiencyResults extends State<EfficiencyResults> {
+  //SuperTooltip? tooltip;
+
   String resp = '';
 
-  late BuildingResult b_result;
-  late SoftwareResult s_result;
+  late BuildingResult br;
+  late SoftwareResult sr;
   late TooltipBehavior _tooltipBehavior;
 
   String direction = '';
@@ -51,7 +55,13 @@ class _EfficiencyResults extends State<EfficiencyResults> {
   late TextEditingController _controller3;
   late TextEditingController _controller4;
 
-  List<CalculationData> calculation_data = [];
+  Map arguments = {};
+
+  List<CalculationData> calculation_dataCPU = [];
+  List<CalculationData> calculation_dataGPU = [];
+
+  late AsyncMemoizer _memoizer;
+
   CalculationData cd_maxdemand = CalculationData(
       object: '',
       antiquity: '',
@@ -134,16 +144,10 @@ class _EfficiencyResults extends State<EfficiencyResults> {
     _controller2 = TextEditingController();
     _controller3 = TextEditingController();
     _controller4 = TextEditingController();
-    b_result = widget.br;
-    s_result = widget.sr;
+
     _tooltipBehavior = TooltipBehavior(enable: true);
-    chartData = [
-      ChartData('CPU', s_result.CPU_percentatge, Colors.yellow),
-      ChartData('GPU', s_result.GPU_percentatge, Colors.blue),
-      ChartData('mem', s_result.mem_percentatge, Colors.green)
-    ];
-    print(b_result.demand);
-    print('---------------------');
+
+    _memoizer = AsyncMemoizer();
     super.initState();
   }
 
@@ -156,21 +160,101 @@ class _EfficiencyResults extends State<EfficiencyResults> {
     super.dispose();
   }
 
+  _fetchdata() async {
+    return _memoizer.runOnce(() async {
+      await getComponentsData();
+      return;
+    });
+  }
+
+  /*Future<bool> _willPopCallback() async {
+    // If the tooltip is open we don't pop the page on a backbutton press
+    // but close the ToolTip
+    if (tooltip!.isOpen) {
+      tooltip!.close();
+      return false;
+    }
+    return true;
+  }
+
+  void onTap() {
+    if (tooltip != null && tooltip!.isOpen) {
+      tooltip!.close();
+      return;
+    }
+
+    var renderBox = context.findRenderObject() as RenderBox;
+    final overlay =
+        Overlay.of(context)!.context.findRenderObject() as RenderBox?;
+
+    var targetGlobalCenter = renderBox
+        .localToGlobal(renderBox.size.center(Offset.zero), ancestor: overlay);
+
+    // We create the tooltip on the first use
+    if (br.purpose == 'No residencial' || arguments['tipus'] == 2) {
+      tooltip = SuperTooltip(
+        popupDirection: TooltipDirection.left,
+        arrowTipDistance: 15.0,
+        arrowBaseWidth: 40.0,
+        arrowLength: 40.0,
+        borderColor: Colors.green,
+        borderWidth: 5.0,
+        snapsFarAwayVertically: true,
+        hasShadow: false,
+        touchThroughAreaShape: ClipAreaShape.rectangle,
+        content: new Material(
+            child: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Text(
+            "A: 0.00 ≤ C < 0.40"
+            "B: 0.40 ≤ C < 0.65"
+            "C: 0.65 ≤ C < 1.00"
+            "D: 1.00 ≤ C < 1.30"
+            "E: 1.30 ≤ C < 1.60"
+            "F: 1.60 ≤ C < 2.00"
+            "G: 2.00 ≤ C",
+            softWrap: true,
+          ),
+        )),
+      );
+    } else {
+      tooltip = SuperTooltip(
+        popupDirection: TooltipDirection.left,
+        arrowTipDistance: 15.0,
+        arrowBaseWidth: 40.0,
+        arrowLength: 40.0,
+        borderColor: Colors.green,
+        borderWidth: 5.0,
+        snapsFarAwayVertically: true,
+        hasShadow: false,
+        touchThroughAreaShape: ClipAreaShape.rectangle,
+        content: new Material(
+            child: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Text(
+            "A: 0.00 ≤ C1 < 0.15"
+            "B: 0.15 ≤ C1 < 0.50"
+            "C: 0.50 ≤ C1 < 1.00"
+            "D: 1.00 ≤ C1 < 1.75"
+            "E: 1.30 ≤ C1 < 1.60"
+            "   0.00 ≤ C2 < 1.00"
+            "F: 1.60 ≤ C1 < 2.00"
+            "   1.00 ≤ C2 < 1.50"
+            "G: 1,75 ≤ C1"
+            "   1.50 ≤ C2",
+            softWrap: true,
+          ),
+        )),
+      );
+    }
+    tooltip!.show(context);
+  }*/
+
   Future<void> getComponentsData() async {
-    print('empiezo a obtener la informacion de los grficos');
-    if (widget.tipus == 1) {
-      print('dentro de obtener los resultados de los edificios');
-      if (widget.br.demand != '0') {
-        print('el servicio no es ACS');
-        await getMaximumClass(
-                'Edifici',
-                'Nou',
-                'Màxim',
-                'Demanda',
-                widget.br.type,
-                widget.br.climatic_zone,
-                widget.br.zone,
-                widget.br.demand_class)
+    if (arguments['tipus'] == 1) {
+      if (br.demandC1 != '0') {
+        await getMaximumClass('Edifici', 'Nou', 'Màxim', 'Demanda', br.type,
+                br.climatic_zone, br.zone, br.demand_class)
             .then((CalculationData calcdata) {
           cd_maxdemand = calcdata;
         });
@@ -179,23 +263,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                 'Nou',
                 'Màxim',
                 'Demanda',
-                widget.br.type,
-                widget.br.climatic_zone,
-                widget.br.zone,
-                String.fromCharCode(widget.br.demand_class.codeUnitAt(0) - 1))
+                br.type,
+                br.climatic_zone,
+                br.zone,
+                String.fromCharCode(br.demand_class.codeUnitAt(0) - 1))
             .then((CalculationData calcdata) {
           cd_mindemand = calcdata;
         });
       }
-      await getMaximumClass(
-              'Edifici',
-              'Nou',
-              'Màxim',
-              'Consum d\'energia',
-              widget.br.type,
-              widget.br.climatic_zone,
-              widget.br.zone,
-              widget.br.consumption_class)
+      await getMaximumClass('Edifici', 'Nou', 'Màxim', 'Consum d\'energia',
+              br.type, br.climatic_zone, br.zone, br.consumption_class)
           .then((CalculationData calcdata) {
         cd_maxconsump = calcdata;
       });
@@ -204,23 +281,15 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               'Nou',
               'Màxim',
               'Consum d\'energia',
-              widget.br.type,
-              widget.br.climatic_zone,
-              widget.br.zone,
-              String.fromCharCode(
-                  widget.br.consumption_class.codeUnitAt(0) - 1))
+              br.type,
+              br.climatic_zone,
+              br.zone,
+              String.fromCharCode(br.consumption_class.codeUnitAt(0) - 1))
           .then((CalculationData calcdata) {
         cd_minconsump = calcdata;
       });
-      await getMaximumClass(
-              'Edifici',
-              'Nou',
-              'Màxim',
-              'Emissions',
-              widget.br.type,
-              widget.br.climatic_zone,
-              widget.br.zone,
-              widget.br.emissions_class)
+      await getMaximumClass('Edifici', 'Nou', 'Màxim', 'Emissions', br.type,
+              br.climatic_zone, br.zone, br.emissions_class)
           .then((CalculationData calcdata) {
         cd_maxemissions = calcdata;
       });
@@ -229,70 +298,28 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               'Nou',
               'Màxim',
               'Emissions',
-              widget.br.type,
-              widget.br.climatic_zone,
-              widget.br.zone,
-              String.fromCharCode(widget.br.emissions_class.codeUnitAt(0) - 1))
+              br.type,
+              br.climatic_zone,
+              br.zone,
+              String.fromCharCode(br.emissions_class.codeUnitAt(0) - 1))
           .then((CalculationData calcdata) {
         cd_minemissions = calcdata;
       });
-      print('despues de obtener la informacion de los edificios');
-    } else if (widget.tipus == 2) {
-      print('antes de obtener la informacion de los sistemas software');
+    } else if (arguments['tipus'] == 2) {
       await getCPUs().then((List<CalculationData> cd) {
-        setState(() {
-          print(
-              'se ha obtenido la lista de cpus y se guarda para poder usarla');
-          calculation_data = cd;
-        });
+        calculation_dataCPU = cd;
       });
-      print('antes de obtener los valores de cada una de las cpus');
-      for (CalculationData c in calculation_data) {
-        if (c.value_type != widget.sr.cpu) {
-          print('valor de c.value---->');
-          print(c.value1);
-          chartDataCPU.add(ChartData(
-              c.value_type, double.parse(c.value1), Colors.green.shade700));
-        } else {
-          print('valor de c.value (igual)---->');
-          print(c.value1);
-          chartDataCPU.add(
-              ChartData(c.value_type, double.parse(c.value1), Colors.lime));
-        }
-      }
-      print(chartDataCPU);
-      print('entre las dos llamadas me encuentro');
       await getGPUs().then((List<CalculationData> cd) {
-        setState(() {
-          calculation_data = cd;
-        });
+        calculation_dataGPU = cd;
       });
-      for (CalculationData c in calculation_data) {
-        if (c.value_type != widget.sr.gpu) {
-          print('ESTO ES DONDE EMPIEZA UNA ITERACION DE LAS GPUS');
-          print('valor de c.value---->');
-          print(c.value1);
-          chartDataGPU.add(
-              ChartData(c.value_type, double.parse(c.value1), Colors.green));
-        } else {
-          print('valor de c.value---->');
-          print(c.value1);
-          chartDataGPU.add(
-              ChartData(c.value_type, double.parse(c.value1), Colors.yellow));
-        }
-      }
-      print(chartDataGPU);
-      print('despues de obtener la informacion de los sistemas software');
     }
   }
 
   Future<void> createInform() async {
-    print('empieza el fichero');
     final pdf = pw.Document();
-    if (widget.tipus == 1) {
+    if (arguments['tipus'] == 1) {
       ByteData bytes = await rootBundle.load('images/building-certificate.jpg');
       ByteData logobytes = await rootBundle.load('images/icono-negro.png');
-      print('pagina 1 de edificio');
       pdf.addPage(
         pw.Page(
           build: (pw.Context context) => pw.Column(
@@ -308,7 +335,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               pw.SizedBox(
                 height: 30,
                 width: 485,
-                child: pw.Text('Dades introduides',
+                child: pw.Text('Dades introduïdes',
                     textAlign: pw.TextAlign.left,
                     style: const pw.TextStyle(fontSize: 18)),
               ),
@@ -421,7 +448,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.purpose,
+                            child: pw.Text(br.purpose,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                       pw.TableRow(children: [
@@ -429,7 +456,15 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.type,
+                            child:
+                                pw.Text(br.type, textAlign: pw.TextAlign.left)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(br.service,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                       pw.TableRow(children: [
@@ -437,7 +472,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.service,
+                            child: pw.Text(br.climatic_zone,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                       pw.TableRow(children: [
@@ -445,7 +480,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.climatic_zone,
+                            child: pw.Text(br.in_demand,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                       pw.TableRow(children: [
@@ -453,7 +488,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.in_demand,
+                            child: pw.Text(br.in_consumption,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                       pw.TableRow(children: [
@@ -461,65 +496,10 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.in_consumption,
-                                textAlign: pw.TextAlign.left)),
-                      ]),
-                      pw.TableRow(children: [
-                        pw.SizedBox(height: 20, width: 5),
-                        pw.SizedBox(
-                            height: 20,
-                            width: 235,
-                            child: pw.Text(widget.br.in_emissions,
+                            child: pw.Text(br.in_emissions,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                     ])
-                /*pw.Table(
-                  border: pw.TableBorder(
-                      top: pw.BorderSide(),
-                      bottom: pw.BorderSide(),
-                      right: pw.BorderSide(),
-                      left: pw.BorderSide()),
-                  children: [
-                    pw.TableRow(children: [
-                      pw.Text('Tipus d\'objecte', textAlign: pw.TextAlign.left),
-                      pw.Text('Edifici', textAlign: pw.TextAlign.left)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Finalitat de l\'edifici',
-                          textAlign: pw.TextAlign.left),
-                      pw.Text(widget.br.purpose, textAlign: pw.TextAlign.left)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Tipus d\'edifici', textAlign: pw.TextAlign.left),
-                      pw.Text(widget.br.type, textAlign: pw.TextAlign.left)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Servei', textAlign: pw.TextAlign.left),
-                      pw.Text(widget.br.service, textAlign: pw.TextAlign.left)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Zona climàtica', textAlign: pw.TextAlign.left),
-                      pw.Text(widget.br.climatic_zone,
-                          textAlign: pw.TextAlign.left)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Valor de demanda introduït',
-                          textAlign: pw.TextAlign.left),
-                      pw.Text(widget.br.in_demand, textAlign: pw.TextAlign.left)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Valor del consum d\'energia introduït',
-                          textAlign: pw.TextAlign.left),
-                      pw.Text(widget.br.in_consumption,
-                          textAlign: pw.TextAlign.left)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Valor de les emissions introduït',
-                          textAlign: pw.TextAlign.left),
-                      pw.Text(widget.br.in_emissions,
-                          textAlign: pw.TextAlign.left)
-                    ]),
-                  ]),*/
               ]),
               pw.SizedBox(height: 30),
               pw.SizedBox(
@@ -584,7 +564,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.demand_class,
+                            child: pw.Text(br.demand_class,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                       pw.TableRow(children: [
@@ -592,7 +572,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.consumption_class,
+                            child: pw.Text(br.consumption_class,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                       pw.TableRow(children: [
@@ -600,40 +580,20 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(widget.br.emissions_class,
+                            child: pw.Text(br.emissions_class,
                                 textAlign: pw.TextAlign.left)),
                       ]),
                     ]),
               ]),
-              /*pw.Table(
-                  border: pw.TableBorder(
-                      top: pw.BorderSide(),
-                      bottom: pw.BorderSide(),
-                      right: pw.BorderSide(),
-                      left: pw.BorderSide()),
-                  children: [
-                    pw.TableRow(children: [
-                      pw.Text('Demanda'),
-                      pw.Text(widget.br.demand_class)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Consum d\'energia'),
-                      pw.Text(widget.br.consumption_class)
-                    ]),
-                    pw.TableRow(children: [
-                      pw.Text('Emissions'),
-                      pw.Text(widget.br.emissions_class)
-                    ]),
-                  ]),*/
             ],
           ),
         ),
       );
       double consumption_row =
-          double.parse(widget.br.consumption_class.codeUnitAt(0).toString()) -
+          double.parse(br.consumption_class.codeUnitAt(0).toString()) -
               'A'.codeUnitAt(0);
       double emissions_row =
-          double.parse(widget.br.emissions_class.codeUnitAt(0).toString()) -
+          double.parse(br.emissions_class.codeUnitAt(0).toString()) -
               'A'.codeUnitAt(0);
       pdf.addPage(pw.Page(
           build: (pw.Context context) => pw.Column(
@@ -645,7 +605,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(height: 97),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 290),
-                          pw.Text(widget.br.purpose,
+                          pw.Text(br.purpose,
                               style: const pw.TextStyle(fontSize: 10)),
                         ]),
                       ]),
@@ -685,7 +645,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(height: 240 + 37 * consumption_row),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 310),
-                          pw.Text(widget.br.in_consumption,
+                          pw.Text(br.in_consumption,
                               style: const pw.TextStyle(fontSize: 30)),
                         ]),
                       ]),
@@ -693,7 +653,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(height: 240 + 37 * emissions_row),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 385),
-                          pw.Text(widget.br.in_emissions,
+                          pw.Text(br.in_emissions,
                               style: const pw.TextStyle(fontSize: 30)),
                         ]),
                       ]),
@@ -705,7 +665,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
       html.window.open(url, 'Placeholdername');
       return;
     } else {
-      ByteData bytes = await rootBundle.load('images/software-certificate.jpg');
+      ByteData bytes = await rootBundle.load('images/software-certificate.png');
       ByteData logobytes = await rootBundle.load('images/icono-negro.png');
 
       pdf.addPage(
@@ -724,89 +684,303 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                     style: const pw.TextStyle(fontSize: 20)),
               ),
               pw.SizedBox(height: 10),
-              pw.Table(children: [
-                pw.TableRow(children: [
-                  pw.Text('Tipus d\'objecte'),
-                  pw.Text('Sistema software')
-                ]),
-                pw.TableRow(children: [pw.Text('CPU'), pw.Text(widget.sr.cpu)]),
-                pw.TableRow(children: [
-                  pw.Text('Percentatge de CPU abans de l\'execució'),
-                  pw.Text(widget.sr.cpu_before)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Percentatge de CPU en l\'execució'),
-                  pw.Text(widget.sr.cpu_execution)
-                ]),
-                pw.TableRow(children: [pw.Text('GPU'), pw.Text(widget.sr.gpu)]),
-                pw.TableRow(children: [
-                  pw.Text('Percentatge de GPU abans de l\'execució'),
-                  pw.Text(widget.sr.gpu_before)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Percentatge de GPU en l\'execució'),
-                  pw.Text(widget.sr.gpu_execution)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Tamany de la memòria'),
-                  pw.Text(widget.sr.mem_size)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Percentatge de memòria abans de l\'execució'),
-                  pw.Text(widget.sr.mem_before)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Percentatge de memòria en l\'execució'),
-                  pw.Text(widget.sr.mem_execution)
-                ]),
-                pw.TableRow(children: [pw.Text('PUE'), pw.Text(widget.sr.PUE)]),
-                pw.TableRow(children: [
-                  pw.Text('Nombre d\'errors des del deployment'),
-                  pw.Text(widget.sr.num_errors)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Nombre de dies des del deployment'),
-                  pw.Text(widget.sr.num_days)
-                ]),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Tipus d\'objecte'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20, width: 235, child: pw.Text('CPU')),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text(
+                              'Percentatge de CPU abans de l\'execució'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Percentatge de CPU en l\'execució'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20, width: 235, child: pw.Text('GPU')),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text(
+                              'Percentatge de GPU abans de l\'execució'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Percentatge de GPU en l\'execució'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Tamany de la memòria'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 30,
+                          width: 235,
+                          child: pw.Text(
+                              'Percentatge de memòria abans de l\'execució'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child:
+                              pw.Text('Percentatge de memòria en l\'execució'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20, width: 235, child: pw.Text('PUE')),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Nombre d\'errors des del deployment'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Nombre de dies des del deployment'),
+                        ),
+                      ]),
+                    ]),
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text('Sistema software')),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20, width: 235, child: pw.Text(sr.cpu)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.cpu_before)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.cpu_execution)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20, width: 235, child: pw.Text(sr.gpu)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.gpu_before)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.gpu_execution)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.mem_size)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 30, width: 5),
+                        pw.SizedBox(
+                            height: 30,
+                            width: 235,
+                            child: pw.Text(sr.mem_before)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.mem_execution)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20, width: 235, child: pw.Text(sr.PUE)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.num_errors)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.num_days)),
+                      ]),
+                    ]),
               ]),
               pw.SizedBox(height: 30),
               pw.SizedBox(
                 height: 30,
                 width: 485,
                 child: pw.Text('Resultats obtinguts',
-                    style: const pw.TextStyle(
-                        fontSize: 20, decoration: pw.TextDecoration.underline)),
+                    style: const pw.TextStyle(fontSize: 20)),
               ),
               pw.SizedBox(height: 10),
-              pw.Table(children: [
-                pw.TableRow(children: [
-                  pw.Text('Eficiència energètica'),
-                  pw.Text(widget.sr.efficiency),
-                  pw.Text(widget.sr.efficiency_class)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Optimització de recursos'),
-                  pw.Text(widget.sr.consumption),
-                  pw.Text(widget.sr.consumption_class)
-                ]),
-                pw.TableRow(children: [
-                  pw.Text('Perdurabilitat'),
-                  pw.Text(widget.sr.perdurability),
-                  pw.Text(widget.sr.perdurability_class)
-                ]),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Eficiència energètica'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Optimització de recursos'),
+                        ),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                          height: 20,
+                          width: 235,
+                          child: pw.Text('Perdurabilitat'),
+                        ),
+                      ]),
+                    ]),
+                pw.Table(
+                    border: pw.TableBorder(
+                        top: pw.BorderSide(),
+                        bottom: pw.BorderSide(),
+                        right: pw.BorderSide(),
+                        left: pw.BorderSide()),
+                    children: [
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 5, width: 5),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.efficiency_class)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.consumption_class)),
+                      ]),
+                      pw.TableRow(children: [
+                        pw.SizedBox(height: 20, width: 5),
+                        pw.SizedBox(
+                            height: 20,
+                            width: 235,
+                            child: pw.Text(sr.perdurability_class)),
+                      ]),
+                    ]),
               ]),
             ],
           ),
         ),
       );
       double efficiency_row =
-          double.parse(widget.sr.efficiency_class.codeUnitAt(0).toString()) -
+          double.parse(sr.efficiency_class.codeUnitAt(0).toString()) -
               'A'.codeUnitAt(0);
       double optimization_row =
-          double.parse(widget.sr.consumption_class.codeUnitAt(0).toString()) -
+          double.parse(sr.consumption_class.codeUnitAt(0).toString()) -
               'A'.codeUnitAt(0);
       double perdurability_row =
-          double.parse(widget.sr.perdurability_class.codeUnitAt(0).toString()) -
+          double.parse(sr.perdurability_class.codeUnitAt(0).toString()) -
               'A'.codeUnitAt(0);
       pdf.addPage(pw.Page(
           build: (pw.Context context) => pw.Column(
@@ -815,32 +989,61 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                     pw.Stack(children: [
                       pw.Image(pw.MemoryImage(bytes.buffer.asUint8List())),
                       pw.Column(children: [
-                        pw.SizedBox(height: 110 + 32 * efficiency_row),
+                        pw.SizedBox(height: 97),
+                        pw.Row(children: [
+                          pw.SizedBox(height: 1, width: 290),
+                          pw.Text(_controller.text,
+                              style: const pw.TextStyle(fontSize: 10)),
+                        ]),
+                      ]),
+                      pw.Column(children: [
+                        pw.SizedBox(height: 117),
+                        pw.Row(children: [
+                          pw.SizedBox(height: 1, width: 290),
+                          pw.Text(_controller2.text,
+                              style: const pw.TextStyle(fontSize: 10)),
+                        ]),
+                      ]),
+                      pw.Column(children: [
+                        pw.SizedBox(height: 137),
+                        pw.Row(children: [
+                          pw.SizedBox(height: 1, width: 290),
+                          pw.Text(_controller3.text,
+                              style: const pw.TextStyle(fontSize: 10)),
+                        ]),
+                      ]),
+                      pw.Column(children: [
+                        pw.SizedBox(height: 157),
+                        pw.Row(children: [
+                          pw.SizedBox(height: 1, width: 290),
+                          pw.Text(_controller4.text,
+                              style: const pw.TextStyle(fontSize: 10)),
+                        ]),
+                      ]),
+                      pw.Column(children: [
+                        pw.SizedBox(height: 265 + 32 * efficiency_row),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 245),
                           pw.Text(
-                              double.parse(widget.sr.efficiency)
-                                  .toStringAsFixed(2),
+                              double.parse(sr.efficiency).toStringAsFixed(2),
                               style: const pw.TextStyle(fontSize: 20)),
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 110 + 32 * optimization_row),
+                        pw.SizedBox(height: 265 + 32 * optimization_row),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 320),
                           pw.Text(
-                              double.parse(widget.sr.consumption)
-                                  .toStringAsFixed(2),
+                              double.parse(sr.consumption).toStringAsFixed(2),
                               style: const pw.TextStyle(fontSize: 20)),
                         ]),
                       ]),
                       pw.Column(children: [
-                        pw.SizedBox(height: 110 + 32 * perdurability_row),
+                        pw.SizedBox(height: 265 + 32 * perdurability_row),
                         pw.Row(children: [
                           pw.SizedBox(height: 1, width: 385),
                           pw.Text(
-                              double.parse(widget.sr.perdurability)
-                                  .toStringAsFixed(2),
+                              double.parse(sr.perdurability).toStringAsFixed(2),
                               style: const pw.TextStyle(fontSize: 20)),
                         ]),
                       ]),
@@ -855,37 +1058,52 @@ class _EfficiencyResults extends State<EfficiencyResults> {
   }
 
   Widget BuildingResults() {
-    print(cd_mindemand.value1);
-    print(cd_maxdemand.value1);
-    print('dentro de los resultados del edificio');
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'images/demand.png',
-                width: 120,
-                height: 120,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(b_result.demand, style: TextStyle(fontSize: 25)),
-                  Image(
-                      image: AssetImage('images/right-arrow.png'),
-                      width: 30,
-                      height: 30),
-                  Text(b_result.demand_class, style: TextStyle(fontSize: 25)),
-                ],
-              )
-            ],
-          ),
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Image.asset(
+              'images/demand.png',
+              width: 120,
+              height: 120,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              (arguments['tipus'] == 1 && br.purpose == 'No residencial')
+                  ? Text(double.parse(br.demandC1).toStringAsFixed(2),
+                      style: TextStyle(fontSize: 25))
+                  : Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text('C1: ', style: TextStyle(fontSize: 25)),
+                            Text(double.parse(br.demandC1).toStringAsFixed(2),
+                                style: TextStyle(fontSize: 25)),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                          width: 1,
+                        ),
+                        Row(
+                          children: [
+                            Text('C2: ', style: TextStyle(fontSize: 25)),
+                            Text(double.parse(br.demandC2).toStringAsFixed(2),
+                                style: TextStyle(fontSize: 25)),
+                          ],
+                        ),
+                      ],
+                    ),
+              Image(
+                  image: AssetImage('images/right-arrow.png'),
+                  width: 30,
+                  height: 30),
+              Text(br.demand_class, style: TextStyle(fontSize: 25)),
+            ]),
+          ]),
           SizedBox(
             width: 50,
           ),
@@ -896,18 +1114,42 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               SizedBox(
                 height: 10,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(b_result.consumption, style: TextStyle(fontSize: 25)),
-                  Image(
-                      image: AssetImage('images/right-arrow.png'),
-                      width: 30,
-                      height: 30),
-                  Text(b_result.consumption_class,
-                      style: TextStyle(fontSize: 25)),
-                ],
-              )
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                (arguments['tipus'] == 1 && br.purpose == 'No residencial')
+                    ? Text(double.parse(br.consumptionC1).toStringAsFixed(2),
+                        style: TextStyle(fontSize: 25))
+                    : Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text('C1: ', style: TextStyle(fontSize: 25)),
+                              Text(
+                                  double.parse(br.consumptionC1)
+                                      .toStringAsFixed(2),
+                                  style: TextStyle(fontSize: 25)),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                            width: 1,
+                          ),
+                          Row(
+                            children: [
+                              Text('C2: ', style: TextStyle(fontSize: 25)),
+                              Text(
+                                  double.parse(br.consumptionC2)
+                                      .toStringAsFixed(2),
+                                  style: TextStyle(fontSize: 25)),
+                            ],
+                          ),
+                        ],
+                      ),
+                Image(
+                    image: AssetImage('images/right-arrow.png'),
+                    width: 30,
+                    height: 30),
+                Text(br.consumption_class, style: TextStyle(fontSize: 25)),
+              ]),
             ],
           ),
           SizedBox(
@@ -923,17 +1165,49 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(b_result.emissions, style: TextStyle(fontSize: 25)),
+                  (arguments['tipus'] == 1 && br.purpose == 'No residencial')
+                      ? Text(double.parse(br.emissionsC1).toStringAsFixed(2),
+                          style: TextStyle(fontSize: 25))
+                      : Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text('C1: ', style: TextStyle(fontSize: 25)),
+                                Text(
+                                    double.parse(br.emissionsC1)
+                                        .toStringAsFixed(2),
+                                    style: TextStyle(fontSize: 25)),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                              width: 1,
+                            ),
+                            Row(
+                              children: [
+                                Text('C2: ', style: TextStyle(fontSize: 25)),
+                                Text(
+                                    double.parse(br.emissionsC2)
+                                        .toStringAsFixed(2),
+                                    style: TextStyle(fontSize: 25)),
+                              ],
+                            ),
+                          ],
+                        ),
                   Image(
                       image: AssetImage('images/right-arrow.png'),
                       width: 30,
                       height: 30),
-                  Text(b_result.emissions_class,
-                      style: TextStyle(fontSize: 25)),
+                  Text(br.emissions_class, style: TextStyle(fontSize: 25)),
                 ],
               )
             ],
           ),
+          /*SizedBox(width: 20, height: 1),
+          GestureDetector(
+            onTap: onTap,
+            child: Icon(Icons.info, size: 30, color: Colors.black),
+          ),*/
         ],
       ),
       SizedBox(
@@ -942,7 +1216,8 @@ class _EfficiencyResults extends State<EfficiencyResults> {
       FutureBuilder(
           future: getComponentsData(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                arguments['tipus'] == 1) {
               return SizedBox(
                   height: 300,
                   width: 1000,
@@ -959,14 +1234,30 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                           series: <ChartSeries>[
                             // Initialize line series
                             LineSeries<ChartData, String>(
+                                name: 'màxim',
+                                color: Colors.green.shade900,
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_maxdemand.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_maxdemand.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
+                            LineSeries<ChartData, String>(
                               name: 'demanda',
+                              color: Colors.lightGreen,
                               dataSource: [
                                 // Bind data source
-                                ChartData('', double.parse(widget.br.in_demand),
+                                ChartData('', double.parse(br.in_demand),
                                     Colors.lightGreen),
-                                ChartData(
-                                    ' ',
-                                    double.parse(widget.br.in_demand),
+                                ChartData(' ', double.parse(br.in_demand),
                                     Colors.lightGreen),
                               ],
                               xValueMapper: (ChartData data, _) => data.x,
@@ -976,6 +1267,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                             ),
                             LineSeries<ChartData, String>(
                                 name: 'mínim',
+                                color: Colors.green.shade900,
                                 dataSource: [
                                   ChartData(
                                       '',
@@ -984,22 +1276,6 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                   ChartData(
                                       ' ',
                                       double.parse(cd_mindemand.value1),
-                                      Colors.green.shade900),
-                                ],
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y,
-                                pointColorMapper: (ChartData data, _) =>
-                                    data.color),
-                            LineSeries<ChartData, String>(
-                                name: 'màxim',
-                                dataSource: [
-                                  ChartData(
-                                      '',
-                                      double.parse(cd_maxdemand.value1),
-                                      Colors.green.shade900),
-                                  ChartData(
-                                      ' ',
-                                      double.parse(cd_maxdemand.value1),
                                       Colors.green.shade900),
                                 ],
                                 xValueMapper: (ChartData data, _) => data.x,
@@ -1020,16 +1296,30 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                           series: <ChartSeries>[
                             // Initialize line series
                             LineSeries<ChartData, String>(
+                                name: 'màxim',
+                                color: Colors.green.shade900,
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_maxconsump.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_maxconsump.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
+                            LineSeries<ChartData, String>(
                               name: 'consum',
+                              color: Colors.lightGreen,
                               dataSource: [
                                 // Bind data source
-                                ChartData(
-                                    '',
-                                    double.parse(widget.br.in_consumption),
+                                ChartData('', double.parse(br.in_consumption),
                                     Colors.lightGreen),
-                                ChartData(
-                                    ' ',
-                                    double.parse(widget.br.in_consumption),
+                                ChartData(' ', double.parse(br.in_consumption),
                                     Colors.lightGreen),
                               ],
                               xValueMapper: (ChartData data, _) => data.x,
@@ -1039,6 +1329,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                             ),
                             LineSeries<ChartData, String>(
                                 name: 'mínim',
+                                color: Colors.green.shade900,
                                 dataSource: [
                                   ChartData(
                                       '',
@@ -1047,22 +1338,6 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                   ChartData(
                                       ' ',
                                       double.parse(cd_minconsump.value1),
-                                      Colors.green.shade900),
-                                ],
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y,
-                                pointColorMapper: (ChartData data, _) =>
-                                    data.color),
-                            LineSeries<ChartData, String>(
-                                name: 'màxim',
-                                dataSource: [
-                                  ChartData(
-                                      '',
-                                      double.parse(cd_maxconsump.value1),
-                                      Colors.green.shade900),
-                                  ChartData(
-                                      ' ',
-                                      double.parse(cd_maxconsump.value1),
                                       Colors.green.shade900),
                                 ],
                                 xValueMapper: (ChartData data, _) => data.x,
@@ -1083,16 +1358,30 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                           series: <ChartSeries>[
                             // Initialize line series
                             LineSeries<ChartData, String>(
+                                name: 'màxim',
+                                color: Colors.green.shade900,
+                                dataSource: [
+                                  ChartData(
+                                      '',
+                                      double.parse(cd_maxemissions.value1),
+                                      Colors.green.shade900),
+                                  ChartData(
+                                      ' ',
+                                      double.parse(cd_maxemissions.value1),
+                                      Colors.green.shade900),
+                                ],
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                pointColorMapper: (ChartData data, _) =>
+                                    data.color),
+                            LineSeries<ChartData, String>(
                               name: 'emissions',
+                              color: Colors.lightGreen,
                               dataSource: [
                                 // Bind data source
-                                ChartData(
-                                    '',
-                                    double.parse(widget.br.in_emissions),
+                                ChartData('', double.parse(br.in_emissions),
                                     Colors.lightGreen),
-                                ChartData(
-                                    ' ',
-                                    double.parse(widget.br.in_emissions),
+                                ChartData(' ', double.parse(br.in_emissions),
                                     Colors.lightGreen),
                               ],
                               xValueMapper: (ChartData data, _) => data.x,
@@ -1102,6 +1391,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                             ),
                             LineSeries<ChartData, String>(
                                 name: 'mínim',
+                                color: Colors.green.shade900,
                                 dataSource: [
                                   ChartData(
                                       '',
@@ -1110,22 +1400,6 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                   ChartData(
                                       ' ',
                                       double.parse(cd_minemissions.value1),
-                                      Colors.green.shade900),
-                                ],
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y,
-                                pointColorMapper: (ChartData data, _) =>
-                                    data.color),
-                            LineSeries<ChartData, String>(
-                                name: 'màxim',
-                                dataSource: [
-                                  ChartData(
-                                      '',
-                                      double.parse(cd_maxemissions.value1),
-                                      Colors.green.shade900),
-                                  ChartData(
-                                      ' ',
-                                      double.parse(cd_maxemissions.value1),
                                       Colors.green.shade900),
                                 ],
                                 xValueMapper: (ChartData data, _) => data.x,
@@ -1135,15 +1409,15 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                           ])
                     ],
                   ));
-            } else {
+            } else if (arguments['tipus'] == 1) {
               return CircularProgressIndicator();
-            }
+            } else
+              return SizedBox();
           })
     ]);
   }
 
   Widget SoftwareResults() {
-    print('dentro de los resultados del software');
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1158,7 +1432,10 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(double.parse(s_result.efficiency).toStringAsFixed(2),
+                  Text(
+                      arguments['tipus'] == 2
+                          ? double.parse(sr.efficiency).toStringAsFixed(2)
+                          : '0',
                       style: TextStyle(fontSize: 25)),
                   const SizedBox(
                     width: 5,
@@ -1170,8 +1447,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                   const SizedBox(
                     width: 5,
                   ),
-                  Text(s_result.efficiency_class,
-                      style: TextStyle(fontSize: 25)),
+                  Text(sr.efficiency_class, style: TextStyle(fontSize: 25)),
                 ],
               )
             ],
@@ -1189,7 +1465,10 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(double.parse(s_result.consumption).toStringAsFixed(2),
+                  Text(
+                      arguments['tipus'] == 2
+                          ? double.parse(sr.consumption).toStringAsFixed(2)
+                          : '0',
                       style: TextStyle(fontSize: 25)),
                   const SizedBox(
                     width: 5,
@@ -1201,8 +1480,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                   const SizedBox(
                     width: 5,
                   ),
-                  Text(s_result.consumption_class,
-                      style: TextStyle(fontSize: 25)),
+                  Text(sr.consumption_class, style: TextStyle(fontSize: 25)),
                 ],
               ),
             ],
@@ -1220,7 +1498,10 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(double.parse(s_result.perdurability).toStringAsFixed(2),
+                  Text(
+                      arguments['tipus'] == 2
+                          ? double.parse(sr.perdurability).toStringAsFixed(2)
+                          : '0',
                       style: TextStyle(fontSize: 25)),
                   const SizedBox(
                     width: 5,
@@ -1232,21 +1513,47 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                   const SizedBox(
                     width: 5,
                   ),
-                  Text(s_result.perdurability_class,
-                      style: TextStyle(fontSize: 25)),
+                  Text(sr.perdurability_class, style: TextStyle(fontSize: 25)),
                 ],
               ),
             ],
           ),
+          /*SizedBox(width: 20, height: 1),
+          GestureDetector(
+            onTap: onTap,
+            child: Icon(Icons.info, size: 30, color: Colors.black),
+          ),*/
         ],
       ),
       SizedBox(
         height: 40,
       ),
       FutureBuilder(
-          future: getComponentsData(),
+          future: _fetchdata(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
+              List<ChartData> cpus = [];
+              List<ChartData> gpus = [];
+              for (CalculationData c in calculation_dataCPU) {
+                if (c.value_type != sr.cpu) {
+                  cpus.add(ChartData(c.value_type, double.parse(c.value1),
+                      Colors.green.shade700));
+                } else {
+                  cpus.add(ChartData(
+                      c.value_type, double.parse(c.value1), Colors.lime));
+                }
+              }
+              cpus.sort((a, b) => a.y.compareTo(b.y));
+              for (CalculationData c in calculation_dataGPU) {
+                if (c.value_type != sr.gpu) {
+                  gpus.add(ChartData(c.value_type, double.parse(c.value1),
+                      Colors.green.shade700));
+                } else {
+                  gpus.add(ChartData(
+                      c.value_type, double.parse(c.value1), Colors.lime));
+                }
+              }
+              gpus.sort((a, b) => a.y.compareTo(b.y));
               return SizedBox(
                   height: 300,
                   width: 1000,
@@ -1257,12 +1564,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                           // Enables the tooltip for all the series in chart
                           title: ChartTitle(
                               text: 'Proporció de consum per component'),
+                          legend: Legend(isVisible: true),
                           series: <CircularSeries>[
                             // Render pie chart
                             PieSeries<ChartData, String>(
                                 dataSource: chartData,
                                 xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y)
+                                yValueMapper: (ChartData data, _) => data.y,
+                                dataLabelSettings: DataLabelSettings(
+                                    // Renders the data label
+                                    isVisible: true)),
                           ]),
                       SizedBox(
                         width: 30,
@@ -1271,11 +1582,12 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         title: ChartTitle(text: 'Consum de la CPU'),
                         primaryXAxis: CategoryAxis(
                             // Axis will be rendered based on the index values
-                            arrangeByIndex: true),
+                            arrangeByIndex: true,
+                            labelRotation: 90),
                         series: <ChartSeries<ChartData, String>>[
                           ColumnSeries<ChartData, String>(
                               // Binding the chartData to the dataSource of the column series.
-                              dataSource: chartDataCPU,
+                              dataSource: cpus,
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                               pointColorMapper: (ChartData data, _) =>
@@ -1289,11 +1601,12 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         title: ChartTitle(text: 'Consum de la GPU'),
                         primaryXAxis: CategoryAxis(
                             // Axis will be rendered based on the index values
-                            arrangeByIndex: true),
+                            arrangeByIndex: true,
+                            labelRotation: 90),
                         series: <ChartSeries<ChartData, String>>[
                           ColumnSeries<ChartData, String>(
                               // Binding the chartData to the dataSource of the column series.
-                              dataSource: chartDataGPU,
+                              dataSource: gpus,
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                               pointColorMapper: (ChartData data, _) =>
@@ -1310,183 +1623,451 @@ class _EfficiencyResults extends State<EfficiencyResults> {
   }
 
   Widget build(BuildContext context) {
-    print(
-        '------------------------------empieza el build-----------------------------------------');
+    if (ModalRoute.of(context)?.settings.arguments == Null) {
+      return Scaffold(
+          body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('No s\'ha trobat cap informació de càlcul.',
+              style: TextStyle(fontSize: 20)),
+          const Text(
+            'Sisplau, torna a la pantalla de càlcul ',
+            style: TextStyle(fontSize: 20),
+          ),
+          const Text(
+            'i realitza el procés correctament.',
+            style: TextStyle(fontSize: 20),
+          )
+        ],
+      ));
+    }
+    arguments = ModalRoute.of(context)?.settings.arguments as Map;
+    br = arguments['br'];
+    sr = arguments['sr'];
+    chartData = [
+      ChartData(
+          'CPU',
+          double.parse((sr.CPU_percentatge * 100).toStringAsFixed(2)),
+          Colors.yellow),
+      ChartData(
+          'GPU',
+          double.parse((sr.GPU_percentatge * 100).toStringAsFixed(2)),
+          Colors.blue),
+      ChartData(
+          'mem',
+          double.parse((sr.mem_percentatge * 100).toStringAsFixed(2)),
+          Colors.green)
+    ];
     String text = '';
-    if (widget.tipus == 1) {
+    if (arguments['tipus'] == 1) {
       text =
           'L\'eficiència energètica del servei seleccionat de l\'edifici és...';
     } else {
       text = 'L\'eficiència energètica del sistema software és...';
     }
     return Scaffold(
-        body: Column(
-      children: [
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          text,
-          style: TextStyle(fontSize: 25),
-        ),
-        const SizedBox(
-          height: 40,
-        ),
-        Visibility(child: SoftwareResults(), visible: widget.tipus == 2),
-        Visibility(child: BuildingResults(), visible: widget.tipus == 1),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: Stack(
-            children: <Widget>[
-              Positioned.fill(
-                child: Container(
-                  color: Colors.green.shade300,
+      body: Row(children: [
+        Container(
+          color: Colors.lightGreen,
+          width: 200,
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Image(
+              image: AssetImage('images/icono-blanco.png'),
+              width: 125,
+              height: 125,
+            ),
+            SizedBox(width: 1, height: 75),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/home');
+              },
+              child: Text(
+                'Inici',
+                style: TextStyle(color: Colors.grey.shade300),
+              ),
+              /*style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightGreen))*/
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/calculeficiencia');
+              },
+              child: Text(
+                'Calcula l\'eficiència',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
                 ),
               ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.all(13.0),
-                  primary: Colors.white,
-                  textStyle: const TextStyle(fontSize: 20),
+              /*style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightGreen))*/
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/introduirvalors');
+              },
+              child: Text(
+                'Introdueix valors',
+                style: TextStyle(
+                  color: Colors.grey.shade300,
                 ),
-                onPressed: () {
-                  if (widget.tipus == 1) {
-                    showDialog(
-                        context: context,
-                        builder: (_) {
-                          return AlertDialog(
-                            title: Text(
-                                'Introdueix la següent informació sobre l\'edifici:'),
-                            content: new Container(
-                              child: Column(children: [
-                                Row(
-                                  children: [
-                                    Text('Indica la direcció de l\'edifici:'),
-                                    SizedBox(
-                                      width: 10,
-                                      height: 10,
-                                    ),
-                                    Container(
-                                        child: TextField(
-                                          controller: _controller,
-                                          onChanged: (String value) async {
-                                            direction = value;
-                                          },
-                                          obscureText: false,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Direcció',
-                                          ),
+              ),
+              /*style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightGreen))*/
+            ),
+          ]),
+        ),
+        Expanded(
+          child: Container(
+              child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                text,
+                style: TextStyle(fontSize: 25),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              Visibility(
+                  child: SoftwareResults(), visible: arguments['tipus'] == 2),
+              Visibility(
+                  child: BuildingResults(), visible: arguments['tipus'] == 1),
+              SizedBox(
+                height: 20,
+                width: 1,
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.green.shade300,
+                      ),
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(13.0),
+                        primary: Colors.white,
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      onPressed: () {
+                        if (arguments['tipus'] == 1) {
+                          showDialog(
+                              context: context,
+                              builder: (_) {
+                                return AlertDialog(
+                                  title: Text(
+                                      'Introdueix la següent informació sobre l\'edifici:'),
+                                  content: new Container(
+                                    child: Column(children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                                'Indica la direcció de l\'edifici:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    direction = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Direcció',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
                                         ),
-                                        height: 40,
-                                        width: 200),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                  width: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Indica el municipi:'),
-                                    SizedBox(
-                                      width: 10,
-                                      height: 10,
-                                    ),
-                                    Container(
-                                        child: TextField(
-                                          controller: _controller2,
-                                          onChanged: (String value) async {
-                                            municipi = value;
-                                          },
-                                          obscureText: false,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Municipi',
-                                          ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text('Indica el municipi:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller2,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    municipi = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Municipi',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
                                         ),
-                                        height: 40,
-                                        width: 200),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                  width: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Indica el codi postal:'),
-                                    SizedBox(
-                                      width: 10,
-                                      height: 10,
-                                    ),
-                                    Container(
-                                        child: TextField(
-                                          controller: _controller3,
-                                          onChanged: (String value) async {
-                                            zip_code = value;
-                                          },
-                                          obscureText: false,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Codi postal',
-                                          ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text('Indica el codi postal:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller3,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    zip_code = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Codi postal',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
                                         ),
-                                        height: 40,
-                                        width: 200),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                  width: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Indica la comunitat autònoma:'),
-                                    SizedBox(
-                                      width: 10,
-                                      height: 10,
-                                    ),
-                                    Container(
-                                        child: TextField(
-                                          controller: _controller4,
-                                          onChanged: (String value) async {
-                                            comunitat = value;
-                                          },
-                                          obscureText: false,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Comunitat autònoma',
-                                          ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                                'Indica la comunitat autònoma:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller4,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    comunitat = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText:
+                                                        'Comunitat autònoma',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
                                         ),
-                                        height: 40,
-                                        width: 200),
+                                      ),
+                                    ]),
+                                    height: 250,
+                                    width: 475,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        createInform();
+                                      },
+                                      child: const Text('Continuar'),
+                                    )
                                   ],
-                                ),
-                              ]),
-                              height: 250,
-                              width: 475,
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  createInform();
-                                },
-                                child: const Text('Continuar'),
-                              )
-                            ],
-                          );
-                        });
-                  } else {
-                    createInform();
-                  }
-                },
-                child: const Text('Generar informe'),
+                                );
+                              });
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (_) {
+                                return AlertDialog(
+                                  title: Text(
+                                      'Introdueix la següent informació sobre el sistema:'),
+                                  content: new Container(
+                                    child: Column(children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text('Indica el nom del sistema:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    direction = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Nom',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                                'Indica l\'empresa desenvolupadora:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller2,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    municipi = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Empresa',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                                'Indica el municipi de l\'empresa:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller3,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    zip_code = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Municipi',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                                'Indica la comunitat autònoma de l\'empresa:'),
+                                            SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                            ),
+                                            Container(
+                                                child: TextField(
+                                                  controller: _controller4,
+                                                  onChanged:
+                                                      (String value) async {
+                                                    comunitat = value;
+                                                  },
+                                                  obscureText: false,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText:
+                                                        'Comunitat autònoma',
+                                                  ),
+                                                ),
+                                                height: 40,
+                                                width: 200),
+                                          ],
+                                        ),
+                                      ),
+                                    ]),
+                                    height: 250,
+                                    width: 540,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        createInform();
+                                      },
+                                      child: const Text('Continuar'),
+                                    )
+                                  ],
+                                );
+                              });
+                        }
+                      },
+                      child: const Text('Generar informe'),
+                    ),
+                  ],
+                ),
               ),
             ],
-          ),
+          )),
         ),
-      ],
-    ));
+      ]),
+    );
   }
 }
