@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tfg_frontend/endpoints/Objects/CalculationData.dart';
 
@@ -48,11 +49,11 @@ Future<String> createBuildingData(
     map["value1"] = value1_aux;
     map["value2"] = value2_aux;
     map["value3"] = value3_aux;
+    if (value_type == 'Màxim') {
+      map["classification"] = classification;
+    }
     if (zone != 'Escull la zona') {
       map["zone"] = zone;
-    }
-    if (classification != 'Escull la classificació') {
-      map["classification"] = classification;
     }
   } else if (object == 'Sistema software') {
     map["object"] = object;
@@ -64,6 +65,8 @@ Future<String> createBuildingData(
   }
 
   String jsonmap = jsonEncode(map);
+
+  print(jsonmap);
 
   final response = await http.post(
       Uri.parse('https://pablogamiz.pythonanywhere.com/calculationData/'),
@@ -130,7 +133,12 @@ Future<String> updateBuildingData(
     map["value1"] = value1_aux;
     map["value2"] = value2_aux;
     map["value3"] = value3_aux;
-    url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
+    if (value_type == 'Màxim') {
+      url = 'https://pablogamiz.pythonanywhere.com/buildingMaximumData/';
+    } else {
+      url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/';
+    }
+    url = url +
         object +
         '/' +
         antiquity +
@@ -147,7 +155,7 @@ Future<String> updateBuildingData(
       map["zone"] = zone;
       url = url + zone + '/';
     }
-    if (classification != 'Escull la classificació') {
+    if (value_type == 'Màxim') {
       url = url + classification + '/';
       map["classification"] = classification;
     }
@@ -169,7 +177,7 @@ Future<String> updateBuildingData(
   }
 
   String jsonmap = jsonEncode(map);
-
+  print(url);
   final response = await http.put(Uri.parse(url), body: jsonmap, headers: {
     "Accept": "application/json",
     "content-type": "application/json",
@@ -195,26 +203,32 @@ Future<String> deleteBuildingData(
     String climatic_zone,
     String zone,
     String classification) async {
-  String url =
-      'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
-          object +
-          '/' +
-          antiquity +
-          '/' +
-          value_type +
-          '/' +
-          indicator +
-          '/' +
-          building_type +
-          '/' +
-          climatic_zone +
-          '/';
+  String url = '';
+  if (value_type == 'Màxim') {
+    url = 'https://pablogamiz.pythonanywhere.com/buildingMaximumData/';
+  } else {
+    url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/';
+  }
+  url = url +
+      object +
+      '/' +
+      antiquity +
+      '/' +
+      value_type +
+      '/' +
+      indicator +
+      '/' +
+      building_type +
+      '/' +
+      climatic_zone +
+      '/';
   if (zone != 'Escull la zona') {
     url = url + zone + '/';
   }
-  if (classification != 'Escull la classificació') {
+  if (value_type == 'Màxim') {
     url = url + classification + '/';
   }
+  print(url);
   final response = await http.delete(Uri.parse(url), headers: {
     "Accept": "application/json",
     "content-type": "application/json",
@@ -263,7 +277,8 @@ Future<CalculationData> getBuildingData(
     String indicator,
     String building_type,
     String climatic_zone,
-    String zone) async {
+    String zone,
+    BuildContext context) async {
   late String url;
   if (object == 'Edifici') {
     url = 'https://pablogamiz.pythonanywhere.com/buildingCalculationData/' +
@@ -291,6 +306,7 @@ Future<CalculationData> getBuildingData(
         value_type +
         '/';
   }
+  print(url);
   final response = await http.get(Uri.parse(url), headers: {
     "Accept": "application/json",
     "content-type": "application/json",
@@ -302,6 +318,24 @@ Future<CalculationData> getBuildingData(
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text('Hi ha hagut un error en el càlcul',
+                style: TextStyle(
+                    fontSize: 14 * MediaQuery.of(context).size.width / 1536)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('Continuar',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+              )
+            ],
+          );
+        });
     throw Exception('Failed to get the data');
   }
 }

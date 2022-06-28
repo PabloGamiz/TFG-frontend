@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:html';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tfg_frontend/endpoints/Objects/ClassificationData.dart';
 
@@ -76,6 +77,7 @@ Future<String> updateClassificationData(
       calification +
       '/';
 
+  print(url);
   final response = await http.put(Uri.parse(url), body: jsonmap, headers: {
     "Accept": "application/json",
     "content-type": "application/json",
@@ -113,7 +115,8 @@ Future<String> deleteClassificationData(
 }
 
 Future<ClassificationData> getClassificationData(
-    String number_metrics, String C1, String C2) async {
+    String number_metrics, String C1, String C2, BuildContext context) async {
+  print(C2);
   String C1_aux = C1;
   String C2_aux = C2;
   if (double.parse(C1) == double.parse(C1).toInt()) {
@@ -125,7 +128,7 @@ Future<ClassificationData> getClassificationData(
   }
 
   String url = '';
-  if (number_metrics == 2) {
+  if (number_metrics == '2') {
     url = 'https://pablogamiz.pythonanywhere.com/classificationDataC1C2/' +
         number_metrics +
         '/' +
@@ -140,6 +143,7 @@ Future<ClassificationData> getClassificationData(
         C1_aux +
         '/';
   }
+  print(url);
   final response = await http.get(Uri.parse(url), headers: {
     "Accept": "application/json",
     "content-type": "application/json",
@@ -147,6 +151,24 @@ Future<ClassificationData> getClassificationData(
   if (response.statusCode == 200) {
     return ClassificationData.fromJson(jsonDecode(response.body));
   } else {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text('Hi ha hagut un error en el càlcul',
+                style: TextStyle(
+                    fontSize: 14 * MediaQuery.of(context).size.width / 1536)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('Continuar',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+              )
+            ],
+          );
+        });
     throw Exception('Failed to store the classification');
   }
 }

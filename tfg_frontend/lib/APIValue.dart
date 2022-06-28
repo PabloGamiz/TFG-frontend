@@ -229,11 +229,16 @@ class _APIValue extends State {
         context: context,
         builder: (_) {
           return AlertDialog(
-            title: Text(response),
+            title: Text(response,
+                style: TextStyle(
+                    fontSize: 14 * MediaQuery.of(context).size.width / 1536)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Continuar'),
+                child: Text('Continuar',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
               )
             ],
           );
@@ -242,32 +247,39 @@ class _APIValue extends State {
 
   Widget buildingInputs() {
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-      const Text(
+      Text(
         'Introdueix els valors següents dels edificis per poder realitzar l\'acció:',
-        style: TextStyle(fontSize: 18),
+        style:
+            TextStyle(fontSize: 18 * MediaQuery.of(context).size.width / 1536),
       ),
-      const SizedBox(
-        height: 20,
+      SizedBox(
+        height: 20 * MediaQuery.of(context).size.height / 864,
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Indica l\'antiguitat de l\'edifici:'),
-                const SizedBox(
-                  height: 5,
+                Text('Indica l\'antiguitat de l\'edifici:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: antiquity,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
-                    height: 2,
+                    height: 2 * MediaQuery.of(context).size.height / 864,
                     color: Colors.green.shade50,
                   ),
                   onChanged: (String? newValue) {
@@ -279,22 +291,32 @@ class _APIValue extends State {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
-                const Text('Indica el tipus d\'edifici:'),
-                const SizedBox(
-                  height: 5,
+                Text('Indica el tipus d\'edifici:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: building_type,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
-                    height: 2,
+                    height: 2 * MediaQuery.of(context).size.height / 864,
                     color: Colors.green.shade50,
                   ),
                   onChanged: (String? newValue) {
@@ -306,28 +328,39 @@ class _APIValue extends State {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
                 Visibility(
-                  child: const Text('Indica la classificació del valor màxim:'),
+                  child: Text('Indica la classificació del valor màxim:',
+                      style: TextStyle(
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536)),
                   visible: maxvalue,
                 ),
                 Visibility(
-                    child: const SizedBox(
-                      height: 5,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     ),
                     visible: maxvalue),
                 Visibility(
                     child: DropdownButton<String>(
+                      iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                       value: max_classification,
-                      style: TextStyle(color: Colors.green.shade700),
+                      style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536),
                       underline: Container(
-                        height: 2,
+                        height: 2 * MediaQuery.of(context).size.height / 864,
                         color: Colors.green.shade50,
                       ),
                       onChanged: (String? newValue) {
@@ -347,85 +380,165 @@ class _APIValue extends State {
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value,
+                              style: TextStyle(
+                                  fontSize: 14 *
+                                      MediaQuery.of(context).size.width /
+                                      1536)),
                         );
                       }).toList(),
                     ),
                     visible: maxvalue),
                 Visibility(
-                  child: const SizedBox(
-                    height: 20,
+                  child: SizedBox(
+                    height: 20 * MediaQuery.of(context).size.height / 864,
                   ),
-                  visible: maxvalue,
+                  visible: maxvalue && action != 'DELETE',
                 ),
                 Visibility(
-                    visible: maxvalue,
-                    child: const Text('Introdueix el valor de ACS:')),
+                    visible: maxvalue && action != 'DELETE',
+                    child: Text('Introdueix el valor de ACS:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
                 Visibility(
-                    visible: visible3,
-                    child: const SizedBox(
-                      height: 5,
+                    visible: maxvalue && action != 'DELETE',
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
-                    visible: maxvalue,
-                    child: TextField(
-                      controller: _controller3,
-                      onChanged: (String value) async {
-                        value3 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'ACS',
+                  visible: maxvalue && action != 'DELETE',
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller3,
+                        onChanged: (String value) async {
+                          value3 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'ACS',
+                        ),
                       ),
-                    )),
-                Visibility(
-                  child: Text('Introdueix el valor de la calefacció:'),
-                  visible: visible1,
+                      height: 45 * MediaQuery.of(context).size.height / 864),
                 ),
                 Visibility(
-                  child: const SizedBox(
-                    height: 5,
-                  ),
-                  visible: visible1,
+                  child: Text('Introdueix el valor de la calefacció:',
+                      style: TextStyle(
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536)),
+                  visible: visible1 &&
+                      action != 'DELETE' &&
+                      value_type != 'Dispersió',
                 ),
                 Visibility(
-                  child: TextField(
-                    controller: _controller,
-                    onChanged: (String value) async {
-                      value1 = value;
-                    },
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Calefacció',
-                    ),
+                  child: SizedBox(
+                    height: 5 * MediaQuery.of(context).size.height / 864,
                   ),
-                  visible: visible1,
+                  visible: visible1 &&
+                      action != 'DELETE' &&
+                      value_type != 'Dispersió',
+                ),
+                Visibility(
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller,
+                        onChanged: (String value) async {
+                          value1 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Calefacció',
+                        ),
+                      ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                  visible: visible1 &&
+                      action != 'DELETE' &&
+                      value_type != 'Dispersió',
+                ),
+                Visibility(
+                  child: Text('Introdueix el valor de la dispersió:',
+                      style: TextStyle(
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536)),
+                  visible: value_type == 'Dispersió',
+                ),
+                Visibility(
+                  child: SizedBox(
+                    height: 5 * MediaQuery.of(context).size.height / 864,
+                  ),
+                  visible: value_type == 'Dispersió',
+                ),
+                Visibility(
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller,
+                        onChanged: (String value) async {
+                          value1 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Dispersió',
+                        ),
+                      ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                  visible: value_type == 'Dispersió',
                 ),
               ],
             ),
           ),
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Indica el tipus de valor:'),
-                const SizedBox(
-                  height: 5,
+                Text('Indica el tipus de valor:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: value_type,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
-                    height: 2,
+                    height: 2 * MediaQuery.of(context).size.height / 864,
                     color: Colors.green.shade50,
                   ),
                   onChanged: (String? newValue) {
@@ -447,9 +560,30 @@ class _APIValue extends State {
                         '1',
                         '2',
                         '3',
-                        '4'
+                        '4',
+                        'α1',
+                        'α2',
+                        'α3',
+                        'α4',
+                        'A1',
+                        'A2',
+                        'A3',
+                        'A4',
+                        'B1',
+                        'B2',
+                        'B3',
+                        'B4',
+                        'C1',
+                        'C2',
+                        'C3',
+                        'C4',
+                        'D1',
+                        'D2',
+                        'D3',
+                        'E1'
                       ];
-                    } else if (newValue == 'Valor mitjà') {
+                    } else if (newValue == 'Valor mitjà' ||
+                        newValue == 'Màxim') {
                       climaticZones = [
                         'Escull la zona climàtica',
                         'α1',
@@ -494,22 +628,32 @@ class _APIValue extends State {
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
-                const Text('Indica la zona d\'España on es troba:'),
-                const SizedBox(
-                  height: 5,
+                Text('Indica la zona d\'España on es troba:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: zone,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
-                    height: 2,
+                    height: 2 * MediaQuery.of(context).size.height / 864,
                     color: Colors.green.shade50,
                   ),
                   onChanged: (String? newValue) {
@@ -519,86 +663,122 @@ class _APIValue extends State {
                   },
                   items: [
                     'Escull la zona',
-                    'Península, Ceuta, Melilla i Illes Balears',
+                    'Península',
+                    'Ceuta, Melilla i Illes Balears',
                     'Illes Canàries'
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
                 Visibility(
                     visible: visible2,
-                    child:
-                        const Text('Introdueix el valor de la refrigeració:')),
+                    child: Text('Introdueix el valor de la refrigeració:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
                 Visibility(
                     visible: visible2,
-                    child: const SizedBox(
-                      height: 5,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
                   visible: visible2,
-                  child: TextField(
-                      controller: _controller2,
-                      onChanged: (String value) async {
-                        value2 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Refrigeració',
-                      )),
+                  child: SizedBox(
+                      child: TextField(
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          controller: _controller2,
+                          onChanged: (String value) async {
+                            value2 = value;
+                          },
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            labelStyle: TextStyle(
+                                fontSize: 14 *
+                                    MediaQuery.of(context).size.width /
+                                    1536),
+                            border: OutlineInputBorder(),
+                            labelText: 'Refrigeració',
+                          )),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
                 ),
                 Visibility(
-                  child: Text('Introdueix el valor de la calefacció:'),
-                  visible: maxvalue,
+                  child: Text('Introdueix el valor de la calefacció:',
+                      style: TextStyle(
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536)),
+                  visible: maxvalue && action != 'DELETE',
                 ),
                 Visibility(
-                  child: const SizedBox(
-                    height: 5,
+                  child: SizedBox(
+                    height: 5 * MediaQuery.of(context).size.height / 864,
                   ),
-                  visible: maxvalue,
+                  visible: maxvalue && action != 'DELETE',
                 ),
                 Visibility(
-                  child: TextField(
-                    controller: _controller,
-                    onChanged: (String value) async {
-                      value1 = value;
-                    },
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Calefacció',
-                    ),
-                  ),
-                  visible: maxvalue,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller,
+                        onChanged: (String value) async {
+                          value1 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Calefacció',
+                        ),
+                      ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                  visible: maxvalue && action != 'DELETE',
                 ),
               ],
             ),
           ),
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
           Expanded(
             child: Column(
               children: [
-                const Text('Indica el tipus de l\'indicador:'),
-                const SizedBox(
-                  height: 5,
+                Text('Indica el tipus de l\'indicador:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: indicator,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
-                    height: 2,
+                    height: 2 * MediaQuery.of(context).size.height / 864,
                     color: Colors.green.shade50,
                   ),
                   onChanged: (String? newValue) {
@@ -625,22 +805,32 @@ class _APIValue extends State {
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
-                const Text('Indica la zona climàtica:'),
-                const SizedBox(
-                  height: 5,
+                Text('Indica la zona climàtica:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: climatic_zone,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
-                    height: 2,
+                    height: 2 * MediaQuery.of(context).size.height / 864,
                     color: Colors.green.shade50,
                   ),
                   onChanged: (String? newValue) {
@@ -652,66 +842,97 @@ class _APIValue extends State {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
                 Visibility(
                     visible: visible3,
-                    child: const Text('Introdueix el valor de ACS:')),
+                    child: Text('Introdueix el valor de ACS:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
                 Visibility(
                     visible: visible3,
-                    child: const SizedBox(
-                      height: 5,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
-                    visible: visible3,
-                    child: TextField(
-                      controller: _controller3,
-                      onChanged: (String value) async {
-                        value3 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'ACS',
+                  visible: visible3,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller3,
+                        onChanged: (String value) async {
+                          value3 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'ACS',
+                        ),
                       ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                ),
+                Visibility(
+                    visible: maxvalue && action != 'DELETE',
+                    child: Text('Introdueix el valor de la refrigeració:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
+                Visibility(
+                    visible: maxvalue && action != 'DELETE',
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
-                    visible: maxvalue,
-                    child:
-                        const Text('Introdueix el valor de la refrigeració:')),
-                Visibility(
-                    visible: maxvalue,
-                    child: const SizedBox(
-                      height: 5,
-                    )),
-                Visibility(
-                  visible: maxvalue,
-                  child: TextField(
-                      controller: _controller2,
-                      onChanged: (String value) async {
-                        value2 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Refrigeració',
-                      )),
+                  visible: maxvalue && action != 'DELETE',
+                  child: SizedBox(
+                      child: TextField(
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          controller: _controller2,
+                          onChanged: (String value) async {
+                            value2 = value;
+                          },
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            labelStyle: TextStyle(
+                                fontSize: 14 *
+                                    MediaQuery.of(context).size.width /
+                                    1536),
+                            border: OutlineInputBorder(),
+                            labelText: 'Refrigeració',
+                          )),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
                 ),
               ],
               mainAxisAlignment: MainAxisAlignment.center,
             ),
           ),
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
         ],
       )
@@ -720,33 +941,40 @@ class _APIValue extends State {
 
   Widget classificationInputs() {
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-      const Text(
+      Text(
         'Introdueix els valors següents de la classificació per poder realitzar l\'acció:',
-        style: TextStyle(fontSize: 18),
+        style:
+            TextStyle(fontSize: 18 * MediaQuery.of(context).size.width / 1536),
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
-                const Text(
-                    'Indica el nombre de mètriques necessàries per obtenir la classificació:'),
-                const SizedBox(
-                  height: 5,
+                Text(
+                    'Indica el nombre de mètriques necessàries per obtenir la classificació:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: number_metrics,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
-                    height: 2,
+                    height: 2 * MediaQuery.of(context).size.height / 864,
                     color: Colors.green.shade50,
                   ),
                   onChanged: (String? newValue) {
@@ -765,192 +993,290 @@ class _APIValue extends State {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
+                ),
+                Visibility(
+                  visible: visibleC,
+                  child: Text('Introdueix el valor miním de C:',
+                      style: TextStyle(
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536)),
                 ),
                 Visibility(
                     visible: visibleC,
-                    child: const Text('Introdueix el valor miním de C:')),
-                Visibility(
-                    visible: visibleC,
-                    child: const SizedBox(
-                      height: 5,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
-                    visible: visibleC,
-                    child: TextField(
-                      controller: _controller2,
-                      onChanged: (String value) async {
-                        minC = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Valor mínim de C',
+                  visible: visibleC,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller2,
+                        onChanged: (String value) async {
+                          minC = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Valor mínim de C',
+                        ),
                       ),
-                    )),
-                Visibility(
-                    visible: visibleC1C2,
-                    child: const Text('Introdueix el valor miním de C1:')),
-                Visibility(
-                    visible: visibleC1C2,
-                    child: const SizedBox(
-                      height: 5,
-                    )),
-                Visibility(
-                    visible: visibleC1C2,
-                    child: TextField(
-                      controller: _controller2,
-                      onChanged: (String value) async {
-                        minC1 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Valor mínim de C1',
-                      ),
-                    )),
-                Text(_controller2.text),
-                const SizedBox(
-                  height: 20,
+                      height: 45 * MediaQuery.of(context).size.height / 864),
                 ),
                 Visibility(
                     visible: visibleC1C2,
-                    child: const Text('Introdueix el valor miním de C2:')),
+                    child: Text('Introdueix el valor miním de C1:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
                 Visibility(
                     visible: visibleC1C2,
-                    child: const SizedBox(
-                      height: 5,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
-                    visible: visibleC1C2,
-                    child: TextField(
-                      controller: _controller4,
-                      onChanged: (String value) async {
-                        minC2 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Valor mínim de C2',
+                  visible: visibleC1C2,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller2,
+                        onChanged: (String value) async {
+                          minC1 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Valor mínim de C1',
+                        ),
                       ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                ),
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
+                ),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: Text('Introdueix el valor miním de C2:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
+                Visibility(
+                  visible: visibleC1C2,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller4,
+                        onChanged: (String value) async {
+                          minC2 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Valor mínim de C2',
+                        ),
+                      ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                ),
               ],
             ),
           ),
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                    'Introdueix la lletra a la que pertanyarà o pertany el llindar:'),
-                const SizedBox(
-                  height: 5,
+                Text(
+                    'Introdueix la lletra a la que pertanyarà o pertany el llindar:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
-                TextField(
-                  controller: _controller,
-                  onChanged: (String value) async {
-                    classification = value;
-                  },
-                  obscureText: false,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Indica la lletra de classificació',
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                    child: TextField(
+                      style: TextStyle(
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536),
+                      controller: _controller,
+                      onChanged: (String value) async {
+                        classification = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        labelStyle: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        border: OutlineInputBorder(),
+                        labelText: 'Indica la lletra de classificació',
+                      ),
+                    ),
+                    height: 45 * MediaQuery.of(context).size.height / 864),
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
                 Visibility(
                     visible: visibleC,
-                    child: const Text('Introdueix el valor màxim de C:')),
+                    child: Text('Introdueix el valor màxim de C:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
                 Visibility(
                     visible: visibleC,
-                    child: const SizedBox(
-                      height: 5,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
-                    visible: visibleC,
-                    child: TextField(
-                      controller: _controller3,
-                      onChanged: (String value) async {
-                        maxC = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Valor màxim de C',
+                  visible: visibleC,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller3,
+                        onChanged: (String value) async {
+                          maxC = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Valor màxim de C',
+                        ),
                       ),
-                    )),
-                Visibility(
-                    visible: visibleC1C2,
-                    child: const Text('Introdueix el valor màxim de C1:')),
-                Visibility(
-                    visible: visibleC1C2,
-                    child: const SizedBox(
-                      height: 5,
-                    )),
-                Visibility(
-                    visible: visibleC1C2,
-                    child: TextField(
-                      controller: _controller3,
-                      onChanged: (String value) async {
-                        maxC1 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Valor màxim de C1',
-                      ),
-                    )),
-                const SizedBox(
-                  height: 20,
+                      height: 45 * MediaQuery.of(context).size.height / 864),
                 ),
                 Visibility(
                     visible: visibleC1C2,
-                    child: const Text('Introdueix el valor màxim de C2:')),
+                    child: Text('Introdueix el valor màxim de C1:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
                 Visibility(
                     visible: visibleC1C2,
-                    child: const SizedBox(
-                      height: 5,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
                 Visibility(
-                    visible: visibleC1C2,
-                    child: TextField(
-                      controller: _controller5,
-                      onChanged: (String value) async {
-                        maxC2 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Valor màxim de C2',
+                  visible: visibleC1C2,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller3,
+                        onChanged: (String value) async {
+                          maxC1 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Valor màxim de C1',
+                        ),
                       ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                ),
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
+                ),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: Text('Introdueix el valor màxim de C2:',
+                        style: TextStyle(
+                            fontSize: 14 *
+                                MediaQuery.of(context).size.width /
+                                1536))),
+                Visibility(
+                    visible: visibleC1C2,
+                    child: SizedBox(
+                      height: 5 * MediaQuery.of(context).size.height / 864,
                     )),
+                Visibility(
+                  visible: visibleC1C2,
+                  child: SizedBox(
+                      child: TextField(
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        controller: _controller5,
+                        onChanged: (String value) async {
+                          maxC2 = value;
+                        },
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          border: OutlineInputBorder(),
+                          labelText: 'Valor màxim de C2',
+                        ),
+                      ),
+                      height: 45 * MediaQuery.of(context).size.height / 864),
+                ),
               ],
             ),
           ),
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
         ],
       ),
@@ -959,31 +1285,38 @@ class _APIValue extends State {
 
   Widget softwareInputs() {
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-      const Text(
+      Text(
         'Introdueix els valors següents dels sistemes software per poder realitzar l\'acció:',
-        style: TextStyle(fontSize: 18),
+        style:
+            TextStyle(fontSize: 18 * MediaQuery.of(context).size.width / 1536),
       ),
-      SizedBox(height: 30),
+      SizedBox(height: 30 * MediaQuery.of(context).size.height / 864),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
-                const Text('Indica el tipus de component:'),
-                const SizedBox(
-                  height: 5,
+                Text('Indica el tipus de component:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
                 DropdownButton<String>(
+                  iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                   value: component,
-                  style: TextStyle(color: Colors.green.shade700),
+                  style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 14 * MediaQuery.of(context).size.width / 1536),
                   underline: Container(
                     height: 2,
                     color: Colors.green.shade50,
@@ -997,68 +1330,95 @@ class _APIValue extends State {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536)),
                     );
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
                 Visibility(
-                    child:
-                        const Text('Introdueix el consum màxim del component:'),
+                    child: Text('Introdueix el consum màxim del component:',
+                        style: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536)),
                     visible: visible1),
                 Visibility(
-                  child: const SizedBox(
-                    height: 5,
+                  child: SizedBox(
+                    height: 5 * MediaQuery.of(context).size.height / 864,
                   ),
                   visible: visible1,
                 ),
                 Visibility(
-                    child: TextField(
-                      controller: _controller2,
-                      onChanged: (String value) async {
-                        value2 = value;
-                      },
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Consum màxim',
-                      ),
-                    ),
+                    child: SizedBox(
+                        child: TextField(
+                          style: TextStyle(
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
+                          controller: _controller2,
+                          onChanged: (String value) async {
+                            value2 = value;
+                          },
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            labelStyle: TextStyle(
+                                fontSize: 14 *
+                                    MediaQuery.of(context).size.width /
+                                    1536),
+                            border: OutlineInputBorder(),
+                            labelText: 'Consum màxim',
+                          ),
+                        ),
+                        height: 45 * MediaQuery.of(context).size.height / 864),
                     visible: visible1),
               ],
             ),
           ),
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Introdueix el nom del component:'),
-                const SizedBox(
-                  height: 5,
+                Text('Introdueix el nom del component:',
+                    style: TextStyle(
+                        fontSize:
+                            14 * MediaQuery.of(context).size.width / 1536)),
+                SizedBox(
+                  height: 5 * MediaQuery.of(context).size.height / 864,
                 ),
-                TextField(
-                  controller: _controller,
-                  onChanged: (String value) async {
-                    value1 = value;
-                  },
-                  obscureText: false,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Nom',
-                  ),
-                ),
+                SizedBox(
+                    child: TextField(
+                      style: TextStyle(
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536),
+                      controller: _controller,
+                      onChanged: (String value) async {
+                        value1 = value;
+                      },
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelStyle: TextStyle(
+                            fontSize:
+                                14 * MediaQuery.of(context).size.width / 1536),
+                        labelText: 'Nom',
+                      ),
+                    ),
+                    height: 45 * MediaQuery.of(context).size.height / 864),
               ],
             ),
           ),
-          const SizedBox(
-            width: 120,
+          SizedBox(
+            width: 120 * MediaQuery.of(context).size.width / 1536,
           ),
         ],
       ),
@@ -1070,28 +1430,32 @@ class _APIValue extends State {
       body: Row(children: [
         Container(
           color: Colors.lightGreen,
-          width: 200,
+          width: 200 * MediaQuery.of(context).size.width / 1536,
           child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             Image(
               image: AssetImage('images/icono-blanco.png'),
-              width: 125,
-              height: 125,
+              width: 125 * MediaQuery.of(context).size.width / 1536,
+              height: 125 * MediaQuery.of(context).size.height / 864,
             ),
-            SizedBox(width: 1, height: 75),
+            SizedBox(
+                width: 1,
+                height: 75 * MediaQuery.of(context).size.height / 864),
             FlatButton(
               onPressed: () {
                 Navigator.of(context).pushNamed('/home');
               },
               child: Text(
                 'Inici',
-                style: TextStyle(color: Colors.grey.shade300),
+                style: TextStyle(
+                    color: Colors.grey.shade300,
+                    fontSize: 14 * MediaQuery.of(context).size.width / 1536),
               ),
               /*style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.lightGreen))*/
             ),
             SizedBox(
-              height: 50,
+              height: 50 * MediaQuery.of(context).size.height / 864,
             ),
             FlatButton(
               onPressed: () {
@@ -1100,15 +1464,15 @@ class _APIValue extends State {
               child: Text(
                 'Calcula l\'eficiència',
                 style: TextStyle(
-                  color: Colors.grey.shade300,
-                ),
+                    color: Colors.grey.shade300,
+                    fontSize: 14 * MediaQuery.of(context).size.width / 1536),
               ),
               /*style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.lightGreen))*/
             ),
             SizedBox(
-              height: 50,
+              height: 50 * MediaQuery.of(context).size.height / 864,
             ),
             FlatButton(
               onPressed: () {},
@@ -1116,7 +1480,7 @@ class _APIValue extends State {
                 'Introdueix valors',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 20 * MediaQuery.of(context).size.width / 1536,
                 ),
               ),
               /*style: ButtonStyle(
@@ -1129,31 +1493,38 @@ class _APIValue extends State {
           child: Container(
             child: Column(
               children: [
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: 10 * MediaQuery.of(context).size.height / 864,
                 ),
-                const Text(
+                Text(
                   'Modificació de la API',
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(
+                      fontSize: 30 * MediaQuery.of(context).size.width / 1536),
                 ),
-                const SizedBox(
-                  height: 50,
+                SizedBox(
+                  height: 50 * MediaQuery.of(context).size.height / 864,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Indica el tipus d\'acció que vols realitzar: ',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                          fontSize:
+                              18 * MediaQuery.of(context).size.width / 1536),
                     ),
-                    const SizedBox(
-                      width: 20,
+                    SizedBox(
+                      width: 20 * MediaQuery.of(context).size.width / 1536,
                     ),
                     DropdownButton<String>(
+                      iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                       value: action,
-                      style: TextStyle(color: Colors.green.shade700),
+                      style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536),
                       underline: Container(
-                        height: 2,
+                        height: 2 * MediaQuery.of(context).size.height / 864,
                         color: Colors.green.shade50,
                       ),
                       onChanged: (String? newValue) {
@@ -1175,24 +1546,30 @@ class _APIValue extends State {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: 10 * MediaQuery.of(context).size.height / 864,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Indica el tipus d\'informació per al que vols realitzar l\'acció: ',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                          fontSize:
+                              18 * MediaQuery.of(context).size.width / 1536),
                     ),
-                    const SizedBox(
-                      width: 20,
+                    SizedBox(
+                      width: 20 * MediaQuery.of(context).size.width / 1536,
                     ),
                     DropdownButton<String>(
+                      iconSize: 14 * MediaQuery.of(context).size.width / 1536,
                       value: info,
-                      style: TextStyle(color: Colors.green.shade700),
+                      style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontSize:
+                              14 * MediaQuery.of(context).size.width / 1536),
                       underline: Container(
-                        height: 2,
+                        height: 2 * MediaQuery.of(context).size.height / 864,
                         color: Colors.green.shade50,
                       ),
                       onChanged: (String? newValue) {
@@ -1223,26 +1600,36 @@ class _APIValue extends State {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: 10 * MediaQuery.of(context).size.height / 864,
                 ),
                 Visibility(
                     visible: noClassification && !initial,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Indica l\'objecte per al que vols introduir, actualitzar o esborrar dades:',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(
+                              fontSize: 18 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
                         ),
-                        const SizedBox(
-                          width: 20,
+                        SizedBox(
+                          width: 20 * MediaQuery.of(context).size.width / 1536,
                         ),
                         DropdownButton<String>(
+                          iconSize:
+                              14 * MediaQuery.of(context).size.width / 1536,
                           value: element,
-                          style: TextStyle(color: Colors.green.shade700),
+                          style: TextStyle(
+                              color: Colors.green.shade700,
+                              fontSize: 14 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
                           underline: Container(
-                            height: 2,
+                            height:
+                                2 * MediaQuery.of(context).size.height / 864,
                             color: Colors.green.shade50,
                           ),
                           onChanged: (String? newValue) {
@@ -1273,51 +1660,8 @@ class _APIValue extends State {
                         ),
                       ],
                     )),
-                /*Visibility(
-              child: const Text(
-                  'Indica l\'element per al que vols realitzar l\'acció:'),
-              visible: noClassification && !initial),
-          Visibility(
-            child: const SizedBox(
-              height: 5,
-            ),
-            visible: noClassification && !initial,
-          ),
-          Visibility(
-            child: DropdownButton<String>(
-              value: element,
-              style: TextStyle(color: Colors.green.shade700),
-              underline: Container(
-                height: 2,
-                color: Colors.green.shade50,
-              ),
-              onChanged: (String? newValue) {
-                setState(() {
-                  if (newValue == '') {
-                    building = false;
-                    software = false;
-                  } else if (newValue == 'Edifici') {
-                    building = true;
-                    software = false;
-                  } else if (newValue == 'Sistema software') {
-                    building = false;
-                    software = true;
-                  }
-                  element = newValue!;
-                });
-              },
-              items: ['', 'Edifici', 'Sistema software']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-            visible: noClassification && !initial,
-          ),*/
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20 * MediaQuery.of(context).size.height / 864,
                 ),
                 Visibility(
                     child: Expanded(child: Container()),
@@ -1357,10 +1701,12 @@ class _APIValue extends State {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.all(13.0),
                           primary: Colors.white,
-                          textStyle: const TextStyle(fontSize: 20),
+                          textStyle: TextStyle(
+                              fontSize: 20 *
+                                  MediaQuery.of(context).size.width /
+                                  1536),
                         ),
                         onPressed: () {
-                          //if ((number_metrics != '' && classification != '' && ((minC != '' && maxC != '') || (minC1 != '' && maxC1 != '') || (minC1 != '' && maxC1 != '' && minC2 != '' && maxC2 != ''))) {
                           if (action != 'Escull l\'acció' &&
                               info != 'Escull el tipus') {
                             if (info == 'Classificació' &&
@@ -1391,7 +1737,17 @@ class _APIValue extends State {
                                     (value_type == 'Valor mitjà' &&
                                         _controller.text != '' &&
                                         _controller2.text != '' &&
-                                        _controller3.text != ''))) {
+                                        _controller3.text != '') ||
+                                    (max_classification !=
+                                            'Escull la classificació' &&
+                                        value_type == 'Màxim' &&
+                                        _controller.text != '' &&
+                                        _controller2.text != '' &&
+                                        _controller3.text != '') ||
+                                    (max_classification !=
+                                            'Escull la classificació' &&
+                                        value_type == 'Màxim' &&
+                                        action == 'DELETE'))) {
                               realizarCrida();
                             } else if (info == 'Dades de càlcul' &&
                                 element == 'Sistema software' &&
@@ -1406,12 +1762,24 @@ class _APIValue extends State {
                                 context: context,
                                 builder: (_) {
                                   return AlertDialog(
-                                    title: Text('Falten valors per introduir'),
+                                    title: Text('Falten valors per introduir',
+                                        style: TextStyle(
+                                            fontSize: 14 *
+                                                MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                1536)),
                                     actions: [
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, true),
-                                        child: const Text('Continuar'),
+                                        child: Text('Continuar',
+                                            style: TextStyle(
+                                                fontSize: 14 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536)),
                                       )
                                     ],
                                   );
@@ -1423,12 +1791,24 @@ class _APIValue extends State {
                               context: context,
                               builder: (_) {
                                 return AlertDialog(
-                                  title: Text('Falten valors per introduir'),
+                                  title: Text('Falten valors per introduir',
+                                      style: TextStyle(
+                                          fontSize: 14 *
+                                              MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              1536)),
                                   actions: [
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.pop(context, true),
-                                      child: const Text('Continuar'),
+                                      child: Text('Continuar',
+                                          style: TextStyle(
+                                              fontSize: 14 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536)),
                                     )
                                   ],
                                 );
@@ -1441,8 +1821,8 @@ class _APIValue extends State {
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: 10 * MediaQuery.of(context).size.height / 864,
                 ),
               ],
             ),

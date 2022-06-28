@@ -167,89 +167,6 @@ class _EfficiencyResults extends State<EfficiencyResults> {
     });
   }
 
-  /*Future<bool> _willPopCallback() async {
-    // If the tooltip is open we don't pop the page on a backbutton press
-    // but close the ToolTip
-    if (tooltip!.isOpen) {
-      tooltip!.close();
-      return false;
-    }
-    return true;
-  }
-
-  void onTap() {
-    if (tooltip != null && tooltip!.isOpen) {
-      tooltip!.close();
-      return;
-    }
-
-    var renderBox = context.findRenderObject() as RenderBox;
-    final overlay =
-        Overlay.of(context)!.context.findRenderObject() as RenderBox?;
-
-    var targetGlobalCenter = renderBox
-        .localToGlobal(renderBox.size.center(Offset.zero), ancestor: overlay);
-
-    // We create the tooltip on the first use
-    if (br.purpose == 'No residencial' || arguments['tipus'] == 2) {
-      tooltip = SuperTooltip(
-        popupDirection: TooltipDirection.left,
-        arrowTipDistance: 15.0,
-        arrowBaseWidth: 40.0,
-        arrowLength: 40.0,
-        borderColor: Colors.green,
-        borderWidth: 5.0,
-        snapsFarAwayVertically: true,
-        hasShadow: false,
-        touchThroughAreaShape: ClipAreaShape.rectangle,
-        content: new Material(
-            child: Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: Text(
-            "A: 0.00 ≤ C < 0.40"
-            "B: 0.40 ≤ C < 0.65"
-            "C: 0.65 ≤ C < 1.00"
-            "D: 1.00 ≤ C < 1.30"
-            "E: 1.30 ≤ C < 1.60"
-            "F: 1.60 ≤ C < 2.00"
-            "G: 2.00 ≤ C",
-            softWrap: true,
-          ),
-        )),
-      );
-    } else {
-      tooltip = SuperTooltip(
-        popupDirection: TooltipDirection.left,
-        arrowTipDistance: 15.0,
-        arrowBaseWidth: 40.0,
-        arrowLength: 40.0,
-        borderColor: Colors.green,
-        borderWidth: 5.0,
-        snapsFarAwayVertically: true,
-        hasShadow: false,
-        touchThroughAreaShape: ClipAreaShape.rectangle,
-        content: new Material(
-            child: Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: Text(
-            "A: 0.00 ≤ C1 < 0.15"
-            "B: 0.15 ≤ C1 < 0.50"
-            "C: 0.50 ≤ C1 < 1.00"
-            "D: 1.00 ≤ C1 < 1.75"
-            "E: 1.30 ≤ C1 < 1.60"
-            "   0.00 ≤ C2 < 1.00"
-            "F: 1.60 ≤ C1 < 2.00"
-            "   1.00 ≤ C2 < 1.50"
-            "G: 1,75 ≤ C1"
-            "   1.50 ≤ C2",
-            softWrap: true,
-          ),
-        )),
-      );
-    }
-    tooltip!.show(context);
-  }*/
-
   Future<void> getComponentsData() async {
     if (arguments['tipus'] == 1) {
       if (br.demandC1 != '0') {
@@ -328,9 +245,6 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               pw.Image(pw.MemoryImage(logobytes.buffer.asUint8List())),
               pw.Text('Informe de resultats',
                   style: pw.TextStyle(fontSize: 30)),
-              /*pw.SizedBox(height: 5),
-              pw.Text('GreenIdCard',
-                  style: pw.TextStyle(fontSize: 25)),*/
               pw.SizedBox(height: 30),
               pw.SizedBox(
                 height: 30,
@@ -855,21 +769,21 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(sr.mem_size)),
+                            child: pw.Text(sr.mem_before)),
                       ]),
                       pw.TableRow(children: [
                         pw.SizedBox(height: 30, width: 5),
                         pw.SizedBox(
                             height: 30,
                             width: 235,
-                            child: pw.Text(sr.mem_before)),
+                            child: pw.Text(sr.mem_execution)),
                       ]),
                       pw.TableRow(children: [
                         pw.SizedBox(height: 20, width: 5),
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(sr.mem_execution)),
+                            child: pw.Text(sr.mem_size)),
                       ]),
                       pw.TableRow(children: [
                         pw.SizedBox(height: 20, width: 5),
@@ -881,14 +795,14 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(sr.num_errors)),
+                            child: pw.Text(sr.num_days)),
                       ]),
                       pw.TableRow(children: [
                         pw.SizedBox(height: 20, width: 5),
                         pw.SizedBox(
                             height: 20,
                             width: 235,
-                            child: pw.Text(sr.num_days)),
+                            child: pw.Text(sr.num_errors)),
                       ]),
                     ]),
               ]),
@@ -1058,6 +972,12 @@ class _EfficiencyResults extends State<EfficiencyResults> {
   }
 
   Widget BuildingResults() {
+    print(br.demandC1);
+    print(br.demandC2);
+    print(br.consumptionC1);
+    print(br.consumptionC2);
+    print(br.emissionsC1);
+    print(br.emissionsC2);
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1065,140 +985,203 @@ class _EfficiencyResults extends State<EfficiencyResults> {
           Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Image.asset(
               'images/demand.png',
-              width: 120,
-              height: 120,
+              width: 120 * MediaQuery.of(context).size.width / 1536,
+              height: 120 * MediaQuery.of(context).size.height / 864,
             ),
             SizedBox(
-              height: 10,
+              height: 10 * MediaQuery.of(context).size.height / 864,
             ),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               (arguments['tipus'] == 1 && br.purpose == 'No residencial')
                   ? Text(double.parse(br.demandC1).toStringAsFixed(2),
-                      style: TextStyle(fontSize: 25))
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536))
                   : Column(
                       children: [
                         Row(
                           children: [
-                            Text('C1: ', style: TextStyle(fontSize: 25)),
+                            Text('C1: ',
+                                style: TextStyle(
+                                    fontSize: 25 *
+                                        MediaQuery.of(context).size.width /
+                                        1536)),
                             Text(double.parse(br.demandC1).toStringAsFixed(2),
-                                style: TextStyle(fontSize: 25)),
+                                style: TextStyle(
+                                    fontSize: 25 *
+                                        MediaQuery.of(context).size.width /
+                                        1536)),
                           ],
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 10 * MediaQuery.of(context).size.height / 864,
                           width: 1,
                         ),
                         Row(
                           children: [
-                            Text('C2: ', style: TextStyle(fontSize: 25)),
+                            Text('C2: ',
+                                style: TextStyle(
+                                    fontSize: 25 *
+                                        MediaQuery.of(context).size.width /
+                                        1536)),
                             Text(double.parse(br.demandC2).toStringAsFixed(2),
-                                style: TextStyle(fontSize: 25)),
+                                style: TextStyle(
+                                    fontSize: 25 *
+                                        MediaQuery.of(context).size.width /
+                                        1536)),
                           ],
                         ),
                       ],
                     ),
               Image(
                   image: AssetImage('images/right-arrow.png'),
-                  width: 30,
-                  height: 30),
-              Text(br.demand_class, style: TextStyle(fontSize: 25)),
+                  width: 30 * MediaQuery.of(context).size.width / 1536,
+                  height: 30 * MediaQuery.of(context).size.height / 864),
+              Text(br.demand_class,
+                  style: TextStyle(
+                      fontSize: 25 * MediaQuery.of(context).size.width / 1536)),
             ]),
           ]),
           SizedBox(
-            width: 50,
+            width: 50 * MediaQuery.of(context).size.width / 1536,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/consumption.png', width: 120, height: 120),
+              Image.asset('images/consumption.png',
+                  width: 120 * MediaQuery.of(context).size.width / 1536,
+                  height: 120 * MediaQuery.of(context).size.height / 864),
               SizedBox(
-                height: 10,
+                height: 10 * MediaQuery.of(context).size.height / 864,
               ),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 (arguments['tipus'] == 1 && br.purpose == 'No residencial')
                     ? Text(double.parse(br.consumptionC1).toStringAsFixed(2),
-                        style: TextStyle(fontSize: 25))
+                        style: TextStyle(
+                            fontSize:
+                                25 * MediaQuery.of(context).size.width / 1536))
                     : Column(
                         children: [
                           Row(
                             children: [
-                              Text('C1: ', style: TextStyle(fontSize: 25)),
+                              Text('C1: ',
+                                  style: TextStyle(
+                                      fontSize: 25 *
+                                          MediaQuery.of(context).size.width /
+                                          1536)),
                               Text(
                                   double.parse(br.consumptionC1)
                                       .toStringAsFixed(2),
-                                  style: TextStyle(fontSize: 25)),
+                                  style: TextStyle(
+                                      fontSize: 25 *
+                                          MediaQuery.of(context).size.width /
+                                          1536)),
                             ],
                           ),
                           SizedBox(
-                            height: 10,
+                            height:
+                                10 * MediaQuery.of(context).size.height / 864,
                             width: 1,
                           ),
                           Row(
                             children: [
-                              Text('C2: ', style: TextStyle(fontSize: 25)),
+                              Text('C2: ',
+                                  style: TextStyle(
+                                      fontSize: 25 *
+                                          MediaQuery.of(context).size.width /
+                                          1536)),
                               Text(
                                   double.parse(br.consumptionC2)
                                       .toStringAsFixed(2),
-                                  style: TextStyle(fontSize: 25)),
+                                  style: TextStyle(
+                                      fontSize: 25 *
+                                          MediaQuery.of(context).size.width /
+                                          1536)),
                             ],
                           ),
                         ],
                       ),
                 Image(
                     image: AssetImage('images/right-arrow.png'),
-                    width: 30,
-                    height: 30),
-                Text(br.consumption_class, style: TextStyle(fontSize: 25)),
+                    width: 30 * MediaQuery.of(context).size.width / 1536,
+                    height: 30 * MediaQuery.of(context).size.height / 864),
+                Text(br.consumption_class,
+                    style: TextStyle(
+                        fontSize:
+                            25 * MediaQuery.of(context).size.width / 1536)),
               ]),
             ],
           ),
           SizedBox(
-            width: 50,
+            width: 50 * MediaQuery.of(context).size.width / 1536,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/emissions.png', width: 120, height: 120),
+              Image.asset('images/emissions.png',
+                  width: 120 * MediaQuery.of(context).size.width / 1536,
+                  height: 120),
               SizedBox(
-                height: 10,
+                height: 10 * MediaQuery.of(context).size.height / 864,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   (arguments['tipus'] == 1 && br.purpose == 'No residencial')
                       ? Text(double.parse(br.emissionsC1).toStringAsFixed(2),
-                          style: TextStyle(fontSize: 25))
+                          style: TextStyle(
+                              fontSize: 25 *
+                                  MediaQuery.of(context).size.width /
+                                  1536))
                       : Column(
                           children: [
                             Row(
                               children: [
-                                Text('C1: ', style: TextStyle(fontSize: 25)),
+                                Text('C1: ',
+                                    style: TextStyle(
+                                        fontSize: 25 *
+                                            MediaQuery.of(context).size.width /
+                                            1536)),
                                 Text(
                                     double.parse(br.emissionsC1)
                                         .toStringAsFixed(2),
-                                    style: TextStyle(fontSize: 25)),
+                                    style: TextStyle(
+                                        fontSize: 25 *
+                                            MediaQuery.of(context).size.width /
+                                            1536)),
                               ],
                             ),
                             SizedBox(
-                              height: 10,
+                              height:
+                                  10 * MediaQuery.of(context).size.height / 864,
                               width: 1,
                             ),
                             Row(
                               children: [
-                                Text('C2: ', style: TextStyle(fontSize: 25)),
+                                Text('C2: ',
+                                    style: TextStyle(
+                                        fontSize: 25 *
+                                            MediaQuery.of(context).size.width /
+                                            1536)),
                                 Text(
                                     double.parse(br.emissionsC2)
                                         .toStringAsFixed(2),
-                                    style: TextStyle(fontSize: 25)),
+                                    style: TextStyle(
+                                        fontSize: 25 *
+                                            MediaQuery.of(context).size.width /
+                                            1536)),
                               ],
                             ),
                           ],
                         ),
                   Image(
                       image: AssetImage('images/right-arrow.png'),
-                      width: 30,
-                      height: 30),
-                  Text(br.emissions_class, style: TextStyle(fontSize: 25)),
+                      width: 30 * MediaQuery.of(context).size.width / 1536,
+                      height: 30 * MediaQuery.of(context).size.height / 864),
+                  Text(br.emissions_class,
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536)),
                 ],
               )
             ],
@@ -1211,7 +1194,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
         ],
       ),
       SizedBox(
-        height: 40,
+        height: 40 * MediaQuery.of(context).size.height / 864,
       ),
       FutureBuilder(
           future: getComponentsData(),
@@ -1219,8 +1202,8 @@ class _EfficiencyResults extends State<EfficiencyResults> {
             if (snapshot.connectionState == ConnectionState.done &&
                 arguments['tipus'] == 1) {
               return SizedBox(
-                  height: 300,
-                  width: 1000,
+                  height: 300 * MediaQuery.of(context).size.height / 864,
+                  width: 1000 * MediaQuery.of(context).size.width / 1536,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1284,7 +1267,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                     data.color),
                           ]),
                       SizedBox(
-                        width: 30,
+                        width: 30 * MediaQuery.of(context).size.width / 1536,
                       ),
                       SfCartesianChart(
                           // Initialize category axis
@@ -1346,7 +1329,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                     data.color),
                           ]),
                       SizedBox(
-                        width: 30,
+                        width: 30 * MediaQuery.of(context).size.width / 1536,
                       ),
                       SfCartesianChart(
                           // Initialize category axis
@@ -1425,9 +1408,11 @@ class _EfficiencyResults extends State<EfficiencyResults> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/efficiency.png', width: 120, height: 120),
-              const SizedBox(
-                height: 10,
+              Image.asset('images/efficiency.png',
+                  width: 120 * MediaQuery.of(context).size.width / 1536,
+                  height: 120 * MediaQuery.of(context).size.height / 864),
+              SizedBox(
+                height: 5 * MediaQuery.of(context).size.height / 864,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1436,31 +1421,38 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                       arguments['tipus'] == 2
                           ? double.parse(sr.efficiency).toStringAsFixed(2)
                           : '0',
-                      style: TextStyle(fontSize: 25)),
-                  const SizedBox(
-                    width: 5,
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536)),
+                  SizedBox(
+                    width: 5 * MediaQuery.of(context).size.width / 1536,
                   ),
                   Image(
                       image: AssetImage('images/right-arrow.png'),
                       width: 30,
-                      height: 30),
-                  const SizedBox(
-                    width: 5,
+                      height: 30 * MediaQuery.of(context).size.height / 864),
+                  SizedBox(
+                    width: 5 * MediaQuery.of(context).size.width / 1536,
                   ),
-                  Text(sr.efficiency_class, style: TextStyle(fontSize: 25)),
+                  Text(sr.efficiency_class,
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536)),
                 ],
               )
             ],
           ),
           SizedBox(
-            width: 50,
+            width: 50 * MediaQuery.of(context).size.width / 1536,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/optimization.png', width: 120, height: 120),
-              const SizedBox(
-                height: 10,
+              Image.asset('images/optimization.png',
+                  width: 120 * MediaQuery.of(context).size.width / 1536,
+                  height: 120 * MediaQuery.of(context).size.height / 864),
+              SizedBox(
+                height: 10 * MediaQuery.of(context).size.height / 864,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1469,31 +1461,38 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                       arguments['tipus'] == 2
                           ? double.parse(sr.consumption).toStringAsFixed(2)
                           : '0',
-                      style: TextStyle(fontSize: 25)),
-                  const SizedBox(
-                    width: 5,
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536)),
+                  SizedBox(
+                    width: 5 * MediaQuery.of(context).size.width / 1536,
                   ),
                   Image(
                       image: AssetImage('images/right-arrow.png'),
-                      width: 30,
-                      height: 30),
-                  const SizedBox(
-                    width: 5,
+                      width: 30 * MediaQuery.of(context).size.width / 1536,
+                      height: 30 * MediaQuery.of(context).size.height / 864),
+                  SizedBox(
+                    width: 5 * MediaQuery.of(context).size.width / 1536,
                   ),
-                  Text(sr.consumption_class, style: TextStyle(fontSize: 25)),
+                  Text(sr.consumption_class,
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536)),
                 ],
               ),
             ],
           ),
           SizedBox(
-            width: 50,
+            width: 50 * MediaQuery.of(context).size.width / 1536,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/perdurability.png', width: 120, height: 120),
-              const SizedBox(
-                height: 10,
+              Image.asset('images/perdurability.png',
+                  width: 120,
+                  height: 120 * MediaQuery.of(context).size.height / 864),
+              SizedBox(
+                height: 10 * MediaQuery.of(context).size.height / 864,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1502,18 +1501,23 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                       arguments['tipus'] == 2
                           ? double.parse(sr.perdurability).toStringAsFixed(2)
                           : '0',
-                      style: TextStyle(fontSize: 25)),
-                  const SizedBox(
-                    width: 5,
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536)),
+                  SizedBox(
+                    width: 5 * MediaQuery.of(context).size.width / 1536,
                   ),
                   Image(
                       image: AssetImage('images/right-arrow.png'),
                       width: 30,
-                      height: 30),
-                  const SizedBox(
-                    width: 5,
+                      height: 30 * MediaQuery.of(context).size.height / 864),
+                  SizedBox(
+                    width: 5 * MediaQuery.of(context).size.width / 1536,
                   ),
-                  Text(sr.perdurability_class, style: TextStyle(fontSize: 25)),
+                  Text(sr.perdurability_class,
+                      style: TextStyle(
+                          fontSize:
+                              25 * MediaQuery.of(context).size.width / 1536)),
                 ],
               ),
             ],
@@ -1526,7 +1530,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
         ],
       ),
       SizedBox(
-        height: 40,
+        height: 40 * MediaQuery.of(context).size.height / 864,
       ),
       FutureBuilder(
           future: _fetchdata(),
@@ -1534,29 +1538,66 @@ class _EfficiencyResults extends State<EfficiencyResults> {
             if (snapshot.connectionState == ConnectionState.done) {
               List<ChartData> cpus = [];
               List<ChartData> gpus = [];
+              late ChartData aux;
               for (CalculationData c in calculation_dataCPU) {
                 if (c.value_type != sr.cpu) {
                   cpus.add(ChartData(c.value_type, double.parse(c.value1),
                       Colors.green.shade700));
                 } else {
-                  cpus.add(ChartData(
-                      c.value_type, double.parse(c.value1), Colors.lime));
+                  aux = ChartData(
+                      c.value_type, double.parse(c.value1), Colors.lime);
+                  cpus.add(aux);
                 }
               }
               cpus.sort((a, b) => a.y.compareTo(b.y));
+              int index_cpu = cpus.indexOf(aux);
+              print('despues de obtener el indice de cpu');
+              List<ChartData> cpus_aux = [];
+              print('despues de crear las cpus');
+              print(cpus.length - index_cpu);
+              if (cpus.length - index_cpu < 3) {
+                print('dentro de cpus cerca del final');
+                int diference = 3 + cpus.length - index_cpu;
+                print(diference);
+                cpus_aux = cpus.sublist(index_cpu - diference, cpus.length);
+              } else if (cpus.length - index_cpu > cpus.length - 3) {
+                int diference = 7 - index_cpu;
+                print(diference);
+                cpus_aux = cpus.sublist(1, index_cpu + diference);
+              } else {
+                print('dentro de cpus no cerca del final');
+                print(index_cpu);
+                cpus_aux = cpus.sublist(index_cpu - 3, index_cpu + 3);
+              }
               for (CalculationData c in calculation_dataGPU) {
                 if (c.value_type != sr.gpu) {
                   gpus.add(ChartData(c.value_type, double.parse(c.value1),
                       Colors.green.shade700));
                 } else {
-                  gpus.add(ChartData(
-                      c.value_type, double.parse(c.value1), Colors.lime));
+                  aux = ChartData(
+                      c.value_type, double.parse(c.value1), Colors.lime);
+                  gpus.add(aux);
                 }
               }
               gpus.sort((a, b) => a.y.compareTo(b.y));
+              int index_gpu = gpus.indexOf(aux);
+              print(index_gpu);
+              List<ChartData> gpus_aux = [];
+
+              if (gpus.length - index_gpu < 3) {
+                int diference = 3 + gpus.length - index_gpu;
+                print(diference);
+                gpus_aux = gpus.sublist(index_gpu - diference, gpus.length);
+              } else if (gpus.length - index_gpu > gpus.length - 3) {
+                int diference = 7 - index_gpu;
+                print(diference);
+                gpus_aux = gpus.sublist(1, index_gpu + diference);
+              } else {
+                gpus_aux = gpus.sublist(index_gpu - 3, index_gpu + 3);
+              }
               return SizedBox(
-                  height: 300,
-                  width: 1000,
+                  height: 300 * MediaQuery.of(context).size.height / 864,
+                  width: 1000 * MediaQuery.of(context).size.width / 1536,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1576,18 +1617,19 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                     isVisible: true)),
                           ]),
                       SizedBox(
-                        width: 30,
+                        width: 30 * MediaQuery.of(context).size.width / 1536,
                       ),
                       SfCartesianChart(
                         title: ChartTitle(text: 'Consum de la CPU'),
                         primaryXAxis: CategoryAxis(
                             // Axis will be rendered based on the index values
                             arrangeByIndex: true,
-                            labelRotation: 90),
+                            labelRotation: 90,
+                            labelStyle: TextStyle(fontSize: 10)),
                         series: <ChartSeries<ChartData, String>>[
                           ColumnSeries<ChartData, String>(
                               // Binding the chartData to the dataSource of the column series.
-                              dataSource: cpus,
+                              dataSource: cpus_aux,
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                               pointColorMapper: (ChartData data, _) =>
@@ -1595,18 +1637,19 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         ],
                       ),
                       SizedBox(
-                        width: 30,
+                        width: 30 * MediaQuery.of(context).size.width / 1536,
                       ),
                       SfCartesianChart(
                         title: ChartTitle(text: 'Consum de la GPU'),
                         primaryXAxis: CategoryAxis(
                             // Axis will be rendered based on the index values
                             arrangeByIndex: true,
-                            labelRotation: 90),
+                            labelRotation: 90,
+                            labelStyle: TextStyle(fontSize: 10)),
                         series: <ChartSeries<ChartData, String>>[
                           ColumnSeries<ChartData, String>(
                               // Binding the chartData to the dataSource of the column series.
-                              dataSource: gpus,
+                              dataSource: gpus_aux,
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                               pointColorMapper: (ChartData data, _) =>
@@ -1628,15 +1671,18 @@ class _EfficiencyResults extends State<EfficiencyResults> {
           body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('No s\'ha trobat cap informació de càlcul.',
-              style: TextStyle(fontSize: 20)),
-          const Text(
+          Text('No s\'ha trobat cap informació de càlcul.',
+              style: TextStyle(
+                  fontSize: 20 * MediaQuery.of(context).size.width / 1536)),
+          Text(
             'Sisplau, torna a la pantalla de càlcul ',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(
+                fontSize: 20 * MediaQuery.of(context).size.width / 1536),
           ),
-          const Text(
+          Text(
             'i realitza el procés correctament.',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(
+                fontSize: 20 * MediaQuery.of(context).size.width / 1536),
           )
         ],
       ));
@@ -1669,28 +1715,32 @@ class _EfficiencyResults extends State<EfficiencyResults> {
       body: Row(children: [
         Container(
           color: Colors.lightGreen,
-          width: 200,
+          width: 200 * MediaQuery.of(context).size.width / 1536,
           child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             Image(
               image: AssetImage('images/icono-blanco.png'),
-              width: 125,
-              height: 125,
+              width: 125 * MediaQuery.of(context).size.width / 1536,
+              height: 125 * MediaQuery.of(context).size.height / 864,
             ),
-            SizedBox(width: 1, height: 75),
+            SizedBox(
+                width: 1,
+                height: 75 * MediaQuery.of(context).size.height / 864),
             FlatButton(
               onPressed: () {
                 Navigator.of(context).pushNamed('/home');
               },
               child: Text(
                 'Inici',
-                style: TextStyle(color: Colors.grey.shade300),
+                style: TextStyle(
+                    color: Colors.grey.shade300,
+                    fontSize: 14 * MediaQuery.of(context).size.width / 1536),
               ),
               /*style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.lightGreen))*/
             ),
             SizedBox(
-              height: 50,
+              height: 50 * MediaQuery.of(context).size.height / 864,
             ),
             FlatButton(
               onPressed: () {
@@ -1700,7 +1750,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                 'Calcula l\'eficiència',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 20 * MediaQuery.of(context).size.width / 1536,
                 ),
               ),
               /*style: ButtonStyle(
@@ -1708,7 +1758,7 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                         MaterialStateProperty.all<Color>(Colors.lightGreen))*/
             ),
             SizedBox(
-              height: 50,
+              height: 50 * MediaQuery.of(context).size.height / 864,
             ),
             FlatButton(
               onPressed: () {
@@ -1717,8 +1767,8 @@ class _EfficiencyResults extends State<EfficiencyResults> {
               child: Text(
                 'Introdueix valors',
                 style: TextStyle(
-                  color: Colors.grey.shade300,
-                ),
+                    color: Colors.grey.shade300,
+                    fontSize: 14 * MediaQuery.of(context).size.width / 1536),
               ),
               /*style: ButtonStyle(
                     backgroundColor:
@@ -1730,22 +1780,23 @@ class _EfficiencyResults extends State<EfficiencyResults> {
           child: Container(
               child: Column(
             children: [
-              const SizedBox(
-                height: 10,
+              SizedBox(
+                height: 10 * MediaQuery.of(context).size.height / 864,
               ),
               Text(
                 text,
-                style: TextStyle(fontSize: 25),
+                style: TextStyle(
+                    fontSize: 25 * MediaQuery.of(context).size.width / 1536),
               ),
-              const SizedBox(
-                height: 40,
+              SizedBox(
+                height: 40 * MediaQuery.of(context).size.height / 864,
               ),
               Visibility(
                   child: SoftwareResults(), visible: arguments['tipus'] == 2),
               Visibility(
                   child: BuildingResults(), visible: arguments['tipus'] == 1),
               SizedBox(
-                height: 20,
+                height: 20 * MediaQuery.of(context).size.height / 864,
                 width: 1,
               ),
               ClipRRect(
@@ -1761,7 +1812,9 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.all(13.0),
                         primary: Colors.white,
-                        textStyle: const TextStyle(fontSize: 20),
+                        textStyle: TextStyle(
+                            fontSize:
+                                20 * MediaQuery.of(context).size.width / 1536),
                       ),
                       onPressed: () {
                         if (arguments['tipus'] == 1) {
@@ -1779,8 +1832,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                             Text(
                                                 'Indica la direcció de l\'edifici:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -1796,22 +1857,42 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                     labelText: 'Direcció',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 20,
-                                        width: 10,
+                                        height: 20 *
+                                            MediaQuery.of(context).size.height /
+                                            864,
+                                        width: 10 *
+                                            MediaQuery.of(context).size.width /
+                                            1536,
                                       ),
                                       Expanded(
                                         child: Row(
                                           children: [
                                             Text('Indica el municipi:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -1827,22 +1908,42 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                     labelText: 'Municipi',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 20,
-                                        width: 10,
+                                        height: 20 *
+                                            MediaQuery.of(context).size.height /
+                                            864,
+                                        width: 10 *
+                                            MediaQuery.of(context).size.width /
+                                            1536,
                                       ),
                                       Expanded(
                                         child: Row(
                                           children: [
                                             Text('Indica el codi postal:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -1858,14 +1959,26 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                     labelText: 'Codi postal',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 20,
-                                        width: 10,
+                                        height: 20 *
+                                            MediaQuery.of(context).size.height /
+                                            864,
+                                        width: 10 *
+                                            MediaQuery.of(context).size.width /
+                                            1536,
                                       ),
                                       Expanded(
                                         child: Row(
@@ -1873,8 +1986,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                             Text(
                                                 'Indica la comunitat autònoma:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -1891,14 +2012,26 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                         'Comunitat autònoma',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                     ]),
-                                    height: 250,
-                                    width: 475,
+                                    height: 250 *
+                                        MediaQuery.of(context).size.height /
+                                        864,
+                                    width: 475 *
+                                        MediaQuery.of(context).size.width /
+                                        1536,
                                   ),
                                   actions: [
                                     TextButton(
@@ -1924,8 +2057,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                           children: [
                                             Text('Indica el nom del sistema:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -1941,14 +2082,26 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                     labelText: 'Nom',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 20,
-                                        width: 10,
+                                        height: 20 *
+                                            MediaQuery.of(context).size.height /
+                                            864,
+                                        width: 10 *
+                                            MediaQuery.of(context).size.width /
+                                            1536,
                                       ),
                                       Expanded(
                                         child: Row(
@@ -1956,8 +2109,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                             Text(
                                                 'Indica l\'empresa desenvolupadora:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -1973,14 +2134,26 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                     labelText: 'Empresa',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 20,
-                                        width: 10,
+                                        height: 20 *
+                                            MediaQuery.of(context).size.height /
+                                            864,
+                                        width: 10 *
+                                            MediaQuery.of(context).size.width /
+                                            1536,
                                       ),
                                       Expanded(
                                         child: Row(
@@ -1988,8 +2161,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                             Text(
                                                 'Indica el municipi de l\'empresa:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -2005,14 +2186,26 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                     labelText: 'Municipi',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 20,
-                                        width: 10,
+                                        height: 20 *
+                                            MediaQuery.of(context).size.height /
+                                            864,
+                                        width: 10 *
+                                            MediaQuery.of(context).size.width /
+                                            1536,
                                       ),
                                       Expanded(
                                         child: Row(
@@ -2020,8 +2213,16 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                             Text(
                                                 'Indica la comunitat autònoma de l\'empresa:'),
                                             SizedBox(
-                                              width: 10,
-                                              height: 10,
+                                              width: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1536,
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  864,
                                             ),
                                             Container(
                                                 child: TextField(
@@ -2038,14 +2239,26 @@ class _EfficiencyResults extends State<EfficiencyResults> {
                                                         'Comunitat autònoma',
                                                   ),
                                                 ),
-                                                height: 40,
-                                                width: 200),
+                                                height: 40 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    864,
+                                                width: 200 *
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1536),
                                           ],
                                         ),
                                       ),
                                     ]),
-                                    height: 250,
-                                    width: 540,
+                                    height: 250 *
+                                        MediaQuery.of(context).size.height /
+                                        864,
+                                    width: 540 *
+                                        MediaQuery.of(context).size.width /
+                                        1536,
                                   ),
                                   actions: [
                                     TextButton(
